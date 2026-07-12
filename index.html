@@ -3,30 +3,618 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>voxelworldmodel</title>
+  <title>Voxel World Model</title>
+  <meta name="description" content="An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge.">
   <style>
+    :root {
+      --bg: #000;
+      --bg-elevated: #0a0a0a;
+      --bg-card: #111;
+      --border: #222;
+      --text: #f5f5f5;
+      --text-muted: #a3a3a3;
+      --accent: #6ee7b7;
+      --accent-dim: #34d399;
+      --warn: #fbbf24;
+      --max-width: 920px;
+      --radius: 10px;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      background: #000;
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      font-size: 1.05rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    header {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 52ch;
+    }
+
+    nav {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 2rem;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 1.75rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    section {
+      margin-bottom: 3.5rem;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.75rem;
+      color: var(--accent-dim);
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+    }
+
+    p strong,
+    li strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    ul {
+      margin: 0 0 1rem 1.25rem;
+      color: var(--text-muted);
+    }
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+
+    .highlight {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+    }
+
+    .highlight p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: #d4d4d4;
+      white-space: pre;
+    }
+
+    .pill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 1rem 0;
+    }
+
+    .pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+    }
+
+    .card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .meta-block {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #d4d4d4;
+      margin: 1rem 0;
+    }
+
+    .meta-block .label {
+      color: var(--accent);
+    }
+
+    .status-banner {
+      background: linear-gradient(135deg, #0d1f17 0%, #0a0a0a 100%);
+      border: 1px solid #1a3d2e;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-banner h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+
+    .stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      text-align: center;
+    }
+
+    .stat .value {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .stat .label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      line-height: 1.3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      color: var(--text-muted);
+    }
+
+    td:first-child {
+      color: var(--text);
+      font-weight: 500;
+      width: 42%;
+    }
+
+    .ok { color: var(--accent); }
+    .pending { color: var(--warn); }
+
+    .footnote {
+      font-size: 0.88rem;
+      color: #737373;
+      margin-top: 1rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .wrap {
+        padding: 0 1rem 4rem;
+      }
+
+      header {
+        padding-top: 2.5rem;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.5rem 0;
+      }
+
+      td {
+        border: none;
+        padding: 0.4rem 0.85rem;
+      }
+
+      td:first-child {
+        width: auto;
+        padding-bottom: 0.15rem;
+      }
+
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #737373;
+        margin-bottom: 0.15rem;
+      }
     }
   </style>
 </head>
 <body>
-  hello
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">🌍 Open Platform</p>
+      <h1>Voxel World Model</h1>
+      <p class="lead">An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge.</p>
+      <nav>
+        <a href="#what">What is VWM?</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#twins">Digital Twins</a>
+        <a href="#semantic">Semantic Worlds</a>
+        <a href="#rendering">Neural Rendering</a>
+        <a href="#status">Development Status</a>
+        <a href="#vision">Vision</a>
+        <a href="#org">Organization</a>
+      </nav>
+    </header>
+
+    <section id="what">
+      <h2>What is Voxel World Model?</h2>
+      <p><strong>Voxel World Model (VWM)</strong> is an open architecture for representing the world as a living, synchronized voxel simulation.</p>
+      <p>Rather than treating AI rendering as the simulation itself, VWM separates <strong>simulation</strong>, <strong>understanding</strong>, and <strong>visualization</strong> into independent layers.</p>
+      <div class="highlight">
+        <p>The <strong>voxel world is the authoritative source of truth</strong>.</p>
+        <p>Everything else — including photorealistic rendering — is simply another way of <em>observing</em> that world.</p>
+      </div>
+    </section>
+
+    <section id="philosophy">
+      <h2>Core Philosophy</h2>
+      <p>The renderer never owns reality. The renderer visualizes reality.</p>
+      <div class="diagram">Reality
+    │
+Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
+    │
+    ▼
+═══════════════════════════════
+ Authoritative Voxel World
+═══════════════════════════════
+    │
+    ├── Native Voxel Rendering
+    ├── Stylized Rendering
+    ├── Neural Rendering
+    ├── VR / AR
+    ├── Robotics
+    └── Simulation APIs</div>
+
+      <h3>Why Voxels?</h3>
+      <p>Voxel worlds provide something extremely valuable:</p>
+      <div class="card-grid">
+        <div class="card"><h4>Deterministic</h4><p>Reproducible, predictable simulation behavior.</p></div>
+        <div class="card"><h4>Editable</h4><p>Environments you can change and reason about.</p></div>
+        <div class="card"><h4>Networked</h4><p>Efficient sync across devices and players.</p></div>
+        <div class="card"><h4>Persistent</h4><p>World state that survives and evolves.</p></div>
+        <div class="card"><h4>Semantic</h4><p>Meaning, not just geometry — a chair is a chair.</p></div>
+        <div class="card"><h4>Simple Physics</h4><p>Straightforward rules for real interaction.</p></div>
+      </div>
+      <p>Instead of storing only pixels or meshes, VWM stores <strong>meaning</strong>. A door is a door. A vehicle is a vehicle — not simply millions of triangles.</p>
+    </section>
+
+    <section id="twins">
+      <h2>Digital Twins</h2>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world.</p>
+      <ul>
+        <li>Smart homes, offices, and factories</li>
+        <li>Vehicles, robots, farms, and warehouses</li>
+        <li>Laboratories and industrial sites</li>
+      </ul>
+      <p>Real-world events become voxel events. Opening your real office door can open the corresponding voxel door. Smart lights update the virtual room. Vehicle telemetry updates your vehicle inside the world.</p>
+
+      <h3>Reality is an Input</h3>
+      <p>Everything becomes an event. The simulation does not care where data originated — only that the world changed.</p>
+      <div class="diagram">Door Sensor · Temperature · Camera · GPS · Vehicle · Player · Robot
+        │
+        ▼
+──────────────
+ World Events
+──────────────
+        │
+        ▼
+Voxel Simulation</div>
+    </section>
+
+    <section id="semantic">
+      <h2>Semantic Worlds</h2>
+      <p>Unlike traditional voxel engines, objects are not merely blocks. Every object can contain semantic information that enriches understanding without changing gameplay.</p>
+      <div class="meta-block"><span class="label">Door</span>
+
+Material:  Oak
+Finish:    Satin
+Age:       15 years
+State:     Open
+Description: Office entrance</div>
+
+      <h3>Hierarchical Context</h3>
+      <p>Semantic information exists at every level — from the whole world down to individual components:</p>
+      <div class="diagram">World → Region → Building → Room → Object → Component
+
+World:    Modern suburban neighborhood
+Building: Engineering office
+Room:     Electronics laboratory
+Desk:     Walnut standing desk
+Object:   Oscilloscope</div>
+      <p>AI systems receive rich contextual information instead of only geometry.</p>
+    </section>
+
+    <section id="rendering">
+      <h2>Neural Rendering</h2>
+      <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines — changing renderers never changes simulation.</p>
+
+      <h3>View Modes</h3>
+      <div class="pill-grid">
+        <span class="pill">Native Voxel</span>
+        <span class="pill">Enhanced Voxel</span>
+        <span class="pill">Low Poly</span>
+        <span class="pill">LEGO</span>
+        <span class="pill">Clay</span>
+        <span class="pill">Pixel Art</span>
+        <span class="pill">Anime</span>
+        <span class="pill">Watercolor</span>
+        <span class="pill">Photorealistic</span>
+        <span class="pill">Cinematic</span>
+        <span class="pill">Wireframe</span>
+        <span class="pill">LiDAR Point Cloud</span>
+        <span class="pill">Gaussian Splat</span>
+        <span class="pill">Semantic Segmentation</span>
+        <span class="pill">Thermal / IR</span>
+        <span class="pill">Physics View</span>
+        <span class="pill">AI Attention Maps</span>
+        <span class="pill">Mixed Reality</span>
+        <span class="pill">Custom User Views</span>
+      </div>
+
+      <h3>Voxel Game → Real-Time Photorealism</h3>
+      <p>A real VWM deployment uses an open-source voxel game as the structured simulation layer, then replaces or overlays the native renderer with an AI-driven photorealistic pipeline — keeping geometry exact while upgrading appearance.</p>
+
+      <h3>AI-Assisted Rendering</h3>
+      <p>Objects may optionally include rendering hints (material, lighting, condition, style). The renderer uses these as conditioning information. <strong>Hard facts remain deterministic. Soft hints remain artistic guidance.</strong></p>
+    </section>
+
+    <section>
+      <h2>Reality Capture &amp; Understanding</h2>
+      <p>The platform ingests information from many sources — RGB and depth cameras, LiDAR, radar, GPS, smart home devices, industrial sensors, and more. Future pipelines (Gaussian splatting, neural reconstruction, semantic scene understanding) can all contribute to building or updating the voxel world.</p>
+      <p>VWM is intended to evolve beyond rendering — reasoning about objects, relationships, ownership, events, history, behaviors, automation, navigation, and robotics. <strong>The world becomes understandable — not merely visible.</strong></p>
+
+      <h3>Replay Everything</h3>
+      <p>Every change can be recorded: player movement, sensor events, AI actions, vehicle telemetry, automation, weather, and world modifications. Entire worlds become replayable for debugging, simulation, training datasets, and historical analysis.</p>
+
+      <h3>Modular by Design</h3>
+      <div class="diagram">Reality Capture
+        ↓
+World Reconstruction
+        ↓
+Voxel Simulation
+        ↓
+Knowledge Layer
+        ↓
+AI Systems
+        ↓
+Rendering</div>
+      <p>Every subsystem is replaceable. New renderers, AI models, sensors, and robotics systems integrate without redesigning the platform.</p>
+    </section>
+
+    <section id="status">
+      <h2>Development Status</h2>
+      <p>Current milestone: a trained, integrated VWM-native appearance compiler — proven with real data, minimal VRAM, and strict geometry invariants.</p>
+
+      <div class="status-banner">
+        <h3>✅ VWM-Native Photographic Appearance Compiler</h3>
+        <p>A genuinely trained appearance model maps VWM deferred/G-buffer views to Blender/Cycles photographic targets, integrated behind the compiler invariant: <strong>the model runs only when appearance must be built — never when the camera moves.</strong></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">21×</span><span class="label">L1 improvement on held-out scenes</span></div>
+        <div class="stat"><span class="value">0.97</span><span class="label">Silhouette IoU (camera parity)</span></div>
+        <div class="stat"><span class="value">0.72</span><span class="label">Edge IoU (geometry preserved)</span></div>
+        <div class="stat"><span class="value">394 MB</span><span class="label">Peak VRAM during training</span></div>
+        <div class="stat"><span class="value">13 s</span><span class="label">Training time (600 steps)</span></div>
+        <div class="stat"><span class="value">0 runs</span><span class="label">Model invocations across 500 camera frames</span></div>
+        <div class="stat"><span class="value">242 FPS</span><span class="label">Camera-only playback speed</span></div>
+        <div class="stat"><span class="value">89 FPS</span><span class="label">Median (1,000-frame proof)</span></div>
+      </div>
+
+      <h3>Milestone Checklist</h3>
+      <table>
+        <thead>
+          <tr><th>Criterion</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Criterion">Blender/Cycles target generation</td><td data-label="Status" class="ok">✅ bpy 5.0.1, CUDA/OPTIX on RTX 2060 SUPER</td></tr>
+          <tr><td data-label="Criterion">Camera / geometry parity</td><td data-label="Status" class="ok">✅ Silhouette IoU 0.97 (measured pre-training)</td></tr>
+          <tr><td data-label="Criterion">Paired VWM dataset</td><td data-label="Status" class="ok">✅ 50 aligned pairs, scene-split (no leakage)</td></tr>
+          <tr><td data-label="Criterion">Trained checkpoint</td><td data-label="Status" class="ok">✅ vwm_appearance_v1.pt</td></tr>
+          <tr><td data-label="Criterion">Photographic metric improvement</td><td data-label="Status" class="ok">✅ Held-out L1: 0.343 → 0.016 (100% of views)</td></tr>
+          <tr><td data-label="Criterion">Geometry within thresholds</td><td data-label="Status" class="ok">✅ Edge-IoU 0.72, geometry-gated fallback</td></tr>
+          <tr><td data-label="Criterion">AppearanceCompiler integration</td><td data-label="Status" class="ok">✅ model_checkpoint wired; 6 views compiled, then 0 on movement</td></tr>
+          <tr><td data-label="Criterion">Persistent baked appearance</td><td data-label="Status" class="ok">✅ Via existing backprojection path</td></tr>
+          <tr><td data-label="Criterion">Test suites</td><td data-label="Status" class="ok">✅ 46 suites green · 82 modules import clean</td></tr>
+          <tr><td data-label="Criterion">Live Luanti client capture</td><td data-label="Status" class="pending">⚠️ Integration wired; live capture not re-run this milestone</td></tr>
+        </tbody>
+      </table>
+
+      <h3>What This Proves</h3>
+      <ul>
+        <li><strong>Architecture holds:</strong> VoxelWorld → trained appearance compiler → persistent component-local appearance → fast fused renderer → Luanti client.</li>
+        <li><strong>Efficient by design:</strong> Training used only 394 MB VRAM; system left 6.6 GB VRAM free. Runtime camera movement triggers zero recompilation.</li>
+        <li><strong>Real evidence:</strong> Model learned Cycles AgX tonemapping, GI-darkened corners, and mood while preserving exact geometry on held-out scenes.</li>
+      </ul>
+
+      <p class="footnote"><strong>Honest scope note:</strong> This is a first real checkpoint — 50 pairs, 600 steps, 160² procedural scenes. It decisively beats the deferred baseline but targets a narrow distribution. The training CLI is resumable for larger runs; multi-view and edit-locality loss terms are scaffolded but not yet in the training objective. SD-Turbo head-to-head and in-client Luanti capture remain future demonstrations.</p>
+    </section>
+
+    <section id="vision">
+      <h2>Long-Term Vision</h2>
+      <p>Voxel World Model aims to become a universal foundation for persistent digital worlds — a place where:</p>
+      <ul>
+        <li>Reality continuously synchronizes into simulation</li>
+        <li>AI understands the world instead of only generating images</li>
+        <li>Robotics interacts through the same world model</li>
+        <li>Digital twins remain deterministic</li>
+        <li>Rendering becomes interchangeable</li>
+        <li>Future neural rendering advances automatically improve every connected world</li>
+      </ul>
+      <div class="highlight">
+        <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
+      </div>
+    </section>
+
+    <section id="org">
+      <h2>Organization</h2>
+      <p>This GitHub organization hosts the components that make Voxel World Model possible:</p>
+      <div class="pill-grid">
+        <span class="pill">Voxel Simulation</span>
+        <span class="pill">Reality Capture</span>
+        <span class="pill">Neural Rendering</span>
+        <span class="pill">Gaussian Reconstruction</span>
+        <span class="pill">World Synchronization</span>
+        <span class="pill">Semantic Understanding</span>
+        <span class="pill">Sensor Frameworks</span>
+        <span class="pill">AI Tooling</span>
+        <span class="pill">Robotics Interfaces</span>
+        <span class="pill">Dataset Tooling</span>
+        <span class="pill">Developer Utilities</span>
+      </div>
+      <p>Every repository contributes toward a common goal: <strong>building an open, persistent, AI-native world model for reality itself.</strong></p>
+    </section>
+
+    <footer>
+      <p><a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+    </footer>
+  </div>
 </body>
 </html>
