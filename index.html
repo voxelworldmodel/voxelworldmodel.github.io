@@ -15,9 +15,15 @@
       --text-muted: #a3a3a3;
       --accent: #6ee7b7;
       --accent-dim: #34d399;
+      --accent-dark: #0d5c40;
       --warn: #fbbf24;
       --max-width: 920px;
-      --radius: 10px;
+      --radius: 0;
+      --voxel-step: 4px;
+      --voxel-face: #121212;
+      --voxel-shadow: #1a1a1a;
+      --voxel-shadow-deep: #0a0a0a;
+      --voxel-edge: #2a2a2a;
     }
 
     * {
@@ -105,7 +111,8 @@
       font-weight: 600;
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      box-shadow: 0 4px 0 -2px var(--accent-dark);
     }
 
     h3 {
@@ -135,13 +142,56 @@
       margin-bottom: 0.35rem;
     }
 
+    .highlight,
+    .status-banner,
+    .card,
+    .diagram,
+    .meta-block,
+    .stat {
+      border-radius: 0;
+      position: relative;
+    }
+
     .highlight {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      margin: 1.25rem 0;
+      background: var(--voxel-face);
+      border: 2px solid var(--accent);
+      padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+      margin: 1.25rem var(--voxel-step) 1.75rem 0;
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--voxel-shadow-deep),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--accent-dark);
+    }
+
+    .highlight::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: repeating-linear-gradient(
+        180deg,
+        var(--accent) 0,
+        var(--accent) 10px,
+        var(--accent-dim) 10px,
+        var(--accent-dim) 20px
+      );
+    }
+
+    .highlight::after {
+      content: "";
+      position: absolute;
+      top: calc(var(--voxel-step) * -1.5);
+      right: calc(var(--voxel-step) * -1.5);
+      width: var(--voxel-step);
+      height: var(--voxel-step);
+      background: var(--accent);
+      box-shadow:
+        calc(var(--voxel-step) * -1) 0 0 var(--accent-dim),
+        0 var(--voxel-step) 0 var(--accent-dim),
+        calc(var(--voxel-step) * -1) var(--voxel-step) 0 var(--accent-dark),
+        calc(var(--voxel-step) * -2) var(--voxel-step) 0 var(--accent-dark),
+        calc(var(--voxel-step) * -1) calc(var(--voxel-step) * 2) 0 var(--accent-dark);
     }
 
     .highlight p:last-child {
@@ -150,10 +200,12 @@
 
     .diagram {
       background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border: 2px solid var(--voxel-edge);
       padding: 1.25rem 1.5rem;
-      margin: 1.25rem 0;
+      margin: 1.25rem var(--voxel-step) 1.75rem 0;
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--voxel-shadow-deep),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow);
       overflow-x: auto;
       font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
       font-size: 0.82rem;
@@ -170,12 +222,13 @@
     }
 
     .pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.3rem 0.75rem;
+      background: var(--voxel-face);
+      border: 2px solid var(--voxel-edge);
+      border-radius: 0;
+      padding: 0.35rem 0.7rem;
       font-size: 0.82rem;
       color: var(--text-muted);
+      box-shadow: 2px 2px 0 0 var(--voxel-shadow-deep);
     }
 
     .card-grid {
@@ -186,10 +239,23 @@
     }
 
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--voxel-face);
+      border: 2px solid var(--voxel-edge);
       padding: 1.1rem 1.25rem;
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--voxel-shadow-deep),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow);
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 6px;
+      height: 6px;
+      background: var(--accent-dim);
+      opacity: 0.45;
     }
 
     .card h4 {
@@ -205,9 +271,13 @@
 
     .meta-block {
       background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border: 2px solid var(--accent-dim);
       padding: 1rem 1.25rem;
+      margin-right: var(--voxel-step);
+      margin-bottom: calc(var(--voxel-step) * 1.5);
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--accent-dark),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow-deep);
       font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
       font-size: 0.85rem;
       line-height: 1.5;
@@ -220,11 +290,30 @@
     }
 
     .status-banner {
-      background: linear-gradient(135deg, #0d1f17 0%, #0a0a0a 100%);
-      border: 1px solid #1a3d2e;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      background: #0d1a14;
+      border: 2px solid var(--accent);
+      padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+      margin: 0 var(--voxel-step) 1.75rem 0;
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 #06100c,
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--accent-dark),
+        calc(var(--voxel-step) * 3) calc(var(--voxel-step) * 3) 0 0 #041008;
+    }
+
+    .status-banner::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: repeating-linear-gradient(
+        180deg,
+        var(--accent) 0,
+        var(--accent) 8px,
+        transparent 8px,
+        transparent 12px
+      );
     }
 
     .status-banner h3 {
@@ -240,11 +329,13 @@
     }
 
     .stat {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--voxel-face);
+      border: 2px solid var(--voxel-edge);
       padding: 0.9rem 1rem;
       text-align: center;
+      box-shadow:
+        3px 3px 0 0 var(--voxel-shadow-deep),
+        3px 3px 0 2px var(--accent-dark);
     }
 
     .stat .value {
@@ -338,9 +429,10 @@
 
       tr {
         margin-bottom: 1rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border: 2px solid var(--border);
+        border-radius: 0;
         padding: 0.5rem 0;
+        box-shadow: 3px 3px 0 0 var(--voxel-shadow-deep);
       }
 
       td {
