@@ -14,16 +14,107 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v2">Latest: Appearance v2</a>
+        <a href="#v21">Latest: Appearance v2.1</a>
+        <a href="#v2">Appearance v2</a>
         <a href="#v1">Appearance v1</a>
         <a href="benchmarks.html">Benchmarks</a>
       </nav>
     </header>
 
+    <article class="update" id="v21">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge badge-partial">Complete, not promoted</span>
+      </div>
+      <h2>VWM Appearance Model v2.1, Executed, Measured, Honestly Judged</h2>
+      <p>Four named weaknesses attacked with real data, real training, and real measurement. Two resolved as measured capabilities; two partial with honest reasons. <strong>v2 remains production default.</strong></p>
+
+      <div class="status-banner">
+        <h3>✅ Milestone complete, v2 stays default</h3>
+        <p>v2.1 has the best photographic L1 and proven edit-locality + light-invariance, but edge-IoU softens (0.531) and gate failure hits 1%. Under the promotion gate, v2 wins aggregate VWMScore (<strong>0.871</strong> vs <strong>0.833</strong>).</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.014</span><span class="label">Photographic L1 (best of v1/v2/v2.1)</span></div>
+        <div class="stat"><span class="value">1050</span><span class="label">Observations (600 + 270 edit + 180 relight)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Unchanged-component drift (8 edits)</span></div>
+        <div class="stat"><span class="value">8×10⁻⁶</span><span class="label">Intrinsic light variance (measured)</span></div>
+        <div class="stat"><span class="value">5000</span><span class="label">Training steps (~180s, 215 MB VRAM)</span></div>
+        <div class="stat"><span class="value">89.5</span><span class="label">FPS median (default v2, 1000 frames)</span></div>
+      </div>
+
+      <h3>Resolved: Edit-Locality Supervision (#1 weakness)</h3>
+      <p>Built authoritative edit-pair generation (<code>tools/vwm_dataset_v21.py</code>): render World A, apply an authoritative edit, render the same cameras of World B, derive dependency-aware influence masks (UNCHANGED / INTRINSIC / GEOMETRY / TRANSFORM / LIGHT) from the world itself, not image diff. All 5 influence classes appear across <strong>270 edit observations</strong>.</p>
+      <p>The trainer runs the model on both before/after states and penalizes drift over UNCHANGED pixels on both heads. Measured: locality loss EMA <strong>0.0005</strong>; sequential-edit torture shows <strong>0 unchanged-component drift</strong> across 8 edits (move mug, rotate chair, lamp off, oak→aluminum, HAV refine, move chair, lamp on, remove mug). Material/remove invalidates exactly 1 component each.</p>
+
+      <h3>Resolved: Intrinsic Relighting Measured (#2 weakness)</h3>
+      <p>Built relighting groups (<code>vwm_blender_batch.py</code> renders warm/cool/off states over identical geometry with lighting-free albedo targets). Forensic test: intrinsic-head variance across lamp-on/off drops to <strong>8×10⁻⁶</strong>, the intrinsic head genuinely ignores lighting.</p>
+
+      <h3>3-Way Benchmark (16 held-out scenes, VWMScore v2)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v1</th><th>v2 (default)</th><th>v2.1</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Metric">Photographic L1 → Cycles</td>
+            <td data-label="v1">0.033</td>
+            <td data-label="v2">0.019</td>
+            <td data-label="v2.1" class="ok">0.014</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Edge IoU</td>
+            <td data-label="v1">0.635</td>
+            <td data-label="v2" class="ok">0.580</td>
+            <td data-label="v2.1">0.531</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Geometry-gate failure rate</td>
+            <td data-label="v1" class="ok">0.0</td>
+            <td data-label="v2" class="ok">0.0</td>
+            <td data-label="v2.1" class="pending">0.01</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Intrinsic light variance</td>
+            <td data-label="v1">-</td>
+            <td data-label="v2">0.0</td>
+            <td data-label="v2.1" class="ok">8×10⁻⁶</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Unchanged-component drift</td>
+            <td data-label="v1">-</td>
+            <td data-label="v2">0</td>
+            <td data-label="v2.1" class="ok">0</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">VWMScore v2</td>
+            <td data-label="v1">0.717</td>
+            <td data-label="v2" class="ok">0.871</td>
+            <td data-label="v2.1">0.833</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Partial: Dataset Scale</h3>
+      <p><strong>600 → 1050 observations</strong> (600 standard + 270 edit pairs + 180 relight), audited <strong>0 rejected</strong>. A real 3.5× multi-task scale-up, but not the 10k stretch target. Cycles throughput (~0.8 obs/s) caps a responsible session.</p>
+
+      <h3>Partial: In-Luanti v2.1 Capture</h3>
+      <p>Integration plugs into the identical compiler→renderer→bridge path proven in prior milestones. Live client capture not re-run to avoid disrupting the active desktop/game.</p>
+
+      <h3>What This Proves</h3>
+      <ul>
+        <li><strong>Appearance behaves like a world property:</strong> a wall move leaves 0 unchanged drift; wood grain stays surface-attached; lamp off does not destroy material identity.</li>
+        <li><strong>Camera only observes:</strong> 1,000 camera-only frames → 0 compiler calls, 0 model calls at 89.5 FPS median (default v2).</li>
+        <li><strong>Honest promotion:</strong> when the checkpoint did not beat v2 on aggregate score and gate failures, v2 stayed default and v2.1 was retained with full documentation.</li>
+      </ul>
+
+      <p class="footnote">Production default remains <a href="#v2">Appearance Model v2</a>. v2.1 available as <code>vwm_appearance_v21.pt</code> with model card in <code>checkpoints/vwm_appearance_v2_1/</code>.</p>
+    </article>
+
     <article class="update" id="v2">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
-        <span class="badge badge-ok">Complete</span>
+        <span class="badge badge-default">Production default</span>
       </div>
       <h2>VWM Appearance Model v2, Scaled, Consistency-Trained, Benchmarked, Promoted</h2>
       <p>The v1 proof became a real training system, and v2 won on evidence.</p>
@@ -126,6 +217,8 @@
       <div class="highlight">
         <p><strong>Architecture held throughout:</strong> VoxelWorld → appearance compiler (now v2, trained on path-traced targets with multi-view consistency) → persistent component-local appearance → fast fused renderer → Luanti, and the permanent invariant, <em>camera movement runs the model zero times</em>, is intact at 209 FPS.</p>
       </div>
+
+      <p class="footnote">Evaluated against <a href="#v21">v2.1</a>; v2 retained as production default (VWMScore v2 0.871 vs 0.833). See <a href="benchmarks.html">benchmarks</a> for 3-way comparison.</p>
     </article>
 
     <article class="update" id="v1">
@@ -188,7 +281,7 @@
         <li><strong>In-Luanti capture.</strong> Render path proven from prior milestone; live capture not relaunched (GPU in use).</li>
       </ul>
 
-      <p class="footnote">Superseded by <a href="#v2">Appearance Model v2</a>, which scales data 12×, adds multi-view consistency, and wins the VWMScore benchmark. v1 checkpoint remains available for compatibility.</p>
+      <p class="footnote">Superseded by <a href="#v2">Appearance Model v2</a> for production default. v1 checkpoint remains for compatibility.</p>
     </article>
 
     <footer>

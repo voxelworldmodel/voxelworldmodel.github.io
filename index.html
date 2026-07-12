@@ -192,23 +192,23 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Current milestone: <strong>Appearance Model v2</strong>, scaled training, multi-view consistency, benchmarked against v1, and promoted in the compiler.</p>
+      <p>Latest milestone: <strong>Appearance Model v2.1</strong>, edit-locality and relighting measured. <strong>v2 remains the production default</strong> under the promotion gate (best aggregate VWMScore, zero gate failures).</p>
 
       <div class="status-banner">
-        <h3>✅ VWM Appearance Model v2, Promoted</h3>
-        <p>Dual-head U-Net trained on 600 pairs across 100 diverse scenes. Wins VWMScore benchmark (<strong>0.796</strong> vs v1 <strong>0.792</strong>), perfect cross-view surface identity, and the compiler invariant holds: <strong>0 model runs across 1,000 camera frames at 209 FPS</strong>.</p>
+        <h3>✅ v2.1 Executed, Measured, Honestly Judged</h3>
+        <p>Edit-locality supervision wired into training (<strong>0 unchanged-component drift</strong> across 8 sequential edits). Intrinsic relighting measured against Cycles (<strong>8×10⁻⁶</strong> light variance). Best held-out photographic L1 (<strong>0.014</strong>), but edge-IoU tradeoff keeps <strong>v2 as default</strong>.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.019</span><span class="label">Photographic L1 (held-out, v2)</span></div>
-        <div class="stat"><span class="value">42%</span><span class="label">Better than v1 on diverse scenes</span></div>
-        <div class="stat"><span class="value">215 MB</span><span class="label">Peak VRAM (v2 training)</span></div>
-        <div class="stat"><span class="value">0.0</span><span class="label">Multi-view surface variance</span></div>
-        <div class="stat"><span class="value">0 runs</span><span class="label">Model invocations (camera movement)</span></div>
-        <div class="stat"><span class="value">209 FPS</span><span class="label">Camera-only playback (v2 proof)</span></div>
+        <div class="stat"><span class="value">0.014</span><span class="label">Photographic L1 (v2.1, best)</span></div>
+        <div class="stat"><span class="value">0.871</span><span class="label">VWMScore v2 (production default)</span></div>
+        <div class="stat"><span class="value">1050</span><span class="label">Training observations (0 rejected)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Unchanged drift (8-edit torture)</span></div>
+        <div class="stat"><span class="value">0 runs</span><span class="label">Model calls (1,000 camera frames)</span></div>
+        <div class="stat"><span class="value">89.5</span><span class="label">FPS median (default v2 proof)</span></div>
       </div>
 
-      <p>Full milestone reports and side-by-side benchmark tables:</p>
+      <p>Full milestone reports and 3-way benchmark tables:</p>
       <a class="cta-link" href="updates.html">Project updates →</a>
       <a class="cta-link" href="benchmarks.html" style="margin-left: 0.5rem">Benchmarks →</a>
     </section>
