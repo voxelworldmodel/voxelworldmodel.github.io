@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Updates — Voxel World Model</title>
+  <title>Project Updates, Voxel World Model</title>
   <meta name="description" content="Development milestones and honest progress reports for the Voxel World Model appearance compiler and platform.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <div class="wrap">
     <header>
-      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <p class="eyebrow"><a href="index.html">← <span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span></a></p>
       <h1>Project Updates</h1>
-      <p class="lead">Honest milestone reports — what shipped, what was measured, and what is still in progress.</p>
+      <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
         <a href="#v2">Latest: Appearance v2</a>
         <a href="#v1">Appearance v1</a>
@@ -25,7 +25,7 @@
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-ok">Complete</span>
       </div>
-      <h2>VWM Appearance Model v2 — Scaled, Consistency-Trained, Benchmarked, Promoted</h2>
+      <h2>VWM Appearance Model v2, Scaled, Consistency-Trained, Benchmarked, Promoted</h2>
       <p>The v1 proof became a real training system, and v2 won on evidence.</p>
 
       <div class="status-banner">
@@ -44,25 +44,25 @@
         <div class="stat"><span class="value">0 runs</span><span class="label">Model invocations (500 camera frames)</span></div>
       </div>
 
-      <h3>v1 Audit — What Drove v2</h3>
-      <p>Channel ablation was decisive: <strong>only deferred RGB contributes</strong> (removing it costs ΔL1 +0.010); albedo, normal, and depth added nothing. v1 was learning a tone/GI transform. That proved v2 must change the task to demand structure — not just enlarge the network.</p>
+      <h3>v1 Audit, What Drove v2</h3>
+      <p>Channel ablation was decisive: <strong>only deferred RGB contributes</strong> (removing it costs ΔL1 +0.010); albedo, normal, and depth added nothing. v1 was learning a tone/GI transform. That proved v2 must change the task to demand structure, not just enlarge the network.</p>
 
       <h3>Scaled, Diverse Dataset</h3>
       <ul>
-        <li><code>tools/vwm_blender_batch.py</code> — one bpy process per scene renders all views (beauty + lighting-free albedo/intrinsic pass + component masks), amortizing startup.</li>
+        <li><code>tools/vwm_blender_batch.py</code>, one bpy process per scene renders all views (beauty + lighting-free albedo/intrinsic pass + component masks), amortizing startup.</li>
         <li>Material library expanded to <strong>40+ families</strong>.</li>
         <li><code>tools/vwm_appearance_dataset_v2.py</code> generated <strong>600 aligned VWM→Cycles pairs</strong> across 100 diverse procedural scenes (10 scene classes, 8 component types).</li>
-        <li><strong>0 rejected</strong> under silhouette-parity validation — with component-local multi-view correspondence.</li>
+        <li><strong>0 rejected</strong> under silhouette-parity validation, with component-local multi-view correspondence.</li>
       </ul>
 
       <h3>v2 Model &amp; Losses</h3>
       <p><code>vwm/appearance_model_v2.py</code> is a dual-head U-Net (~1.45M params): an <strong>intrinsic albedo head</strong> (relightable, multi-view-consistent) and a <strong>final RGB head</strong> (photographic).</p>
       <p>Trained via <code>tools/vwm_train_appearance_v2.py</code> with photographic L1 + intrinsic L1 + edge-preservation + explicit <strong>multi-view surface consistency loss</strong> (scatter-mean intrinsic over component+local-cell keys across two views). 3,000 steps, 105s, 215 MB VRAM, mixed precision.</p>
 
-      <h3>Honest Iteration — v2 Lost, Then Won</h3>
+      <h3>Honest Iteration, v2 Lost, Then Won</h3>
       <p>The first v2 attempt (intrinsic-only) <strong>lost the benchmark</strong>: VWMScore <strong>0.584</strong> vs v1's <strong>0.792</strong>, because it re-lit intrinsic albedo through a crude approximation, hurting the final photographic match (L1 0.135). Rather than ship a worse model, the architecture was improved with a <strong>dual head</strong> and re-benchmarked.</p>
 
-      <h3>Benchmark — 16 Held-Out Scenes, 96 Views</h3>
+      <h3>Benchmark, 16 Held-Out Scenes, 96 Views</h3>
       <table class="benchmark">
         <thead>
           <tr><th>Metric</th><th>Deferred</th><th>v1</th><th>v2</th></tr>
@@ -76,33 +76,33 @@
           </tr>
           <tr>
             <td data-label="Metric">Edge IoU</td>
-            <td data-label="Deferred">—</td>
+            <td data-label="Deferred">-</td>
             <td data-label="v1">0.635</td>
             <td data-label="v2">0.580</td>
           </tr>
           <tr>
             <td data-label="Metric">Multi-view surface variance</td>
-            <td data-label="Deferred">—</td>
-            <td data-label="v1">—</td>
+            <td data-label="Deferred">-</td>
+            <td data-label="v1">-</td>
             <td data-label="v2" class="ok">0.0</td>
           </tr>
           <tr>
             <td data-label="Metric">Geometry-gate failure rate</td>
-            <td data-label="Deferred">—</td>
+            <td data-label="Deferred">-</td>
             <td data-label="v1" class="ok">0.0</td>
             <td data-label="v2" class="ok">0.0</td>
           </tr>
           <tr>
             <td data-label="Metric">VWMScore</td>
-            <td data-label="Deferred">—</td>
+            <td data-label="Deferred">-</td>
             <td data-label="v1">0.792</td>
             <td data-label="v2" class="ok">0.796</td>
           </tr>
         </tbody>
       </table>
-      <p>v2 is <strong>42% better photographically</strong> than v1 on unseen diverse scenes (better generalization from 12× more diverse data), has perfect cross-view surface identity, passes the geometry gate, and its intrinsic head is <strong>relightable</strong> — which v1 is not.</p>
+      <p>v2 is <strong>42% better photographically</strong> than v1 on unseen diverse scenes (better generalization from 12× more diverse data), has perfect cross-view surface identity, passes the geometry gate, and its intrinsic head is <strong>relightable</strong>, which v1 is not.</p>
 
-      <h3>Promoted &amp; Integrated — Invariant Intact</h3>
+      <h3>Promoted &amp; Integrated, Invariant Intact</h3>
       <ul>
         <li>Compiler auto-selects the v1/v2 adapter by checkpoint version; <code>component_local</code> conditioning added for v2.</li>
         <li>Compiling a furnished house ran the model <strong>17×</strong> (once per view), then <strong>1,000 camera-only frames ran it 0×</strong> at <strong>209 FPS</strong> median (p95 5.5 ms).</li>
@@ -112,19 +112,19 @@
 
       <figure class="figure figure-accent">
         <img src="voxel_color_to_real_compare.png" alt="Side-by-side voxel simulation and neural photorealistic render.">
-        <figcaption><strong>Same world, upgraded appearance.</strong> The compiler invariant holds: geometry from simulation, photographic quality from the trained model — only at compile time.</figcaption>
+        <figcaption><strong>Same world, upgraded appearance.</strong> The compiler invariant holds: geometry from simulation, photographic quality from the trained model, only at compile time.</figcaption>
       </figure>
 
       <h3>Honest Boundaries</h3>
       <ul>
-        <li><strong>Scale.</strong> 600 pairs / 100 scenes / 3,000 steps is a real generalization win, but not the 10k–100k stretch target. Pipelines are built to scale further.</li>
-        <li><strong>Edit-locality loss.</strong> Edit locality is guaranteed architecturally (per-component compilation, dependency fingerprints — proven in the house test), but edit-pair data primitives are scaffolded; the loss term is not wired.</li>
+        <li><strong>Scale.</strong> 600 pairs / 100 scenes / 3,000 steps is a real generalization win, but not the 10k-100k stretch target. Pipelines are built to scale further.</li>
+        <li><strong>Edit-locality loss.</strong> Edit locality is guaranteed architecturally (per-component compilation, dependency fingerprints, proven in the house test), but edit-pair data primitives are scaffolded; the loss term is not wired.</li>
         <li><strong>In-Luanti v2 capture.</strong> v2 plugs into the compiler→fused-renderer→photoreal-bridge path proven in-client previously; live capture was not re-run this milestone (GPU in use). Integration is wired and headlessly proven.</li>
         <li><strong>Intrinsic relighting.</strong> Works architecturally via the renderer's dynamic lighting; lamp-off does not invalidate material identity. No Blender/Cycles relighting-target comparison for v2 specifically yet.</li>
       </ul>
 
       <div class="highlight">
-        <p><strong>Architecture held throughout:</strong> VoxelWorld → appearance compiler (now v2, trained on path-traced targets with multi-view consistency) → persistent component-local appearance → fast fused renderer → Luanti — and the permanent invariant, <em>camera movement runs the model zero times</em>, is intact at 209 FPS.</p>
+        <p><strong>Architecture held throughout:</strong> VoxelWorld → appearance compiler (now v2, trained on path-traced targets with multi-view consistency) → persistent component-local appearance → fast fused renderer → Luanti, and the permanent invariant, <em>camera movement runs the model zero times</em>, is intact at 209 FPS.</p>
       </div>
     </article>
 
@@ -133,7 +133,7 @@
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-ok">Complete</span>
       </div>
-      <h2>VWM-Native Photographic Appearance Compiler v1 — Trained, Integrated, Proven</h2>
+      <h2>VWM-Native Photographic Appearance Compiler v1, Trained, Integrated, Proven</h2>
       <p>The first genuinely trained VWM-native appearance compiler from mathematically matched VoxelWorld→Blender/Cycles data, integrated behind the compiler invariant.</p>
 
       <div class="status-banner">
@@ -154,13 +154,13 @@
 
       <h3>What Shipped</h3>
       <ul>
-        <li><strong>Blender/Cycles pipeline</strong> — bpy 5.0.1 in dedicated <code>.venv-blender</code>; Cycles headless with CUDA+OPTIX on RTX 2060 SUPER. <code>tools/vwm_blender_render.py</code> + <code>vwm/blender_export.py</code>.</li>
-        <li><strong>Camera parity</strong> — exact raycaster basis; silhouette IoU <strong>0.9705</strong> between Cycles and VWM G-buffer.</li>
-        <li><strong>Dataset</strong> — 50 aligned (deferred + G-buffer → Cycles) pairs, 10 scenes × 5 views, scene-split held-out (1008/1009, no leakage).</li>
-        <li><strong>Model</strong> — compact residual U-Net (11 input channels → RGB residual). Checkpoint <code>vwm_appearance_v1.pt</code>: 600 steps, 13s, 394 MB VRAM.</li>
-        <li><strong>Held-out result</strong> — L1 to Cycles target dropped <strong>0.343 → 0.016</strong> (21×), improving 100% of held-out views; edge-IoU 0.72.</li>
-        <li><strong>Integration</strong> — <code>AppearanceCompiler(model_checkpoint=...)</code> runs per view during compilation, geometry-gated. 6 views compiled, then 500 camera frames at <strong>242 FPS</strong> with <strong>0 model runs</strong>.</li>
-        <li><strong>Verification</strong> — 46 suites green; 82 modules import clean.</li>
+        <li><strong>Blender/Cycles pipeline</strong>, bpy 5.0.1 in dedicated <code>.venv-blender</code>; Cycles headless with CUDA+OPTIX on RTX 2060 SUPER. <code>tools/vwm_blender_render.py</code> + <code>vwm/blender_export.py</code>.</li>
+        <li><strong>Camera parity</strong>, exact raycaster basis; silhouette IoU <strong>0.9705</strong> between Cycles and VWM G-buffer.</li>
+        <li><strong>Dataset</strong>, 50 aligned (deferred + G-buffer → Cycles) pairs, 10 scenes × 5 views, scene-split held-out (1008/1009, no leakage).</li>
+        <li><strong>Model</strong>, compact residual U-Net (11 input channels → RGB residual). Checkpoint <code>vwm_appearance_v1.pt</code>: 600 steps, 13s, 394 MB VRAM.</li>
+        <li><strong>Held-out result</strong>, L1 to Cycles target dropped <strong>0.343 → 0.016</strong> (21×), improving 100% of held-out views; edge-IoU 0.72.</li>
+        <li><strong>Integration</strong>, <code>AppearanceCompiler(model_checkpoint=...)</code> runs per view during compilation, geometry-gated. 6 views compiled, then 500 camera frames at <strong>242 FPS</strong> with <strong>0 model runs</strong>.</li>
+        <li><strong>Verification</strong>, 46 suites green; 82 modules import clean.</li>
       </ul>
 
       <h3>Milestone Checklist</h3>
@@ -192,7 +192,7 @@
     </article>
 
     <footer>
-      <p><a href="index.html">← Back to Voxel World Model</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+      <p><a href="index.html">← Back to <span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span></a> · <a href="benchmarks.html">Benchmarks</a> · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
     </footer>
   </div>
 </body>

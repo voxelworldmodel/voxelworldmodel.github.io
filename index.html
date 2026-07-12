@@ -11,7 +11,7 @@
   <div class="wrap">
     <header>
       <p class="eyebrow">🌍 Open Platform</p>
-      <h1>Voxel World Model</h1>
+      <h1 aria-label="Voxel World Model"><span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span></h1>
       <p class="lead">An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge.</p>
       <nav>
         <a href="#what">What is VWM?</a>
@@ -28,12 +28,12 @@
     </header>
 
     <section id="what">
-      <h2>What is Voxel World Model?</h2>
-      <p><strong>Voxel World Model (VWM)</strong> is an open architecture for representing the world as a living, synchronized voxel simulation.</p>
+      <h2>What is <span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span>?</h2>
+      <p><strong><span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span> (VWM)</strong> is an open architecture for representing the world as a living, synchronized voxel simulation.</p>
       <p>Rather than treating AI rendering as the simulation itself, VWM separates <strong>simulation</strong>, <strong>understanding</strong>, and <strong>visualization</strong> into independent layers.</p>
       <div class="highlight">
         <p>The <strong>voxel world is the authoritative source of truth</strong>.</p>
-        <p>Everything else — including photorealistic rendering — is simply another way of <em>observing</em> that world.</p>
+        <p>Everything else, including photorealistic rendering, is simply another way of <em>observing</em> that world.</p>
       </div>
     </section>
 
@@ -64,15 +64,15 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
         <div class="card"><h4>Editable</h4><p>Environments you can change and reason about.</p></div>
         <div class="card"><h4>Networked</h4><p>Efficient sync across devices and players.</p></div>
         <div class="card"><h4>Persistent</h4><p>World state that survives and evolves.</p></div>
-        <div class="card"><h4>Semantic</h4><p>Meaning, not just geometry — a chair is a chair.</p></div>
+        <div class="card"><h4>Semantic</h4><p>Meaning, not just geometry, a chair is a chair.</p></div>
         <div class="card"><h4>Simple Physics</h4><p>Straightforward rules for real interaction.</p></div>
       </div>
-      <p>Instead of storing only pixels or meshes, VWM stores <strong>meaning</strong>. A door is a door. A vehicle is a vehicle — not simply millions of triangles.</p>
+      <p>Instead of storing only pixels or meshes, VWM stores <strong>meaning</strong>. A door is a door. A vehicle is a vehicle, not simply millions of triangles.</p>
     </section>
 
     <section id="twins">
       <h2>Digital Twins</h2>
-      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world.</p>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong>, real-world devices continuously synchronized into the voxel world.</p>
       <ul>
         <li>Smart homes, offices, and factories</li>
         <li>Vehicles, robots, farms, and warehouses</li>
@@ -81,7 +81,7 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
       <p>Real-world events become voxel events. Opening your real office door can open the corresponding voxel door. Smart lights update the virtual room. Vehicle telemetry updates your vehicle inside the world.</p>
 
       <h3>Reality is an Input</h3>
-      <p>Everything becomes an event. The simulation does not care where data originated — only that the world changed.</p>
+      <p>Everything becomes an event. The simulation does not care where data originated, only that the world changed.</p>
       <div class="diagram">Door Sensor · Temperature · Camera · GPS · Vehicle · Player · Robot
         │
         ▼
@@ -105,7 +105,7 @@ State:     Open
 Description: Office entrance</div>
 
       <h3>Hierarchical Context</h3>
-      <p>Semantic information exists at every level — from the whole world down to individual components:</p>
+      <p>Semantic information exists at every level, from the whole world down to individual components:</p>
       <div class="diagram">World → Region → Building → Room → Object → Component
 
 World:    Modern suburban neighborhood
@@ -116,7 +116,7 @@ Object:   Oscilloscope</div>
 
       <figure class="figure">
         <img src="voxel_color.png" alt="Isometric voxel house with semantic labels for vehicle, room, desk, and door.">
-        <figcaption><strong>Semantic voxel world.</strong> Objects carry meaning at every level — a vehicle in the garage, rooms, furniture, and doors are labeled and understood, not just drawn as geometry.</figcaption>
+        <figcaption><strong>Semantic voxel world.</strong> Objects carry meaning at every level, a vehicle in the garage, rooms, furniture, and doors are labeled and understood, not just drawn as geometry.</figcaption>
       </figure>
 
       <p>AI systems receive rich contextual information instead of only geometry.</p>
@@ -124,7 +124,7 @@ Object:   Oscilloscope</div>
 
     <section id="rendering">
       <h2>Neural Rendering</h2>
-      <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines — changing renderers never changes simulation.</p>
+      <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines, changing renderers never changes simulation.</p>
 
       <h3>View Modes</h3>
       <div class="pill-grid">
@@ -155,11 +155,11 @@ Object:   Oscilloscope</div>
       </figure>
 
       <h3>Voxel Game → Real-Time Photorealism</h3>
-      <p>A real VWM deployment uses an open-source voxel game as the structured simulation layer, then replaces or overlays the native renderer with an AI-driven photorealistic pipeline — keeping geometry exact while upgrading appearance.</p>
+      <p>A real VWM deployment uses an open-source voxel game as the structured simulation layer, then replaces or overlays the native renderer with an AI-driven photorealistic pipeline, keeping geometry exact while upgrading appearance.</p>
 
       <figure class="figure figure-accent">
         <img src="voxel_color_to_real_compare.png" alt="Side-by-side comparison of voxel simulation render and AI photorealistic neural render of the same house scene.">
-        <figcaption><strong>Same world, different renderer.</strong> Left: authoritative voxel simulation. Right: neural photorealistic appearance — geometry unchanged, visualization upgraded. This is the core VWM rendering invariant in practice.</figcaption>
+        <figcaption><strong>Same world, different renderer.</strong> Left: authoritative voxel simulation. Right: neural photorealistic appearance, geometry unchanged, visualization upgraded. This is the core VWM rendering invariant in practice.</figcaption>
       </figure>
 
       <h3>AI-Assisted Rendering</h3>
@@ -168,8 +168,8 @@ Object:   Oscilloscope</div>
 
     <section>
       <h2>Reality Capture &amp; Understanding</h2>
-      <p>The platform ingests information from many sources — RGB and depth cameras, LiDAR, radar, GPS, smart home devices, industrial sensors, and more. Future pipelines (Gaussian splatting, neural reconstruction, semantic scene understanding) can all contribute to building or updating the voxel world.</p>
-      <p>VWM is intended to evolve beyond rendering — reasoning about objects, relationships, ownership, events, history, behaviors, automation, navigation, and robotics. <strong>The world becomes understandable — not merely visible.</strong></p>
+      <p>The platform ingests information from many sources, RGB and depth cameras, LiDAR, radar, GPS, smart home devices, industrial sensors, and more. Future pipelines (Gaussian splatting, neural reconstruction, semantic scene understanding) can all contribute to building or updating the voxel world.</p>
+      <p>VWM is intended to evolve beyond rendering, reasoning about objects, relationships, ownership, events, history, behaviors, automation, navigation, and robotics. <strong>The world becomes understandable, not merely visible.</strong></p>
 
       <h3>Replay Everything</h3>
       <p>Every change can be recorded: player movement, sensor events, AI actions, vehicle telemetry, automation, weather, and world modifications. Entire worlds become replayable for debugging, simulation, training datasets, and historical analysis.</p>
@@ -191,10 +191,10 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Current milestone: <strong>Appearance Model v2</strong> — scaled training, multi-view consistency, benchmarked against v1, and promoted in the compiler.</p>
+      <p>Current milestone: <strong>Appearance Model v2</strong>, scaled training, multi-view consistency, benchmarked against v1, and promoted in the compiler.</p>
 
       <div class="status-banner">
-        <h3>✅ VWM Appearance Model v2 — Promoted</h3>
+        <h3>✅ VWM Appearance Model v2, Promoted</h3>
         <p>Dual-head U-Net trained on 600 pairs across 100 diverse scenes. Wins VWMScore benchmark (<strong>0.796</strong> vs v1 <strong>0.792</strong>), perfect cross-view surface identity, and the compiler invariant holds: <strong>0 model runs across 1,000 camera frames at 209 FPS</strong>.</p>
       </div>
 
@@ -214,7 +214,7 @@ Rendering</div>
 
     <section id="vision">
       <h2>Long-Term Vision</h2>
-      <p>Voxel World Model aims to become a universal foundation for persistent digital worlds — a place where:</p>
+      <p><span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span> aims to become a universal foundation for persistent digital worlds, a place where:</p>
       <ul>
         <li>Reality continuously synchronizes into simulation</li>
         <li>AI understands the world instead of only generating images</li>
@@ -230,7 +230,7 @@ Rendering</div>
 
     <section id="org">
       <h2>Organization</h2>
-      <p>This GitHub organization hosts the components that make Voxel World Model possible:</p>
+      <p>This GitHub organization hosts the components that make <span class="brand-title"><span class="brand-voxel" aria-hidden="true"><span class="voxel-char">V</span><span class="voxel-char">o</span><span class="voxel-char">x</span><span class="voxel-char">e</span><span class="voxel-char">l</span></span><span class="brand-rainbow">World Model</span></span> possible:</p>
       <div class="pill-grid">
         <span class="pill">Voxel Simulation</span>
         <span class="pill">Reality Capture</span>
