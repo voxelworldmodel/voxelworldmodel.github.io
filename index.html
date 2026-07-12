@@ -395,6 +395,40 @@
       margin-top: 1rem;
     }
 
+    .figure {
+      margin: 1.5rem var(--voxel-step) 2rem 0;
+      border: 2px solid var(--voxel-edge);
+      background: var(--voxel-face);
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--voxel-shadow-deep),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow);
+    }
+
+    .figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .figure figcaption {
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-top: 2px solid var(--voxel-edge);
+      line-height: 1.5;
+    }
+
+    .figure figcaption strong {
+      color: var(--text);
+    }
+
+    .figure-accent {
+      border-color: var(--accent-dim);
+      box-shadow:
+        var(--voxel-step) var(--voxel-step) 0 0 var(--accent-dark),
+        calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow-deep);
+    }
+
     footer {
       border-top: 1px solid var(--border);
       padding-top: 2rem;
@@ -488,6 +522,12 @@
     <section id="philosophy">
       <h2>Core Philosophy</h2>
       <p>The renderer never owns reality. The renderer visualizes reality.</p>
+
+      <figure class="figure figure-accent">
+        <img src="infograph.png" alt="Voxel World Model architecture: reality inputs flow into the authoritative voxel world, through simulation and knowledge layers, to interchangeable renderers and integrations.">
+        <figcaption><strong>VWM at a glance.</strong> Reality and devices feed world events into the authoritative voxel simulation. Semantic understanding, digital twins, and replay sit alongside interchangeable renderers — all driven by a modular, replaceable pipeline.</figcaption>
+      </figure>
+
       <div class="diagram">Reality
     │
 Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
@@ -560,6 +600,12 @@ Building: Engineering office
 Room:     Electronics laboratory
 Desk:     Walnut standing desk
 Object:   Oscilloscope</div>
+
+      <figure class="figure">
+        <img src="voxel_color.png" alt="Isometric voxel house with semantic labels for vehicle, room, desk, and door.">
+        <figcaption><strong>Semantic voxel world.</strong> Objects carry meaning at every level — a vehicle in the garage, rooms, furniture, and doors are labeled and understood, not just drawn as geometry.</figcaption>
+      </figure>
+
       <p>AI systems receive rich contextual information instead of only geometry.</p>
     </section>
 
@@ -590,8 +636,18 @@ Object:   Oscilloscope</div>
         <span class="pill">Custom User Views</span>
       </div>
 
+      <figure class="figure">
+        <img src="voxel_pointcloud.png" alt="VWM point cloud view of a house with semantic overlays identifying vehicle, desk, and door.">
+        <figcaption><strong>Point cloud view mode.</strong> The same voxel world observed through a LiDAR-style point cloud renderer, with live semantic readouts for recognized objects.</figcaption>
+      </figure>
+
       <h3>Voxel Game → Real-Time Photorealism</h3>
       <p>A real VWM deployment uses an open-source voxel game as the structured simulation layer, then replaces or overlays the native renderer with an AI-driven photorealistic pipeline — keeping geometry exact while upgrading appearance.</p>
+
+      <figure class="figure figure-accent">
+        <img src="voxel_color_to_real_compare.png" alt="Side-by-side comparison of voxel simulation render and AI photorealistic neural render of the same house scene.">
+        <figcaption><strong>Same world, different renderer.</strong> Left: authoritative voxel simulation. Right: neural photorealistic appearance — geometry unchanged, visualization upgraded. This is the core VWM rendering invariant in practice.</figcaption>
+      </figure>
 
       <h3>AI-Assisted Rendering</h3>
       <p>Objects may optionally include rendering hints (material, lighting, condition, style). The renderer uses these as conditioning information. <strong>Hard facts remain deterministic. Soft hints remain artistic guidance.</strong></p>
@@ -663,7 +719,7 @@ Rendering</div>
       <ul>
         <li><strong>Architecture holds:</strong> VoxelWorld → trained appearance compiler → persistent component-local appearance → fast fused renderer → Luanti client.</li>
         <li><strong>Efficient by design:</strong> Training used only 394 MB VRAM; system left 6.6 GB VRAM free. Runtime camera movement triggers zero recompilation.</li>
-        <li><strong>Real evidence:</strong> Model learned Cycles AgX tonemapping, GI-darkened corners, and mood while preserving exact geometry on held-out scenes.</li>
+        <li><strong>Real evidence:</strong> Model learned Cycles AgX tonemapping, GI-darkened corners, and mood while preserving exact geometry on held-out scenes — as shown in the voxel-to-photoreal comparison above.</li>
       </ul>
 
       <p class="footnote"><strong>Honest scope note:</strong> This is a first real checkpoint — 50 pairs, 600 steps, 160² procedural scenes. It decisively beats the deferred baseline but targets a narrow distribution. The training CLI is resumable for larger runs; multi-view and edit-locality loss terms are scaffolded but not yet in the training objective. SD-Turbo head-to-head and in-client Luanti capture remain future demonstrations.</p>
