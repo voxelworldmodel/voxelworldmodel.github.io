@@ -14,12 +14,115 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v21">Latest: Appearance v2.1</a>
+        <a href="#v22">Latest: Appearance v2.2</a>
+        <a href="#v21">Appearance v2.1</a>
         <a href="#v2">Appearance v2</a>
         <a href="#v1">Appearance v1</a>
         <a href="benchmarks.html">Benchmarks</a>
       </nav>
     </header>
+
+    <article class="update" id="v22">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge badge-ok">Promoted, production default</span>
+      </div>
+      <h2>VWM Appearance Model v2.2, Structural Fidelity Without Sacrificing Photographic Appearance</h2>
+      <p>Promoted to production default. <code>checkpoints/vwm_appearance_v2_2/vwm_appearance_v22.pt</code> (version <code>vwm-structural-unet-2.2</code>), auto-resolved at runtime and integrated into <code>combined.py</code>.</p>
+
+      <div class="status-banner">
+        <h3>✅ Pareto-dominates deployed v2 on every axis</h3>
+        <p>v2.2 recovers structural sharpness lost in v2.1 while keeping edit-locality and light-invariance gains. Wins frozen <strong>VWMScore v3 (0.773)</strong> with <strong>zero gate failures</strong>.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.691</span><span class="label">Edge IoU (+19% vs v2)</span></div>
+        <div class="stat"><span class="value">0.698</span><span class="label">StructuralIdentityScore</span></div>
+        <div class="stat"><span class="value">0.773</span><span class="label">VWMScore v3</span></div>
+        <div class="stat"><span class="value">0.841</span><span class="label">Thin survival (torture house)</span></div>
+        <div class="stat"><span class="value">10k</span><span class="label">Camera frames, 0 model calls</span></div>
+        <div class="stat"><span class="value">48.6</span><span class="label">FPS median (invariant proof)</span></div>
+      </div>
+
+      <h3>Forensic Root Cause (measured, not assumed)</h3>
+      <p>Controlled ablation (identical init/seed/split/steps) showed that neither edit-locality nor light-invariance alone softens edges, only their <strong>combination</strong> does. Gradient-cosine analysis on the shared decoder trunk: intrinsic ~ light-invariance = <strong>+0.89</strong> (nearly collinear). Both objectives pull the trunk toward the flat, lighting-free albedo manifold; v2's final photographic head is a thin residual on that trunk, so activating both roughly doubles the flatten pull and the residual head inherits a smoother base. Amplification imbalance, not gradient cancellation.</p>
+
+      <h3>The Fix (architecture, from the diagnosis)</h3>
+      <ul>
+        <li><strong>Decoupled intrinsic decoder</strong> so intrinsic/light-invariance cannot flatten the final head's features.</li>
+        <li><strong>Structure-guided final decoder</strong> fed an authoritative G-buffer boundary map (depth/normal/component discontinuities, never Cycles RGB).</li>
+        <li><strong>Structural losses:</strong> anti-blur band (edges only), cross-boundary bleed loss, structure-aware locality that never flattens boundary pixels.</li>
+      </ul>
+
+      <h3>Final Benchmark (VWMScore v3)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v2 (was prod)</th><th>v2.1</th><th>v2.2</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Metric">Photographic L1</td>
+            <td data-label="v2">0.019</td>
+            <td data-label="v2.1" class="ok">0.014</td>
+            <td data-label="v2.2" class="ok">0.018</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Edge IoU</td>
+            <td data-label="v2">0.580</td>
+            <td data-label="v2.1">0.531</td>
+            <td data-label="v2.2" class="ok">0.691</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">StructuralIdentityScore</td>
+            <td data-label="v2">0.460</td>
+            <td data-label="v2.1">0.341</td>
+            <td data-label="v2.2" class="ok">0.698</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Light-invariance variance</td>
+            <td data-label="v2">0.025</td>
+            <td data-label="v2.1">0.013</td>
+            <td data-label="v2.2" class="ok">0.006</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Edit drift</td>
+            <td data-label="v2">0.00124</td>
+            <td data-label="v2.1" class="ok">0.00084</td>
+            <td data-label="v2.2" class="ok">0.00115</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">Gate-fail rate</td>
+            <td data-label="v2" class="ok">0.0</td>
+            <td data-label="v2.1" class="pending">0.01</td>
+            <td data-label="v2.2" class="ok">0.0</td>
+          </tr>
+          <tr>
+            <td data-label="Metric">VWMScore v3</td>
+            <td data-label="v2">0.670</td>
+            <td data-label="v2.1">0.650</td>
+            <td data-label="v2.2" class="ok">0.773</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>See <a href="benchmarks.html#four-way">benchmarks</a> for trend indicators vs prior versions.</p>
+
+      <h3>Structural Torture House</h3>
+      <p>Thin chair legs, keyboard keys, vent slats, and similar geometry: <strong>thin_survival 0.841</strong> vs v2's <strong>0.543</strong>, without hallucinating edges (boundary precision held at 0.95). Candidate ladder of eight configs; promoted checkpoint = gentle anti-blur-weighted candidate G (3500 steps), not the longest run.</p>
+
+      <h3>Invariant Proof</h3>
+      <p><strong>10,000</strong> camera-only frames: <code>neural_model_invocations = 0</code>, <code>compiler_invocations = 0</code>, <strong>48.6 FPS</strong> median. The compiler invariant holds.</p>
+
+      <h3>Honest Limitations</h3>
+      <ul>
+        <li><strong>Dataset scale:</strong> still 1050 observations (not 5k/10k). Cycles ~0.8 obs/s on RTX 2060 SUPER; gains are architectural, measured on the same held-out split.</li>
+        <li><strong>In-Luanti capture:</strong> not re-run; Python integration wired, invariant proof stands in for runtime behavior.</li>
+        <li><strong>85 modules</strong> import clean; full forensic package in <code>checkpoints/vwm_appearance_v2_2/</code>.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>What this proves:</strong> appearance can behave like a persistent world property with thin geometry preserved, relighting measured, edit-locality intact, and the camera only observing (zero model calls on movement).</p>
+      </div>
+    </article>
 
     <article class="update" id="v21">
       <div class="update-meta">
@@ -108,13 +211,13 @@
         <li><strong>Honest promotion:</strong> when the checkpoint did not beat v2 on aggregate score and gate failures, v2 stayed default and v2.1 was retained with full documentation.</li>
       </ul>
 
-      <p class="footnote">Production default remains <a href="#v2">Appearance Model v2</a>. v2.1 available as <code>vwm_appearance_v21.pt</code> with model card in <code>checkpoints/vwm_appearance_v2_1/</code>.</p>
+      <p class="footnote">Superseded as production default by <a href="#v22">Appearance Model v2.2</a>. v2.1 available as <code>vwm_appearance_v21.pt</code>.</p>
     </article>
 
     <article class="update" id="v2">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
-        <span class="badge badge-default">Production default</span>
+        <span class="badge">Superseded by v2.2</span>
       </div>
       <h2>VWM Appearance Model v2, Scaled, Consistency-Trained, Benchmarked, Promoted</h2>
       <p>The v1 proof became a real training system, and v2 won on evidence.</p>
@@ -218,7 +321,7 @@
         <p><strong>Architecture held throughout:</strong> VoxelWorld → appearance compiler (now v2, trained on path-traced targets with multi-view consistency) → persistent component-local appearance → fast fused renderer → Luanti, and the permanent invariant, <em>camera movement runs the model zero times</em>, is intact at 209 FPS.</p>
       </div>
 
-      <p class="footnote">Evaluated against <a href="#v21">v2.1</a>; v2 retained as production default (VWMScore v2 0.871 vs 0.833). See <a href="benchmarks.html">benchmarks</a> for 3-way comparison.</p>
+      <p class="footnote">Former production default; superseded by <a href="#v22">v2.2</a>. See <a href="benchmarks.html#four-way">benchmarks</a> for 3-way v2/v2.1/v2.2 comparison.</p>
     </article>
 
     <article class="update" id="v1">

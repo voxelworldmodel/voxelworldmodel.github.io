@@ -727,6 +727,22 @@ table.benchmark td:not(:first-child) {
 .bench-table .th-v2 { color: var(--accent); }
 .bench-table .th-v21 { color: #c4b5fd; }
 .bench-compare-legend .dot-v21 { background: #a78bfa; }
+
+.trend {
+  display: inline-block;
+  font-size: 0.68em;
+  margin-left: 0.3em;
+  vertical-align: middle;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.trend-good { color: var(--accent); }
+.trend-bad { color: #f87171; }
+.trend-flat { color: #525252; }
+
+.bench-table .th-v22 { color: #f472b6; }
+.bench-compare-legend .dot-v22 { background: #f472b6; }
 .bench-table .th-baseline { color: #888; }
 .bench-table .th-model { color: var(--accent); }
 
@@ -802,7 +818,7 @@ table.benchmark td:not(:first-child) {
 .bench-bar-line .bar-fill-deferred { background: #525252; }
 .bench-bar-line .bar-fill-v1 { background: #60a5fa; }
 .bench-bar-line .bar-fill-v2 { background: var(--accent); }
-.bench-bar-line .bar-fill-v21 { background: #a78bfa; }
+.bench-bar-line .bar-fill-v22 { background: #f472b6; }
 
 .bench-bar-line .bar-val {
   text-align: right;

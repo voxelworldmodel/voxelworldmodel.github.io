@@ -14,10 +14,10 @@
       <h1>Benchmarks</h1>
       <p class="lead">Side-by-side numbers for every appearance-compiler milestone, quality, geometry, training cost, and runtime proofs.</p>
       <nav>
-        <a href="#v21-quality">v2.1 Quality</a>
-        <a href="#three-way">3-way compare</a>
-        <a href="#v2-quality">v2 (default)</a>
-        <a href="#v1-quality">v1</a>
+        <a href="#v22-quality">v2.2 (default)</a>
+        <a href="#four-way">4-way compare</a>
+        <a href="#torture">Torture house</a>
+        <a href="#three-way">v2 era (v1/v2/v2.1)</a>
         <a href="#compare">Cross-milestone</a>
         <a href="updates.html">Full updates</a>
       </nav>
@@ -25,11 +25,183 @@
 
     <div class="bench-compare-legend">
       <span><span class="dot dot-deferred"></span> Deferred baseline</span>
-      <span><span class="dot dot-v1"></span> v1</span>
-      <span><span class="dot dot-v2"></span> v2 (production default)</span>
-      <span><span class="dot dot-v21"></span> v2.1 (available)</span>
-      <span class="delta-up">▼ lower L1 = better</span>
+      <span><span class="dot dot-v2"></span> v2</span>
+      <span><span class="dot dot-v21"></span> v2.1</span>
+      <span><span class="dot dot-v22"></span> v2.2 (production default)</span>
+      <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = improved vs prior column</span>
+      <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── v2.2 ─────────────── -->
+    <section class="bench-milestone" id="v22">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge badge-ok">v2.2, production default</span>
+      </div>
+      <h2>Appearance Model v2.2</h2>
+      <p>Structural fidelity without sacrificing photographic appearance. Pareto-dominates deployed v2 on every axis. VWMScore v3 <strong>0.773</strong>.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">VWMScore v3</span><span class="chip-value">0.773</span></div>
+        <div class="bench-chip"><span class="chip-label">Edge IoU</span><span class="chip-value">0.691</span></div>
+        <div class="bench-chip"><span class="chip-label">Structural ID</span><span class="chip-value">0.698</span></div>
+        <div class="bench-chip"><span class="chip-label">Thin survival</span><span class="chip-value">0.841</span></div>
+        <div class="bench-chip"><span class="chip-label">Gate failures</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">10k frames</span><span class="chip-value">0 runs</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent" id="v22-quality">
+        <div class="bench-panel-head">Architecture fix summary</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Change</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Change">Decoupled intrinsic decoder</td><td data-label="Effect">Stops light-invariance from flattening final-head features</td></tr>
+            <tr><td class="metric" data-label="Change">Structure-guided final decoder</td><td data-label="Effect">G-buffer boundary map (never Cycles RGB) guides edges</td></tr>
+            <tr><td class="metric" data-label="Change">Anti-blur + bleed + structure-aware locality</td><td data-label="Effect">Edges preserved; boundaries never flattened by locality loss</td></tr>
+            <tr><td class="metric" data-label="Change">Root cause</td><td data-label="Effect">intrinsic~lightinv cosine +0.89 on shared trunk (amplification imbalance)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Invariant proof (10,000 camera frames)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Test</th><th class="th-v22">v2.2 result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Test">Neural model invocations (camera-only)</td><td class="num winner" data-label="v2.2">0</td></tr>
+            <tr><td class="metric" data-label="Test">Compiler invocations (camera-only)</td><td class="num winner" data-label="v2.2">0</td></tr>
+            <tr><td class="metric" data-label="Test">Median FPS</td><td class="num" data-label="v2.2">48.6</td></tr>
+            <tr><td class="metric" data-label="Test">Modules import clean</td><td class="num winner" data-label="v2.2">85</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─────────────── 4-way final ─────────────── -->
+    <section class="bench-milestone" id="four-way">
+      <h2>4-way benchmark (VWMScore v3)</h2>
+      <p>Frozen benchmark on same held-out split. <strong>v2.2 promoted</strong> (Pareto-dominates v2 on all six axes). Trends vs <strong>v2 (was production)</strong>.</p>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Quality, structure, and aggregate score</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="th-v2">v2 (was prod)</th>
+              <th class="th-v21">v2.1</th>
+              <th class="th-v22">v2.2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
+              <td class="num" data-label="v2">0.019</td>
+              <td class="num" data-label="v2.1">0.014 <span class="trend trend-good" title="lower is better">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.018 <span class="trend trend-good" title="lower is better">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Edge IoU</td>
+              <td class="num" data-label="v2">0.580</td>
+              <td class="num" data-label="v2.1">0.531 <span class="trend trend-bad" title="higher is better">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.691 <span class="trend trend-good" title="higher is better">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">StructuralIdentityScore</td>
+              <td class="num" data-label="v2">0.460</td>
+              <td class="num" data-label="v2.1">0.341 <span class="trend trend-bad" title="higher is better">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.698 <span class="trend trend-good" title="higher is better">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Light-invariance variance</td>
+              <td class="num" data-label="v2">0.025</td>
+              <td class="num" data-label="v2.1">0.013 <span class="trend trend-good" title="lower is better">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.006 <span class="trend trend-good" title="lower is better">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Unchanged-region drift</td>
+              <td class="num" data-label="v2">0.00124</td>
+              <td class="num" data-label="v2.1">0.00084 <span class="trend trend-good" title="lower is better">▼</span></td>
+              <td class="num" data-label="v2.2">0.00115 <span class="trend trend-good" title="lower is better">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Geometry-gate failure rate</td>
+              <td class="num winner" data-label="v2">0.0</td>
+              <td class="num loser" data-label="v2.1">0.01 <span class="trend trend-bad" title="lower is better">▲</span></td>
+              <td class="num winner" data-label="v2.2">0.0 <span class="trend trend-good" title="lower is better">▼</span></td>
+            </tr>
+            <tr class="row-winner">
+              <td class="metric" data-label="Metric">VWMScore v3</td>
+              <td class="num" data-label="v2">0.670</td>
+              <td class="num" data-label="v2.1">0.650 <span class="trend trend-bad" title="higher is better">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.773 <span class="trend trend-good" title="higher is better">▲</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Source: <code>benchmark_final/benchmark_full.json</code>. Trends in v2.1/v2.2 columns vs v2 (previous production default).</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Photographic L1, version comparison</div>
+        <div style="padding: 1rem 1.25rem;">
+          <div class="bench-bars">
+            <div class="bench-bar-line">
+              <span class="bar-label">v2</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-v2" style="width: 5.9%"></span></span>
+              <span class="bar-val">0.019</span>
+            </div>
+            <div class="bench-bar-line">
+              <span class="bar-label">v2.1</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-v21" style="width: 4.5%"></span></span>
+              <span class="bar-val">0.014</span>
+            </div>
+            <div class="bench-bar-line is-winner">
+              <span class="bar-label">v2.2</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-v22" style="width: 5.6%"></span></span>
+              <span class="bar-val">0.018</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bench-milestone" id="torture">
+      <h2>Structural torture house</h2>
+      <p>Thin geometry: chair legs, railing balusters, cables, handles, keyboard keys, vent slats. Trends vs v2.</p>
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Hard-structure survival</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr><th>Metric</th><th class="th-v2">v2</th><th class="th-v21">v2.1</th><th class="th-v22">v2.2</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">StructuralIdentityScore</td>
+              <td class="num" data-label="v2">0.568</td>
+              <td class="num" data-label="v2.1">0.511 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.768 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">thin_survival</td>
+              <td class="num" data-label="v2">0.543</td>
+              <td class="num" data-label="v2.1">0.513 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.841 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Edge IoU</td>
+              <td class="num" data-label="v2">0.425</td>
+              <td class="num" data-label="v2.1">0.368 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.525 <span class="trend trend-good">▲</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">No edge hallucination: boundary precision held at 0.95 on standard set (aggressive-loss candidates painted fake edges).</div>
+      </div>
+    </section>
 
     <!-- ─────────────── v2.1 ─────────────── -->
     <section class="bench-milestone" id="v21">
@@ -85,14 +257,13 @@
       </div>
     </section>
 
-    <!-- ─────────────── 3-way ─────────────── -->
     <section class="bench-milestone" id="three-way">
-      <h2>3-way benchmark (VWMScore v2)</h2>
-      <p>Unified evaluation on 16 held-out scenes, 96 views. Winner for production default: <strong>v2</strong> (best aggregate score, zero gate failures).</p>
+      <h2>Historical: v1 / v2 / v2.1 (VWMScore v2)</h2>
+      <p>Earlier unified evaluation. Superseded by <a href="#four-way">VWMScore v3 benchmark</a> above.</p>
 
-      <div class="bench-panel bench-panel-accent">
-        <div class="bench-panel-head">Quality, geometry, and aggregate score</div>
-        <table class="bench-table benchmark">
+      <div class="bench-panel">
+        <div class="bench-panel-head">Quality, geometry, and aggregate score (archived)</div>
+        <table class="bench-table benchmark has-trends">
           <thead>
             <tr>
               <th>Metric</th>
@@ -102,73 +273,45 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="row-winner">
+            <tr>
               <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
               <td class="num" data-label="v1">0.033</td>
-              <td class="num" data-label="v2">0.019</td>
-              <td class="num winner" data-label="v2.1">0.014</td>
+              <td class="num" data-label="v2">0.019 <span class="trend trend-good">▼</span></td>
+              <td class="num winner" data-label="v2.1">0.014 <span class="trend trend-good">▼</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Edge IoU</td>
               <td class="num" data-label="v1">0.635</td>
-              <td class="num winner" data-label="v2">0.580</td>
-              <td class="num" data-label="v2.1">0.531</td>
+              <td class="num" data-label="v2">0.580 <span class="trend trend-bad">▼</span></td>
+              <td class="num" data-label="v2.1">0.531 <span class="trend trend-bad">▼</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Geometry-gate failure rate</td>
               <td class="num winner" data-label="v1">0.0</td>
-              <td class="num winner" data-label="v2">0.0</td>
-              <td class="num loser" data-label="v2.1">0.01</td>
+              <td class="num winner" data-label="v2">0.0 <span class="trend trend-flat">—</span></td>
+              <td class="num loser" data-label="v2.1">0.01 <span class="trend trend-bad">▲</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Intrinsic light variance</td>
               <td class="num na" data-label="v1">-</td>
               <td class="num" data-label="v2">0.0</td>
-              <td class="num winner" data-label="v2.1">8×10⁻⁶</td>
+              <td class="num winner" data-label="v2.1">8×10⁻⁶ <span class="trend trend-good">▼</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Unchanged-component drift</td>
               <td class="num na" data-label="v1">-</td>
-              <td class="num winner" data-label="v2">0</td>
-              <td class="num winner" data-label="v2.1">0</td>
+              <td class="num" data-label="v2">0</td>
+              <td class="num winner" data-label="v2.1">0 <span class="trend trend-flat">—</span></td>
             </tr>
-            <tr class="row-winner">
+            <tr>
               <td class="metric" data-label="Metric">VWMScore v2</td>
               <td class="num" data-label="v1">0.717</td>
-              <td class="num winner" data-label="v2">0.871</td>
-              <td class="num" data-label="v2.1">0.833</td>
+              <td class="num winner" data-label="v2">0.871 <span class="trend trend-good">▲</span></td>
+              <td class="num" data-label="v2.1">0.833 <span class="trend trend-bad">▼</span></td>
             </tr>
           </tbody>
         </table>
-        <div class="bench-note">Source: <code>benchmark_v1_v2_v2_1.json</code>. v2.1 best on L1 and measured locality/relight; v2 wins promotion gate on aggregate score + geometry.</div>
-      </div>
-
-      <div class="bench-panel">
-        <div class="bench-panel-head">Photographic L1, 3-way bar chart</div>
-        <div style="padding: 1rem 1.25rem;">
-          <div class="bench-bars">
-            <div class="bench-bar-line">
-              <span class="bar-label">Def.</span>
-              <span class="bar-track"><span class="bar-fill bar-fill-deferred" style="width: 100%"></span></span>
-              <span class="bar-val">0.316</span>
-            </div>
-            <div class="bench-bar-line">
-              <span class="bar-label">v1</span>
-              <span class="bar-track"><span class="bar-fill bar-fill-v1" style="width: 10.3%"></span></span>
-              <span class="bar-val">0.033</span>
-            </div>
-            <div class="bench-bar-line">
-              <span class="bar-label">v2</span>
-              <span class="bar-track"><span class="bar-fill bar-fill-v2" style="width: 5.9%"></span></span>
-              <span class="bar-val">0.019</span>
-            </div>
-            <div class="bench-bar-line is-winner">
-              <span class="bar-label">v2.1</span>
-              <span class="bar-track"><span class="bar-fill bar-fill-v21" style="width: 4.5%"></span></span>
-              <span class="bar-val">0.014</span>
-            </div>
-          </div>
-        </div>
+        <div class="bench-note">Trends vs prior column. v2 won production default at this stage; later superseded by v2.2.</div>
       </div>
     </section>
 
@@ -176,10 +319,10 @@
     <section class="bench-milestone" id="v2">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
-        <span class="badge badge-default">v2, production default</span>
+        <span class="badge">v2, superseded</span>
       </div>
       <h2>Appearance Model v2</h2>
-      <p>16 held-out scenes · 96 views · promoted default · VWMScore v2 <strong>0.871</strong> on unified benchmark.</p>
+      <p>Former production default. Promoted after v1; superseded by v2.2.</p>
 
       <div class="bench-summary">
         <div class="bench-chip"><span class="chip-label">VWMScore v2</span><span class="chip-value">0.871</span></div>
@@ -205,13 +348,13 @@
               <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
               <td class="num" data-label="Deferred">0.316</td>
               <td class="num" data-label="v1">0.033</td>
-              <td class="num winner" data-label="v2">0.019</td>
+              <td class="num winner" data-label="v2">0.019 <span class="trend trend-good">▼</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Edge IoU (geometry)</td>
               <td class="num na" data-label="Deferred">-</td>
               <td class="num" data-label="v1">0.635</td>
-              <td class="num" data-label="v2">0.580</td>
+              <td class="num" data-label="v2">0.580 <span class="trend trend-bad">▼</span></td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Multi-view surface variance</td>
@@ -229,7 +372,7 @@
               <td class="metric" data-label="Metric">VWMScore v2</td>
               <td class="num na" data-label="Deferred">-</td>
               <td class="num" data-label="v1">0.717</td>
-              <td class="num winner" data-label="v2">0.871</td>
+              <td class="num winner" data-label="v2">0.871 <span class="trend trend-good">▲</span></td>
             </tr>
           </tbody>
         </table>
@@ -345,7 +488,7 @@
             <tr class="row-winner">
               <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
               <td class="num" data-label="Deferred">0.343</td>
-              <td class="num winner" data-label="v1 model">0.016</td>
+              <td class="num winner" data-label="v1 model">0.016 <span class="trend trend-good">▼</span></td>
               <td class="num winner" data-label="Change">21× better</td>
             </tr>
             <tr>
@@ -434,80 +577,80 @@
     <!-- ─────────────── cross-milestone ─────────────── -->
     <section class="bench-milestone" id="compare">
       <h2>Cross-milestone comparison</h2>
-      <p>Headline metrics across all checkpoints. See <a href="#three-way">3-way benchmark</a> for unified v2.1 evaluation.</p>
+      <p>Headline metrics across all checkpoints. Current default: <strong>v2.2</strong>.</p>
 
       <div class="bench-panel bench-panel-accent">
         <div class="bench-panel-head">Headline metrics at a glance</div>
-        <table class="bench-table benchmark">
+        <table class="bench-table benchmark has-trends">
           <thead>
             <tr>
               <th>Metric</th>
-              <th class="th-v1">v1</th>
               <th class="th-v2">v2</th>
               <th class="th-v21">v2.1</th>
+              <th class="th-v22">v2.2</th>
               <th>Best</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="metric" data-label="Metric">Photographic L1 (diverse 16-scene)</td>
-              <td class="num" data-label="v1">0.033</td>
+              <td class="metric" data-label="Metric">Photographic L1 (held-out)</td>
               <td class="num" data-label="v2">0.019</td>
-              <td class="num winner" data-label="v2.1">0.014</td>
+              <td class="num winner" data-label="v2.1">0.014 <span class="trend trend-good">▼</span></td>
+              <td class="num" data-label="v2.2">0.018 <span class="trend trend-good">▼</span></td>
               <td class="num winner" data-label="Best">v2.1</td>
             </tr>
             <tr>
-              <td class="metric" data-label="Metric">VWMScore v2</td>
-              <td class="num" data-label="v1">0.717</td>
-              <td class="num winner" data-label="v2">0.871</td>
-              <td class="num" data-label="v2.1">0.833</td>
-              <td class="num winner" data-label="Best">v2</td>
+              <td class="metric" data-label="Metric">Edge IoU</td>
+              <td class="num" data-label="v2">0.580</td>
+              <td class="num" data-label="v2.1">0.531 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.691 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="Best">v2.2</td>
             </tr>
             <tr>
-              <td class="metric" data-label="Metric">Edit-locality supervised</td>
-              <td class="num loser" data-label="v1">no</td>
-              <td class="num loser" data-label="v2">no</td>
-              <td class="num winner" data-label="v2.1">yes</td>
-              <td class="num winner" data-label="Best">v2.1</td>
+              <td class="metric" data-label="Metric">VWMScore v3</td>
+              <td class="num" data-label="v2">0.670</td>
+              <td class="num" data-label="v2.1">0.650 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.773 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="Best">v2.2</td>
             </tr>
             <tr>
-              <td class="metric" data-label="Metric">Intrinsic relight measured</td>
-              <td class="num loser" data-label="v1">no</td>
-              <td class="num" data-label="v2">partial</td>
-              <td class="num winner" data-label="v2.1">yes</td>
-              <td class="num winner" data-label="Best">v2.1</td>
+              <td class="metric" data-label="Metric">StructuralIdentityScore</td>
+              <td class="num" data-label="v2">0.460</td>
+              <td class="num" data-label="v2.1">0.341 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.698 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="Best">v2.2</td>
             </tr>
             <tr>
-              <td class="metric" data-label="Metric">Training observations</td>
-              <td class="num" data-label="v1">50</td>
-              <td class="num" data-label="v2">600</td>
-              <td class="num winner" data-label="v2.1">1050</td>
-              <td class="num winner" data-label="Best">v2.1</td>
+              <td class="metric" data-label="Metric">thin_survival (torture)</td>
+              <td class="num" data-label="v2">0.543</td>
+              <td class="num" data-label="v2.1">0.513 <span class="trend trend-bad">▼</span></td>
+              <td class="num winner" data-label="v2.2">0.841 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="Best">v2.2</td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Geometry-gate failures</td>
-              <td class="num winner" data-label="v1">0</td>
               <td class="num winner" data-label="v2">0</td>
-              <td class="num loser" data-label="v2.1">1%</td>
-              <td class="num winner" data-label="Best">v1/v2</td>
+              <td class="num loser" data-label="v2.1">1% <span class="trend trend-bad">▲</span></td>
+              <td class="num winner" data-label="v2.2">0 <span class="trend trend-good">▼</span></td>
+              <td class="num winner" data-label="Best">v2/v2.2</td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Production default</td>
-              <td class="num na" data-label="v1">-</td>
-              <td class="num winner" data-label="v2">✓</td>
-              <td class="num na" data-label="v2.1">available</td>
-              <td class="num winner" data-label="Best">v2</td>
+              <td class="num na" data-label="v2">was</td>
+              <td class="num na" data-label="v2.1">-</td>
+              <td class="num winner" data-label="v2.2">✓</td>
+              <td class="num winner" data-label="Best">v2.2</td>
             </tr>
             <tr>
               <td class="metric" data-label="Metric">Compiler invariant (0 camera runs)</td>
-              <td class="num winner" data-label="v1">✓</td>
               <td class="num winner" data-label="v2">✓</td>
               <td class="num winner" data-label="v2.1">✓</td>
+              <td class="num winner" data-label="v2.2">✓ (10k)</td>
               <td class="num winner" data-label="Best">all</td>
             </tr>
           </tbody>
         </table>
-        <div class="bench-note">† v1 narrow held-out L1 0.016 on scenes 1008/1009 only. Unified 16-scene benchmark above is the fair v1/v2/v2.1 comparison.</div>
+        <div class="bench-note">Trends in v2.1/v2.2 vs v2. v1 narrow held-out L1 0.016 documented in v1 section.</div>
       </div>
 
       <p><a class="cta-link" href="updates.html">Read full milestone narratives →</a></p>

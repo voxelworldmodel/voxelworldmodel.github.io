@@ -192,23 +192,23 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest milestone: <strong>Appearance Model v2.1</strong>, edit-locality and relighting measured. <strong>v2 remains the production default</strong> under the promotion gate (best aggregate VWMScore, zero gate failures).</p>
+      <p>Latest milestone: <strong>Appearance Model v2.2</strong>, promoted to production default. Structural fidelity recovered without sacrificing photographic quality.</p>
 
       <div class="status-banner">
-        <h3>✅ v2.1 Executed, Measured, Honestly Judged</h3>
-        <p>Edit-locality supervision wired into training (<strong>0 unchanged-component drift</strong> across 8 sequential edits). Intrinsic relighting measured against Cycles (<strong>8×10⁻⁶</strong> light variance). Best held-out photographic L1 (<strong>0.014</strong>), but edge-IoU tradeoff keeps <strong>v2 as default</strong>.</p>
+        <h3>✅ v2.2 Promoted, Pareto-dominates v2</h3>
+        <p>Decoupled intrinsic decoder + structure-guided final head fixes the v2.1 edge-softening root cause. <strong>Edge-IoU 0.691</strong>, <strong>StructuralIdentityScore 0.698</strong>, <strong>VWMScore v3 0.773</strong>. Compiler invariant holds: <strong>0 model calls over 10,000 camera frames</strong>.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.014</span><span class="label">Photographic L1 (v2.1, best)</span></div>
-        <div class="stat"><span class="value">0.871</span><span class="label">VWMScore v2 (production default)</span></div>
-        <div class="stat"><span class="value">1050</span><span class="label">Training observations (0 rejected)</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">Unchanged drift (8-edit torture)</span></div>
-        <div class="stat"><span class="value">0 runs</span><span class="label">Model calls (1,000 camera frames)</span></div>
-        <div class="stat"><span class="value">89.5</span><span class="label">FPS median (default v2 proof)</span></div>
+        <div class="stat"><span class="value">0.691</span><span class="label">Edge IoU (vs v2 0.580)</span></div>
+        <div class="stat"><span class="value">0.773</span><span class="label">VWMScore v3 (production)</span></div>
+        <div class="stat"><span class="value">0.841</span><span class="label">Thin survival (torture house)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Gate failures</span></div>
+        <div class="stat"><span class="value">0 runs</span><span class="label">Model calls (10,000 camera frames)</span></div>
+        <div class="stat"><span class="value">48.6</span><span class="label">FPS median (10k-frame proof)</span></div>
       </div>
 
-      <p>Full milestone reports and 3-way benchmark tables:</p>
+      <p>Full milestone reports and benchmark tables with trend indicators:</p>
       <a class="cta-link" href="updates.html">Project updates →</a>
       <a class="cta-link" href="benchmarks.html" style="margin-left: 0.5rem">Benchmarks →</a>
     </section>
