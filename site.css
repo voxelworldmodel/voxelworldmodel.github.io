@@ -68,91 +68,41 @@ header {
 h1 {
   font-size: clamp(2rem, 5vw, 2.75rem);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.35;
   margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.45em;
 }
 
-.brand-voxel {
-  display: inline-flex;
-  gap: 0.14em;
-  vertical-align: baseline;
-  margin-right: 0.22em;
-}
-
-.voxel-char {
-  display: inline-grid;
-  place-items: center;
-  position: relative;
-  min-width: 0.78em;
-  height: 0.92em;
-  padding: 0 0.06em;
-  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
-  font-size: 0.88em;
-  font-weight: 800;
-  line-height: 1;
-  color: #111;
-  background: #fff;
-  border: 2px solid #3b82f6;
-  box-shadow: 2px 2px 0 0 #1e3a8a;
+h1 .title-voxel {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.72rem, 2.4vw, 1.05rem);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: #000;
+  background: #000;
+  -webkit-text-stroke: 3px #3b82f6;
+  paint-order: stroke fill;
+  text-shadow:
+    3px 0 0 #2563eb,
+    -3px 0 0 #2563eb,
+    0 3px 0 #2563eb,
+    0 -3px 0 #2563eb,
+    3px 3px 0 #1d4ed8,
+    -3px -3px 0 #1d4ed8,
+    3px -3px 0 #1d4ed8,
+    -3px 3px 0 #1d4ed8;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
   image-rendering: pixelated;
-  animation: voxel-pixel 2.8s steps(4, end) infinite;
+  image-rendering: crisp-edges;
 }
 
-.voxel-char::before,
-.voxel-char::after {
-  content: "";
-  position: absolute;
-  background: #111;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.voxel-char::before {
-  left: 18%;
-  right: 18%;
-  top: 50%;
-  height: 1px;
-  transform: translateY(-50%);
-}
-
-.voxel-char::after {
-  top: 18%;
-  bottom: 18%;
-  left: 50%;
-  width: 1px;
-  transform: translateX(-50%);
-}
-
-.voxel-char:nth-child(1) { animation-delay: 0s; }
-.voxel-char:nth-child(2) { animation-delay: 0.18s; }
-.voxel-char:nth-child(3) { animation-delay: 0.36s; }
-.voxel-char:nth-child(4) { animation-delay: 0.54s; }
-.voxel-char:nth-child(5) { animation-delay: 0.72s; }
-
-@keyframes voxel-pixel {
-  0%, 100% {
-    background: #fff;
-    color: #111;
-    border-color: #3b82f6;
-  }
-  25% {
-    background: #f1f5f9;
-    color: #000;
-    border-color: #60a5fa;
-  }
-  50% {
-    background: #fff;
-    color: #111;
-    border-color: #2563eb;
-  }
-  75% {
-    background: #e2e8f0;
-    color: #0f172a;
-    border-color: #3b82f6;
-  }
-}
-
-.brand-rainbow {
+h1 .title-rainbow {
   background: linear-gradient(
     90deg,
     #ff6b6b 0%,
@@ -167,54 +117,13 @@ h1 {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-weight: 700;
   animation: rainbow-flow 7s linear infinite;
 }
 
 @keyframes rainbow-flow {
   0% { background-position: 0% 50%; }
   100% { background-position: 400% 50%; }
-}
-
-.brand-title {
-  display: inline;
-}
-
-.brand-title .brand-rainbow {
-  font-weight: 700;
-}
-
-h1 .brand-voxel {
-  font-size: 0.82em;
-}
-
-h2 .brand-voxel {
-  font-size: 0.8em;
-}
-
-h2 .brand-rainbow {
-  font-size: 1em;
-}
-
-.eyebrow .brand-voxel,
-footer .brand-voxel,
-p .brand-voxel {
-  font-size: 0.95em;
-}
-
-.eyebrow .voxel-char,
-footer .voxel-char,
-p strong .voxel-char,
-p .voxel-char {
-  min-width: 0.62em;
-  height: 0.82em;
-  font-size: 0.72em;
-  border-width: 1.5px;
-  box-shadow: 1px 1px 0 0 #1e3a8a;
-}
-
-.eyebrow .brand-rainbow,
-footer .brand-rainbow {
-  font-size: 0.95em;
 }
 
 .lead {
