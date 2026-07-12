@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benchmarks — Voxel World Model</title>
+  <meta name="description" content="Measured benchmarks for VWM appearance compiler milestones — photographic quality, geometry, training cost, and runtime invariants.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <h1>Benchmarks</h1>
+      <p class="lead">Side-by-side numbers for every appearance-compiler milestone — quality, geometry, training cost, and runtime proofs.</p>
+      <nav>
+        <a href="#v2-quality">v2 Quality</a>
+        <a href="#v2-training">v2 Training</a>
+        <a href="#v1-quality">v1 Quality</a>
+        <a href="#compare">Cross-milestone</a>
+        <a href="updates.html">Full updates</a>
+      </nav>
+    </header>
+
+    <div class="bench-compare-legend">
+      <span><span class="dot dot-deferred"></span> Deferred baseline (no model)</span>
+      <span><span class="dot dot-v1"></span> Appearance v1</span>
+      <span><span class="dot dot-v2"></span> Appearance v2 (current)</span>
+      <span class="delta-up">▼ lower L1 = better photographic match</span>
+    </div>
+
+    <!-- ─────────────── v2 ─────────────── -->
+    <section class="bench-milestone" id="v2">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge badge-ok">v2 — Current</span>
+      </div>
+      <h2>Appearance Model v2</h2>
+      <p>16 held-out scenes · 96 views · diverse procedural distribution (10 scene classes). Evaluated with VWMScore (photographic + geometry − gate penalty).</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">VWMScore</span><span class="chip-value">0.796</span></div>
+        <div class="bench-chip"><span class="chip-label">Photographic L1</span><span class="chip-value">0.019</span></div>
+        <div class="bench-chip"><span class="chip-label">vs v1 L1</span><span class="chip-value">−42%</span></div>
+        <div class="bench-chip"><span class="chip-label">Surface variance</span><span class="chip-value">0.0</span></div>
+        <div class="bench-chip"><span class="chip-label">Gate failures</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Camera FPS</span><span class="chip-value">209</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent" id="v2-quality">
+        <div class="bench-panel-head">Quality benchmark — deferred vs v1 vs v2</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="th-deferred">Deferred</th>
+              <th class="th-v1">v1</th>
+              <th class="th-v2">v2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-winner">
+              <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
+              <td class="num" data-label="Deferred">0.316</td>
+              <td class="num" data-label="v1">0.033</td>
+              <td class="num winner" data-label="v2">0.019</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Edge IoU (geometry)</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num" data-label="v1">0.635</td>
+              <td class="num" data-label="v2">0.580</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Multi-view surface variance</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num na" data-label="v1">—</td>
+              <td class="num winner" data-label="v2">0.0</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Geometry-gate failure rate</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num winner" data-label="v1">0.0</td>
+              <td class="num winner" data-label="v2">0.0</td>
+            </tr>
+            <tr class="row-winner">
+              <td class="metric" data-label="Metric">VWMScore</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num" data-label="v1">0.792</td>
+              <td class="num winner" data-label="v2">0.796</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Lower L1 is better. v2 wins on photographic match and VWMScore; adds perfect cross-view surface identity and a relightable intrinsic head. Source: <code>benchmark_v1v2.json</code></div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Photographic L1 — visual comparison</div>
+        <div style="padding: 1rem 1.25rem;">
+          <div class="bench-bars">
+            <div class="bench-bar-line">
+              <span class="bar-label">Def.</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-deferred" style="width: 100%"></span></span>
+              <span class="bar-val">0.316</span>
+            </div>
+            <div class="bench-bar-line">
+              <span class="bar-label">v1</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-v1" style="width: 10.3%"></span></span>
+              <span class="bar-val">0.033</span>
+            </div>
+            <div class="bench-bar-line is-winner">
+              <span class="bar-label">v2</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-v2" style="width: 5.9%"></span></span>
+              <span class="bar-val">0.019</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bench-panel" id="v2-training">
+        <div class="bench-panel-head">Training &amp; dataset</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th class="th-v2">v2</th><th class="th-v1">v1 (ref)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">Training pairs</td><td class="num winner" data-label="v2">600</td><td class="num" data-label="v1">50</td></tr>
+            <tr><td class="metric" data-label="Metric">Scenes</td><td class="num winner" data-label="v2">100</td><td class="num" data-label="v1">10</td></tr>
+            <tr><td class="metric" data-label="Metric">Scene classes</td><td class="num winner" data-label="v2">10</td><td class="num" data-label="v1">1</td></tr>
+            <tr><td class="metric" data-label="Metric">Training steps</td><td class="num" data-label="v2">3,000</td><td class="num" data-label="v1">600</td></tr>
+            <tr><td class="metric" data-label="Metric">Training time</td><td class="num" data-label="v2">105 s</td><td class="num winner" data-label="v1">13 s</td></tr>
+            <tr><td class="metric" data-label="Metric">Peak VRAM</td><td class="num winner" data-label="v2">215 MB</td><td class="num" data-label="v1">395 MB</td></tr>
+            <tr><td class="metric" data-label="Metric">Parameters</td><td class="num" data-label="v2">1.45M</td><td class="num" data-label="v1">compact U-Net</td></tr>
+            <tr><td class="metric" data-label="Metric">Silhouette IoU (parity)</td><td class="num winner" data-label="v2">0.97</td><td class="num winner" data-label="v1">0.97</td></tr>
+            <tr><td class="metric" data-label="Metric">Pairs rejected (parity)</td><td class="num winner" data-label="v2">0</td><td class="num" data-label="v1">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Runtime invariant — model runs only at compile time</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Test</th><th class="th-v2">v2 result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Test">Model runs during house compile</td><td class="num winner" data-label="v2 result">17 (once per view)</td></tr>
+            <tr><td class="metric" data-label="Test">Model runs — 1,000 camera-only frames</td><td class="num winner" data-label="v2 result">0</td></tr>
+            <tr><td class="metric" data-label="Test">Median FPS (camera-only)</td><td class="num winner" data-label="v2 result">209</td></tr>
+            <tr><td class="metric" data-label="Test">p95 frame time</td><td class="num" data-label="v2 result">5.5 ms</td></tr>
+            <tr><td class="metric" data-label="Test">Test suites green</td><td class="num winner" data-label="v2 result">all</td></tr>
+            <tr><td class="metric" data-label="Test">Modules import clean</td><td class="num" data-label="v2 result">83</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Failed iteration (honest) — intrinsic-only v2 before dual-head fix</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th class="th-v1">v1</th><th>Intrinsic-only v2</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">VWMScore</td><td class="num winner" data-label="v1">0.792</td><td class="num loser" data-label="Intrinsic-only v2">0.584</td></tr>
+            <tr><td class="metric" data-label="Metric">Photographic L1</td><td class="num winner" data-label="v1">0.033</td><td class="num loser" data-label="Intrinsic-only v2">0.135</td></tr>
+            <tr><td class="metric" data-label="Metric">Outcome</td><td class="num na" data-label="v1">—</td><td class="num loser" data-label="Intrinsic-only v2">not promoted</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Dual-head architecture was added and re-benchmarked; promoted v2 is the row in the quality table above.</div>
+      </div>
+    </section>
+
+    <!-- ─────────────── v1 ─────────────── -->
+    <section class="bench-milestone" id="v1">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge">v1 — Superseded</span>
+      </div>
+      <h2>Appearance Model v1</h2>
+      <p>First real checkpoint — 2 held-out scenes (1008, 1009) · narrow procedural distribution · proof that the full pipeline works.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">L1 improvement</span><span class="chip-value">21×</span></div>
+        <div class="bench-chip"><span class="chip-label">Held-out L1</span><span class="chip-value">0.016</span></div>
+        <div class="bench-chip"><span class="chip-label">Silhouette IoU</span><span class="chip-value">0.97</span></div>
+        <div class="bench-chip"><span class="chip-label">Edge IoU</span><span class="chip-value">0.72</span></div>
+        <div class="bench-chip"><span class="chip-label">Peak VRAM</span><span class="chip-value">395 MB</span></div>
+        <div class="bench-chip"><span class="chip-label">Camera FPS</span><span class="chip-value">242</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent" id="v1-quality">
+        <div class="bench-panel-head">Quality benchmark — narrow held-out (scenes 1008, 1009)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="th-baseline">Deferred</th>
+              <th class="th-model">v1 model</th>
+              <th>Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-winner">
+              <td class="metric" data-label="Metric">Photographic L1 → Cycles</td>
+              <td class="num" data-label="Deferred">0.343</td>
+              <td class="num winner" data-label="v1 model">0.016</td>
+              <td class="num winner" data-label="Change">21× better</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Views improved</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num winner" data-label="v1 model">100%</td>
+              <td class="num na" data-label="Change">—</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Silhouette IoU (camera parity)</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num winner" data-label="v1 model">0.971</td>
+              <td class="num na" data-label="Change">—</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Edge IoU (geometry)</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num winner" data-label="v1 model">0.72</td>
+              <td class="num na" data-label="Change">—</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Geometry-gate failure rate</td>
+              <td class="num na" data-label="Deferred">—</td>
+              <td class="num winner" data-label="v1 model">0.0</td>
+              <td class="num na" data-label="Change">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">v1 channel ablation later showed only deferred RGB contributed — v1 learned tone/GI, not structure. Source: <code>vwm_appearance_v1.report.json</code></div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Photographic L1 — visual comparison (v1 held-out)</div>
+        <div style="padding: 1rem 1.25rem;">
+          <div class="bench-bars">
+            <div class="bench-bar-line">
+              <span class="bar-label">Def.</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-deferred" style="width: 100%"></span></span>
+              <span class="bar-val">0.343</span>
+            </div>
+            <div class="bench-bar-line is-winner">
+              <span class="bar-label">v1</span>
+              <span class="bar-track"><span class="bar-fill bar-fill-model" style="width: 4.7%"></span></span>
+              <span class="bar-val">0.016</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Training &amp; dataset</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th class="th-model">v1</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">Training pairs</td><td class="num" data-label="v1">50</td></tr>
+            <tr><td class="metric" data-label="Metric">Scenes × views</td><td class="num" data-label="v1">10 × 5</td></tr>
+            <tr><td class="metric" data-label="Metric">Held-out scenes</td><td class="num" data-label="v1">1008, 1009</td></tr>
+            <tr><td class="metric" data-label="Metric">Training steps</td><td class="num" data-label="v1">600</td></tr>
+            <tr><td class="metric" data-label="Metric">Training time</td><td class="num" data-label="v1">13 s</td></tr>
+            <tr><td class="metric" data-label="Metric">Peak VRAM</td><td class="num" data-label="v1">395 MB</td></tr>
+            <tr><td class="metric" data-label="Metric">Resolution</td><td class="num" data-label="v1">160²</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Runtime invariant</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Test</th><th class="th-model">v1 result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Test">Model runs during compile (6 views)</td><td class="num winner" data-label="v1 result">6</td></tr>
+            <tr><td class="metric" data-label="Test">Model runs — 500 camera-only frames</td><td class="num winner" data-label="v1 result">0</td></tr>
+            <tr><td class="metric" data-label="Test">Camera-only FPS</td><td class="num winner" data-label="v1 result">242</td></tr>
+            <tr><td class="metric" data-label="Test">1,000-frame proof median FPS</td><td class="num" data-label="v1 result">89</td></tr>
+            <tr><td class="metric" data-label="Test">Test suites green</td><td class="num winner" data-label="v1 result">46</td></tr>
+            <tr><td class="metric" data-label="Test">Modules import clean</td><td class="num" data-label="v1 result">82</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─────────────── cross-milestone ─────────────── -->
+    <section class="bench-milestone" id="compare">
+      <h2>Cross-milestone comparison</h2>
+      <p>Same metrics where both milestones were measured — note v1 and v2 used different held-out sets (narrow vs diverse).</p>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Headline metrics at a glance</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="th-v1">v1</th>
+              <th class="th-v2">v2</th>
+              <th>Best</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Photographic L1 (held-out)</td>
+              <td class="num" data-label="v1">0.016 <span class="footnote-inline">†</span></td>
+              <td class="num winner" data-label="v2">0.019 <span class="footnote-inline">‡</span></td>
+              <td class="num" data-label="Best">v1† <span class="delta-down">narrow set</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Photographic L1 (diverse 16-scene)</td>
+              <td class="num" data-label="v1">0.033</td>
+              <td class="num winner" data-label="v2">0.019</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">VWMScore</td>
+              <td class="num" data-label="v1">0.792</td>
+              <td class="num winner" data-label="v2">0.796</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Multi-view consistency</td>
+              <td class="num na" data-label="v1">—</td>
+              <td class="num winner" data-label="v2">0.0 var</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Relightable intrinsic head</td>
+              <td class="num loser" data-label="v1">no</td>
+              <td class="num winner" data-label="v2">yes</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Training pairs</td>
+              <td class="num" data-label="v1">50</td>
+              <td class="num winner" data-label="v2">600</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Peak training VRAM</td>
+              <td class="num" data-label="v1">395 MB</td>
+              <td class="num winner" data-label="v2">215 MB</td>
+              <td class="num winner" data-label="Best">v2</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Camera-only FPS proof</td>
+              <td class="num winner" data-label="v1">242</td>
+              <td class="num" data-label="v2">209</td>
+              <td class="num winner" data-label="Best">v1</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Compiler invariant (0 camera runs)</td>
+              <td class="num winner" data-label="v1">✓</td>
+              <td class="num winner" data-label="v2">✓</td>
+              <td class="num winner" data-label="Best">both</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">† v1 held-out: scenes 1008/1009 only. ‡ v2 held-out: 16 diverse scenes — harder generalization test. v2 wins where distributions overlap (diverse benchmark).</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html">Read full milestone narratives →</a></p>
+    </section>
+
+    <footer>
+      <p><a href="index.html">← Home</a> · <a href="updates.html">Updates</a> · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+    </footer>
+  </div>
+</body>
+</html>
