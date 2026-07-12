@@ -72,29 +72,29 @@ h1 {
   margin-bottom: 1rem;
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 0.35em 0.45em;
 }
 
 h1 .title-voxel {
   font-family: "Press Start 2P", monospace;
-  font-size: clamp(0.72rem, 2.4vw, 1.05rem);
+  font-size: 1em;
   font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: 0.04em;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
   color: #000;
   background: #000;
-  -webkit-text-stroke: 3px #3b82f6;
+  -webkit-text-stroke: 0.085em #3b82f6;
   paint-order: stroke fill;
   text-shadow:
-    3px 0 0 #2563eb,
-    -3px 0 0 #2563eb,
-    0 3px 0 #2563eb,
-    0 -3px 0 #2563eb,
-    3px 3px 0 #1d4ed8,
-    -3px -3px 0 #1d4ed8,
-    3px -3px 0 #1d4ed8,
-    -3px 3px 0 #1d4ed8;
+    0.06em 0 0 #2563eb,
+    -0.06em 0 0 #2563eb,
+    0 0.06em 0 #2563eb,
+    0 -0.06em 0 #2563eb,
+    0.06em 0.06em 0 #1d4ed8,
+    -0.06em -0.06em 0 #1d4ed8,
+    0.06em -0.06em 0 #1d4ed8,
+    -0.06em 0.06em 0 #1d4ed8;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
   font-smooth: never;
