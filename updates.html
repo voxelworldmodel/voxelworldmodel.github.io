@@ -14,13 +14,98 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v22">Latest: Appearance v2.2</a>
+        <a href="#v23">Latest: Appearance v2.3</a>
+        <a href="#v22">Appearance v2.2</a>
         <a href="#v21">Appearance v2.1</a>
         <a href="#v2">Appearance v2</a>
         <a href="#v1">Appearance v1</a>
         <a href="benchmarks.html">Benchmarks</a>
       </nav>
     </header>
+
+    <article class="update" id="v23">
+      <div class="update-meta">
+        <time datetime="2026-07-12">July 12, 2026</time>
+        <span class="badge badge-partial">Complete, not promoted</span>
+      </div>
+      <h2>VWM Appearance v2.3, Scale, Rare Geometry, and the 100k Memory Fix</h2>
+      <p>Thesis: the bottleneck is <strong>experience</strong> (only 1,050 observations). Built the data engine, trained v2.3, and stress-tested the renderer. <strong>v2.2 remains production default.</strong></p>
+
+      <div class="status-banner">
+        <h3>✅ Headline: real production memory leak found and fixed</h3>
+        <p>100,000-frame stress test exposed unbounded keyframe growth in <code>FusedAppearanceRenderer._repair</code>. Fixed via shared <code>_insert_keyframe()</code> eviction. Clean re-run: RSS byte-identical at <strong>3056 MB for 52 minutes</strong>. Compiler invariant (0 model/compiler calls on camera movement) was never affected.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">100k</span><span class="label">Frames that surfaced the leak</span></div>
+        <div class="stat"><span class="value">3056</span><span class="label">MB RSS constant (post-fix)</span></div>
+        <div class="stat"><span class="value">2757</span><span class="label">Dataset observations</span></div>
+        <div class="stat"><span class="value">1.79</span><span class="label">Cycles obs/s (2.24× speedup)</span></div>
+        <div class="stat"><span class="value">0.965</span><span class="label">Rare thin_survival (v2.3)</span></div>
+        <div class="stat"><span class="value">v2.2</span><span class="label">Production default kept</span></div>
+      </div>
+
+      <h3>The Bug the 100k Proof Caught</h3>
+      <ul>
+        <li><strong>Root cause:</strong> <code>_repair</code> promoted every repaired frame to a keyframe (~1 MB each) with no eviction, while <code>_build</code> correctly capped at <code>max_keyframes=24</code>. Leak rate ~57 KB/frame.</li>
+        <li><strong>Symptom:</strong> first run RSS climbed 4.6 → 9.7 GB and would have OOM'd before finishing (no swap, 6 GB free).</li>
+        <li><strong>Fix:</strong> shared <code>_insert_keyframe()</code> helper with while-loop eviction; both paths route through it.</li>
+        <li><strong>Validation:</strong> 8,000-frame regression → keyframes flat at 24, RSS growth 1.4 MB. Then clean 100k re-run held RSS at 3056 MB for 52 minutes (vs &gt;9.7 GB by 45 min pre-fix).</li>
+      </ul>
+
+      <h3>The Data Engine (what worked)</h3>
+      <ul>
+        <li>Coverage audit measured real gaps: geometry 28/29, materials 21/50, HAV 5/6 UNSEEN.</li>
+        <li>25 rare thin-geometry generators + 17 new material families + compositional material×object de-correlation.</li>
+        <li>Active planner (coverage + model-disagreement + error mining) avoids <strong>90% of Cycles work</strong>.</li>
+        <li>Persistent Cycles factory: <strong>1.79 obs/s</strong>, 2.24× speedup, crash-safe/resumable. Dataset <strong>1,050 → 2,757</strong> observations.</li>
+        <li>v2.3 improves rare geometry: thin_survival <strong>0.853→0.965</strong>, edge-IoU <strong>0.507→0.626</strong>, rare gate failures <strong>0.05→0</strong>.</li>
+      </ul>
+
+      <h3>Why v2.3 Was Not Promoted</h3>
+      <p>On frozen standard held-out, photographic L1 regressed <strong>+45%</strong> (0.0178→0.0259; scratch variant +132%). Training pool was 74% rare geometry. VWMScore v3 edged higher (0.7645 vs 0.7596) purely on the structure term; scratch model over-sharpened (edge-IoU 0.872). Structure-for-photography lateral trade, not a clean win.</p>
+
+      <h3>Standard Held-Out Benchmark (VWMScore v3)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v2.2 (prod)</th><th>v2.3 continue</th><th>v2.3 scratch</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric">Photographic L1</td><td data-label="v2.2" class="ok">0.018</td><td data-label="v2.3 continue">0.026</td><td data-label="v2.3 scratch" class="pending">0.041</td></tr>
+          <tr><td data-label="Metric">Edge IoU</td><td data-label="v2.2">0.691</td><td data-label="v2.3 continue" class="ok">0.740</td><td data-label="v2.3 scratch">0.872</td></tr>
+          <tr><td data-label="Metric">StructuralIdentityScore</td><td data-label="v2.2">0.698</td><td data-label="v2.3 continue" class="ok">0.786</td><td data-label="v2.3 scratch">0.790</td></tr>
+          <tr><td data-label="Metric">Gate-fail rate</td><td data-label="v2.2" class="ok">0.0</td><td data-label="v2.3 continue" class="ok">0.0</td><td data-label="v2.3 scratch" class="ok">0.0</td></tr>
+          <tr><td data-label="Metric">VWMScore v3</td><td data-label="v2.2">0.760</td><td data-label="v2.3 continue">0.765</td><td data-label="v2.3 scratch">0.773</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Rare Geometry Held-Out (v2.3 wins here)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v2.2</th><th>v2.3 continue</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric">thin_survival</td><td data-label="v2.2">0.853</td><td data-label="v2.3" class="ok">0.965</td></tr>
+          <tr><td data-label="Metric">Edge IoU</td><td data-label="v2.2">0.507</td><td data-label="v2.3" class="ok">0.626</td></tr>
+          <tr><td data-label="Metric">StructuralIdentityScore</td><td data-label="v2.2">0.743</td><td data-label="v2.3" class="ok">0.819</td></tr>
+          <tr><td data-label="Metric">Rare gate failures</td><td data-label="v2.2" class="pending">0.05</td><td data-label="v2.3" class="ok">0.0</td></tr>
+        </tbody>
+      </table>
+      <p>See <a href="benchmarks.html#v23-compare">benchmarks</a> for trend indicators.</p>
+
+      <h3>Honest Status</h3>
+      <ul>
+        <li><strong>PROVEN:</strong> data engine, rare-geometry capability, edit/relight proofs, memory leak fix.</li>
+        <li><strong>PARTIAL:</strong> dataset at 2,757 of 10k (resumable factory); 100k stopped once memory validation achieved.</li>
+        <li><strong>NOT DONE:</strong> live Luanti client (needs interactive session; v2.3 not promoted anyway).</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Production default correctly remains v2.2.</strong> The leak fix means v2.2 is now safe for arbitrarily long camera sessions. Next step: rebalance curriculum toward standard/compositional replay and scale toward 10k before promoting v2.3's rare-geometry gains.</p>
+      </div>
+
+      <p class="footnote">Artifacts in <code>checkpoints/vwm_appearance_v2_3/</code> including <code>MILESTONE_STATUS.md</code>, <code>memory_fix_validation.json</code>, and <code>vwmscore_v3_frozen.json</code>.</p>
+    </article>
 
     <article class="update" id="v22">
       <div class="update-meta">
@@ -122,6 +207,8 @@
       <div class="highlight">
         <p><strong>What this proves:</strong> appearance can behave like a persistent world property with thin geometry preserved, relighting measured, edit-locality intact, and the camera only observing (zero model calls on movement).</p>
       </div>
+
+      <p class="footnote">Production default; evaluated against <a href="#v23">v2.3</a> (not promoted). Memory leak fix from v2.3 applies to the fused renderer used by v2.2. See <a href="benchmarks.html">benchmarks</a>.</p>
     </article>
 
     <article class="update" id="v21">

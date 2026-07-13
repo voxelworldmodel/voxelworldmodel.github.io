@@ -742,7 +742,9 @@ table.benchmark td:not(:first-child) {
 .trend-flat { color: #525252; }
 
 .bench-table .th-v22 { color: #f472b6; }
+.bench-table .th-v23 { color: #38bdf8; }
 .bench-compare-legend .dot-v22 { background: #f472b6; }
+.bench-compare-legend .dot-v23 { background: #38bdf8; }
 .bench-table .th-baseline { color: #888; }
 .bench-table .th-model { color: var(--accent); }
 
