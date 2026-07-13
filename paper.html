@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Paper — Voxel World Model</title>
+  <meta name="description" content="Full technical paper on the Voxel World Model: authoritative voxel simulation, HAV, reality capture, appearance compilation, and the zero-regeneration rendering invariant.">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+</head>
+<body class="paper-page">
+  <div class="wrap paper-wrap">
+    <header class="paper-header">
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <p class="paper-type">Technical Report · July 2026</p>
+      <h1>Voxel World Model: An Authoritative Voxel Architecture for Reality Capture, Persistent Appearance, and Zero-Regeneration Neural Observation</h1>
+      <p class="paper-authors">Voxel World Model Project · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+      <nav class="paper-nav">
+        <a href="#abstract">Abstract</a>
+        <a href="#introduction">Introduction</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#hav">HAV</a>
+        <a href="#components">Components</a>
+        <a href="#capture">Capture</a>
+        <a href="#depth">Depth</a>
+        <a href="#fusion">Fusion</a>
+        <a href="#appearance">Appearance</a>
+        <a href="#invariant">Invariant</a>
+        <a href="#neural">Neural</a>
+        <a href="#dirty">Dirty Regions</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#export">Export</a>
+        <a href="#methodology">Methodology</a>
+        <a href="#experiments">Experiments</a>
+        <a href="#limitations">Limitations</a>
+        <a href="#future">Future Work</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="updates.html">Updates</a>
+      </nav>
+    </header>
+
+    <aside class="paper-toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#introduction">1. Introduction</a></li>
+        <li><a href="#philosophy">2. Design Philosophy</a></li>
+        <li><a href="#architecture">3. System Architecture</a></li>
+        <li><a href="#hav">4. Hierarchical Adaptive Voxels</a></li>
+        <li><a href="#components">5. Hierarchical Adaptive Components</a></li>
+        <li><a href="#capture">6. Reality Capture Pipeline</a></li>
+        <li><a href="#depth">7. Depth Anything Integration</a></li>
+        <li><a href="#alignment">8. Multi-View Depth Alignment</a></li>
+        <li><a href="#fusion">9. Surface Evidence and Fusion</a></li>
+        <li><a href="#appearance">10. Appearance Compilation</a></li>
+        <li><a href="#invariant">11. Zero-Regeneration Invariant</a></li>
+        <li><a href="#neural">12. Neural Rendering</a></li>
+        <li><a href="#gaussians">13. Gaussian Representations</a></li>
+        <li><a href="#dirty">14. Dirty-Region Regeneration</a></li>
+        <li><a href="#simulation">15. Simulation and Semantics</a></li>
+        <li><a href="#export">16. Export and Import</a></li>
+        <li><a href="#methodology">17. Development Methodology</a></li>
+        <li><a href="#experiments">18. Experiments and Benchmarks</a></li>
+        <li><a href="#limitations">19. Limitations and Failures</a></li>
+        <li><a href="#future">20. Future Work</a></li>
+        <li><a href="#conclusion">21. Conclusion</a></li>
+      </ol>
+    </aside>
+
+    <main class="paper-body">
+
+      <section class="paper-section" id="abstract">
+        <h2>Abstract</h2>
+        <div class="paper-abstract">
+          <p>We present <strong>Voxel World Model (VWM)</strong>, an open platform that treats an adaptive voxel octree with hierarchical semantic components as the sole authoritative world state. Reality enters the system through capture and import pipelines; simulation, semantics, and persistence operate on voxels; and neural rendering is a read-only observation layer that must never mutate simulation.</p>
+          <p>Our central rendering invariant is strict: <strong>camera movement causes zero neural compilation and zero trained-model invocations.</strong> Appearance is compiled once per authoritative dependency change into persistent, component-local artifacts; runtime observation reprojects and repairs cached shading at 48–89 FPS. We prove this invariant to 10,000+ camera-only frames with production checkpoint v2.2 (VWMScore v3 0.773).</p>
+          <p>On the capture side, we implement a source-agnostic scan pipeline: frames → poses (known, AR, or visual SfM) → Depth Anything → global depth alignment → multiview fusion → HAV voxels with surface evidence classes. Controlled benchmarks show 0.918 surface recall with sensor depth; monocular depth is limited by cross-frame scale drift and domain gap on synthetic renders, but works cleanly on real photographs. A real Logitech BRIO bedroom capture (425 frames) runs end to end in 10.3 s, fusing 6,154 surface voxels; multi-view metric consistency remains capture-limited (scale CoV ≈ 30) until walk-around baselines, AR poses, or metric anchors are applied.</p>
+          <p>We document measured results, architectural decisions, failed iterations, and honest limitations. VWM is designed so every subsystem (renderer, depth model, pose provider, neural backend) is replaceable without redesigning the authoritative world.</p>
+        </div>
+      </section>
+
+      <section class="paper-section" id="introduction">
+        <h2>1. Introduction</h2>
+        <p>Modern neural rendering systems often conflate <em>observation</em> with <em>simulation</em>: moving a camera triggers expensive generative inference, world state lives inside a neural field, and geometry is implicit. VWM inverts this relationship.</p>
+        <p>The voxel world is the product. Renderers, depth estimators, and language models are tools that read or update that world under explicit contracts. A player digging a block, a door sensor firing, or a scan fusing depth all edit the same authoritative structure. Photorealism is a view mode, not the simulation.</p>
+
+        <h3>1.1 Contributions</h3>
+        <ul>
+          <li><strong>Authoritative adaptive voxels (HAV)</strong> with fractional sub-meter leaves, surface evidence, and hierarchy-preserving export.</li>
+          <li><strong>Hierarchical Adaptive Components</strong> binding geometry, semantics, behavior, and neural artifacts into recursive assemblies.</li>
+          <li><strong>Reality capture pipeline</strong> with Depth Anything, global depth alignment graph, and measured fusion quality.</li>
+          <li><strong>Appearance compiler</strong> producing persistent component-local bakes; geometry-gated neural inference only on dependency change.</li>
+          <li><strong>Zero-regeneration invariant</strong> with formal dependency fingerprints and multi-thousand-frame proofs.</li>
+          <li><strong>Fused reprojection renderer</strong> separating compilation from presentation (keyframe depth reprojection + partial G-buffer repair).</li>
+          <li><strong>Honest benchmark suite</strong> including VWMScore v3, StructuralIdentityScore, controlled depth comparison, and real capture status.</li>
+        </ul>
+
+        <figure class="figure figure-accent">
+          <img src="voxel_color_to_real_compare.png" alt="Voxel simulation render beside neural photorealistic render of the same scene.">
+          <figcaption><strong>Figure 1.</strong> Same authoritative voxel geometry (left) observed through native simulation vs neural appearance (right). Changing renderers does not change simulation.</figcaption>
+        </figure>
+      </section>
+
+      <section class="paper-section" id="philosophy">
+        <h2>2. Design Philosophy</h2>
+        <p>VWM rests on five rules enforced in code and review:</p>
+        <ol class="paper-rules">
+          <li>Reality inputs <strong>edit voxels and semantics</strong>, never the renderer.</li>
+          <li>VolSplat / Gaussian splats are <strong>importers</strong> into voxels, not runtime scenes.</li>
+          <li>Neural rendering is a <strong>view plus persistent artifacts</strong>; work is scoped to dirty AABBs and HAV hits only.</li>
+          <li>Visualization <strong>never mutates</strong> simulation state.</li>
+          <li>Export always leaves from the voxel world; hierarchy is preserved when possible.</li>
+        </ol>
+
+        <div class="diagram paper-diagram">Reality (sensors, players, robots, scans)
+    │
+    ▼
+══════════════════════════════════════
+ Authoritative VoxelWorld (HAV + Components)
+══════════════════════════════════════
+    │
+    ├── Simulation / behaviors / semantics
+    ├── Native voxel rasterization
+    ├── Deferred PBR + appearance compiler
+    ├── Fused reprojection renderer
+    ├── VR / AR / robotics APIs
+    └── Export (hav.json, components, timeline)</div>
+
+        <p><strong>Why voxels?</strong> Voxel worlds are deterministic, editable, network-efficient, persistent, and naturally semantic. A chair is addressable as a chair. Physics, pathfinding, and AI context compile from the same structure humans edit.</p>
+        <p><strong>Combined product.</strong> In the Luanti integration, VoxelWorld is the mind and Luanti is the body: player dig/place events journal into VoxelWorld; HAV sync drives Luanti nodes and sub-meter entities. Neural presentation can replace the client view without changing authority.</p>
+      </section>
+
+      <section class="paper-section" id="architecture">
+        <h2>3. System Architecture</h2>
+        <p>The canonical pipeline is a single platform stage map:</p>
+        <div class="diagram paper-diagram">Reality → Capture → Import → VoxelWorld (HAV) → Semantics → Neural → Visualize → Export</div>
+
+        <h3>3.1 Core modules</h3>
+        <table class="benchmark paper-table">
+          <thead>
+            <tr><th>Responsibility</th><th>Module</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Authoritative world</td><td><code>vwm.voxel_world.VoxelWorld</code></td></tr>
+            <tr><td>Adaptive octree (HAV)</td><td><code>vwm.hav</code></td></tr>
+            <tr><td>Semantic assemblies</td><td><code>vwm.components</code></td></tr>
+            <tr><td>World time and events</td><td><code>vwm.simulation</code></td></tr>
+            <tr><td>Dirty region tracking</td><td><code>vwm.dirty</code></td></tr>
+            <tr><td>Neural artifact cache</td><td><code>vwm.artifacts</code></td></tr>
+            <tr><td>Appearance compiler and store</td><td><code>vwm.appearance</code></td></tr>
+            <tr><td>Fused runtime renderer</td><td><code>vwm.appearance.FusedAppearanceRenderer</code></td></tr>
+            <tr><td>Camera trajectory</td><td><code>vwm.camera_trajectory</code></td></tr>
+            <tr><td>Depth alignment graph</td><td><code>vwm.depth_alignment</code></td></tr>
+            <tr><td>Multiview fusion</td><td><code>vwm.multiview_fusion</code></td></tr>
+            <tr><td>Depth Anything adapter</td><td><code>vwm.depth_anything_adapter</code></td></tr>
+            <tr><td>Export / import</td><td><code>vwm.export_io</code>, <code>vwm.reconstruction</code></td></tr>
+            <tr><td>Combined live session</td><td><code>vwm.combined.CombinedSession</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>3.2 Behavioral loop</h3>
+        <div class="diagram paper-diagram">Reality → Events → Behavior / sim updates → Component state
+    → Voxel edits → Dirty regions → Neural artifacts → Visualization</div>
+        <p>Continuous simulation uses <code>WorldClock</code> and <code>EventScheduler</code>. Components may sleep until woken by events, edits, or dependencies. Autonomous maintenance analyzes read-only state, schedules prioritized work, and executes within a per-tick budget.</p>
+      </section>
+
+      <section class="paper-section" id="hav">
+        <h2>4. Hierarchical Adaptive Voxels (HAV)</h2>
+        <p>The authoritative world is <strong>not</strong> a fixed-resolution grid. <code>VoxelWorld.hav</code> is an adaptive octree:</p>
+        <ul>
+          <li>Coarse empty terrain remains large voxels.</li>
+          <li>Semantics, user edits, import density, and camera proximity trigger local refinement.</li>
+          <li>Past 1 m, leaves use fractional sub-cells (<code>frac_origin</code>, <code>frac_size</code>); Luanti draws them as scaled cube entities.</li>
+          <li>Dirty regions and neural artifacts are keyed by hierarchy node and depth.</li>
+          <li>Export writes <code>hav.json</code> and LOD; flattening is opt-in for consumers that require it.</li>
+        </ul>
+
+        <p>Hierarchy: <code>World → Regions → Chunks → Cells → Subcells → …</code></p>
+
+        <h3>4.1 Surface evidence</h3>
+        <p>Each occupied cell carries fusion status from multiview evidence:</p>
+        <div class="pill-grid paper-pills">
+          <span class="pill">UNOBSERVED</span>
+          <span class="pill">WEAK</span>
+          <span class="pill">PROVISIONAL</span>
+          <span class="pill">CONFIRMED</span>
+          <span class="pill">CONFLICTED</span>
+        </div>
+        <p>Free-space carving marks interior as empty; unseen space is never filled solid. This prevents monocular hallucination from inventing walls behind furniture.</p>
+      </section>
+
+      <section class="paper-section" id="components">
+        <h2>5. Hierarchical Adaptive Components</h2>
+        <p><code>VoxelWorld.components</code> owns recursive semantic assemblies:</p>
+        <div class="diagram paper-diagram">World → Building → Room → Desk → Computer → CPU → …</div>
+        <p>Each component bundles: adaptive voxels, child components, semantics (hard facts + soft hints), state, behaviors, capabilities, interfaces, events, timeline entries, and optional neural artifacts scoped to that subtree.</p>
+        <ul>
+          <li>Move or delete cascades through the ownership tree.</li>
+          <li>Dirty tracking prefers the <strong>smallest affected component</strong> (<code>ComponentDirtyTracker</code>, <code>HierarchicalDirtyTracker</code>).</li>
+          <li>Opening a cabinet dirties only that cabinet's artifacts, not the house.</li>
+        </ul>
+
+        <figure class="figure">
+          <img src="voxel_color.png" alt="Semantic voxel house with labeled objects.">
+          <figcaption><strong>Figure 2.</strong> Semantic labels at object and room level. AI and renderers receive structured context, not only triangles.</figcaption>
+        </figure>
+      </section>
+
+      <section class="paper-section" id="capture">
+        <h2>6. Reality Capture Pipeline</h2>
+        <p>Reality capture ingests RGB (and optionally depth) streams, estimates or receives camera poses, aligns monocular depth globally, and fuses evidence into HAV voxels with attached real RGB.</p>
+
+        <div class="diagram paper-diagram">frames
+  → keyframe selection
+  → CameraTrajectoryProvider (Known / AR / Visual SfM)
+  → depth-anything.cpp (or sensor depth)
+  → DepthAlignmentGraph
+  → multiview fusion → HAV voxels
+  → attach real RGB → novel view validation</div>
+
+        <h3>6.1 Camera trajectory providers</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Provider</th><th>Source</th><th>Scale</th></tr></thead>
+          <tbody>
+            <tr><td><code>KnownPoseProvider</code></td><td>Rendered rig, measured rig</td><td>Metric (ground truth)</td></tr>
+            <tr><td><code>ARPoseProvider</code></td><td>ARKit / ARCore</td><td>Metric, stable</td></tr>
+            <tr><td><code>VisualSLAMProvider</code></td><td>SIFT + essential matrix + PnP</td><td>Arbitrary until anchored</td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.2 Scan session</h3>
+        <p><code>ScanSession</code> provides atomic writes and a resumable journal so capture can survive interruption. CLI entry points: <code>tools/vwm_scan_pipeline.py</code>, <code>tools/vwm_real_scan.py</code>.</p>
+
+        <h3>6.3 Real webcam capture (measured)</h3>
+        <p>July 2026: 18 s / 425 frames from a Logitech BRIO of a real bedroom. End to end in <strong>10.3 s</strong>, fusing <strong>6,154</strong> surface voxels (3,200 confirmed, 2,954 provisional). SIFT: <strong>540</strong> matches, <strong>516</strong> essential-matrix inliers. Alignment graph: <strong>56</strong> edges, <strong>16,626</strong> triangulated samples.</p>
+        <p>Single-view depth on real photos produces a coherent colored voxel cloud (closet recess, dresser, couch, wall). Multi-view fusion is rough (<code>solved_scale_cov ≈ 30</code>) because hand-held motion over inches yields tiny baselines. This is a <strong>capture-quality</strong> limitation, not an architecture failure.</p>
+      </section>
+
+      <section class="paper-section" id="depth">
+        <h2>7. Depth Anything Integration</h2>
+        <p>Monocular depth is provided by <code>depth-anything.cpp</code> via <code>vwm.depth_anything_adapter</code>. We evaluate:</p>
+        <ul>
+          <li><strong>DA3-SMALL</strong> (relative depth)</li>
+          <li><strong>DA2 Metric Hypersim Small</strong> (metric prior)</li>
+          <li><strong>RGB-D / LiDAR sensor depth</strong> (controlled ground truth)</li>
+        </ul>
+
+        <h3>7.1 Domain-gap finding</h3>
+        <p>On synthetic flat-shaded voxel renders, SIFT finds <strong>zero</strong> features; on real BRIO frames, <strong>540</strong> matches. Depth Anything produces poor fusion on synthetic input (surface recall ~0.45–0.56) but coherent geometry on real photographs. The model is trained on real indoor imagery; non-photoreal voxel renders are out of distribution. Per-frame depth correlation with ground truth remains decent (0.76–0.96), but per-frame scale drifts 47–57% (coefficient of variation), capping multiview recall.</p>
+
+        <h3>7.2 Controlled 3-way benchmark</h3>
+        <p>Same room, same poses, same fusion; only depth source changes. All monocular runs use one <strong>robust pooled calibration</strong> (single scale anchor across all frames).</p>
+        <table class="benchmark paper-table">
+          <thead>
+            <tr><th>Depth source</th><th>Backproj err</th><th>Surface recall</th><th>IoU</th><th>Scale CoV</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="ok">RGB-D / LiDAR</td><td class="ok">0.17</td><td class="ok">0.918</td><td class="ok">0.636</td><td>—</td></tr>
+            <tr><td>DA3-SMALL (relative)</td><td>1.99</td><td>0.564</td><td>0.229</td><td>0.47</td></tr>
+            <tr><td>DA2 Metric Hypersim</td><td>2.37</td><td>0.449</td><td>0.178</td><td>0.57</td></tr>
+          </tbody>
+        </table>
+        <p>Backprojection convention verified to <strong>0.02</strong> world-unit error against ground truth. With reliable depth, the fusion pipeline reaches <strong>0.918</strong> surface recall.</p>
+      </section>
+
+      <section class="paper-section" id="alignment">
+        <h2>8. Multi-View Depth Alignment</h2>
+        <p>Monocular depth predicts good per-frame shape but scale drifts frame to frame. <code>DepthAlignmentGraph</code> treats each depth map as noisy geometric evidence and solves per-frame calibration jointly:</p>
+        <div class="paper-eq">$$D'_i = s_i \cdot D_i + b_i$$</div>
+        <p>where $D_i$ is raw monocular depth for frame $i$, and $(s_i, b_i)$ are solved globally.</p>
+
+        <h3>8.1 Algorithm</h3>
+        <ol>
+          <li>SIFT correspondences between overlapping frames (pose from any <code>CameraTrajectoryProvider</code>).</li>
+          <li>Two-view triangulation of matched pixels → true inter-camera distances.</li>
+          <li>Robust global IRLS solve linking predicted depth rays to triangulated distances.</li>
+          <li>Metric models: strong prior $s_i \approx 1$, $b_i \approx 0$. Relative models: scale+shift freedom.</li>
+        </ol>
+
+        <h3>8.2 Calibration methodology lesson</h3>
+        <p>An early bug anchored scale on frame 0 alone. Frame 0 was a scale outlier (per-frame scale 8.1 vs typical ~3.9), producing backprojection error <strong>6.76</strong> and recall <strong>0.39</strong>. <strong>Robust pooled calibration</strong> across all frames cut error to <strong>2.37</strong> (>2.5× improvement). Rule baked into pipeline: <strong>never anchor scale on one frame.</strong></p>
+      </section>
+
+      <section class="paper-section" id="fusion">
+        <h2>9. Surface Evidence and Multiview Fusion</h2>
+        <p><code>multiview_fusion.py</code> backprojects aligned depth into world space, votes occupancy per HAV cell, and applies free-space carving along rays. Cells accumulate toward CONFIRMED or CONFLICTED based on consistent observations.</p>
+
+        <p>Validation on held-out views reports:</p>
+        <ul>
+          <li>Occupancy IoU vs ground truth</li>
+          <li>Surface precision and recall</li>
+          <li>Mean backprojection error in world units</li>
+          <li>Novel-view render for qualitative audit</li>
+        </ul>
+
+        <p>Sensor-depth controlled run: precision <strong>0.674</strong>, recall <strong>0.918</strong>, 4,513 confirmed voxels, backprojection error <strong>0.17</strong>.</p>
+      </section>
+
+      <section class="paper-section" id="appearance">
+        <h2>10. Appearance Compilation</h2>
+        <p>Photorealistic appearance is <strong>compiled</strong>, not generated per frame. The trained U-Net runs only inside <code>AppearanceCompiler</code>, geometry-gated, when dependency fingerprints change or a quality tier is requested.</p>
+
+        <h3>10.1 CompiledAppearance</h3>
+        <p>Output is a component-local surface bake: quantized local cells (0.25 m) storing RGB (and quality tiers UNSEEN → FINAL). Lighting is applied at <strong>render time</strong>, not compile time, so lamp toggles never recompile intrinsic material.</p>
+
+        <h3>10.2 Dependency fingerprint</h3>
+        <p>SHA-1 digest over: <code>world_id</code>, scope, geometry signature, material signature, semantic signature, compiler version, model identity. Properties:</p>
+        <ul>
+          <li>Geometry signature is <strong>rotation-invariant</strong> (minimum over four Y-rotations): rotate a desk → no recompile.</li>
+          <li>Material and semantic signatures exclude positional voxel coordinates: move a chair → no recompile; appearance follows the component transform.</li>
+          <li>Camera pose is <strong>not</strong> in the fingerprint.</li>
+        </ul>
+
+        <h3>10.3 v2.x milestone arc</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Version</th><th>Status</th><th>Key result</th></tr></thead>
+          <tbody>
+            <tr><td>v1</td><td>Superseded</td><td>First proof: held-out L1 0.343 → 0.016 (21×)</td></tr>
+            <tr><td>v2</td><td>Superseded</td><td>Dual-head U-Net; L1 0.019; VWMScore 0.871</td></tr>
+            <tr><td>v2.1</td><td>Available, not default</td><td>Best L1 0.014; softer edges; 1% gate fail</td></tr>
+            <tr><td><strong>v2.2</strong></td><td><strong>Production default</strong></td><td>Pareto-dominates v2; VWMScore v3 <strong>0.773</strong></td></tr>
+            <tr><td>v2.3</td><td>Trained, not promoted</td><td>Rare geometry wins; standard L1 +45%</td></tr>
+            <tr><td>v2.4</td><td>Not trained</td><td>Explicitly skipped per milestone rules</td></tr>
+          </tbody>
+        </table>
+
+        <h3>10.4 v2.2 architectural fix</h3>
+        <p>Forensics on v2.1 found intrinsic and light-invariance gradients nearly collinear on the shared decoder trunk (cosine <strong>+0.89</strong>), flattening features the thin residual final head reads. v2.2 fixes:</p>
+        <ol>
+          <li><strong>Decoupled intrinsic decoder</strong> off the shared encoder.</li>
+          <li><strong>Structure-guided final decoder</strong> fed an authoritative G-buffer boundary map (depth / normal / component discontinuities).</li>
+          <li><strong>Structural losses</strong>: boundary presence, anti-blur band, cross-boundary bleed, structure-aware locality.</li>
+        </ol>
+        <div class="paper-eq">$$\text{final} = \text{deferred} + \tanh(\text{residual}) \cdot 0.6,\quad \text{intrinsic} = \sigma(\text{albedo\_head})$$</div>
+
+        <h3>10.5 FusedAppearanceRenderer</h3>
+        <p>Runtime presentation uses depth reprojection of cached keyframes plus partial G-buffer repair (~10–20 ms), not full recompilation. Keyframes refresh on scene signature change or large camera rotation (<code>keyframe_angle_deg ≈ 24°</code>). Median <strong>56 FPS</strong> fused path; earlier fused benchmark cited <strong>89 FPS</strong>. Reprojection is presentation work, not compilation.</p>
+      </section>
+
+      <section class="paper-section" id="invariant">
+        <h2>11. The Zero-Regeneration Invariant</h2>
+        <div class="highlight paper-callout">
+          <p><strong>Invariant:</strong> Camera movement causes zero neural compilation and zero trained-model invocations.</p>
+        </div>
+
+        <h3>11.1 Why this holds</h3>
+        <ol>
+          <li>Appearance is <strong>derived and persistent</strong>, stored per component in <code>AppearanceStore</code>.</li>
+          <li>Dependency fingerprints exclude camera pose.</li>
+          <li><code>FusedAppearanceRenderer.scene_signature()</code> caches on <code>world.generation</code> and store size; it does not change when only the camera moves.</li>
+          <li>The U-Net executes only inside <code>AppearanceCompiler.compile()</code> on fingerprint mismatch or tier upgrade.</li>
+          <li>Runtime path reprojects keyframes and repairs holes; it never calls the compiler.</li>
+        </ol>
+
+        <h3>11.2 Measured proofs</h3>
+        <table class="benchmark paper-table">
+          <thead>
+            <tr><th>Test</th><th>Camera frames</th><th>Model calls</th><th>Compiler calls</th><th>FPS / memory</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>v1 house acceptance</td><td>500</td><td class="ok">0</td><td>—</td><td>242</td></tr>
+            <tr><td>v2 proof</td><td>1,000</td><td class="ok">0</td><td class="ok">0</td><td>209 median</td></tr>
+            <tr><td>v2.2 proof</td><td>10,000</td><td class="ok">0</td><td class="ok">0</td><td>48.6 median</td></tr>
+            <tr><td>100k stress (post leak-fix)</td><td>100,000</td><td class="ok">0</td><td class="ok">0</td><td>RSS flat 3056 MB / 52 min</td></tr>
+          </tbody>
+        </table>
+
+        <h3>11.3 What triggers regeneration</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Event</th><th>Recompile?</th></tr></thead>
+          <tbody>
+            <tr><td>Camera move / rotate</td><td class="ok">No</td></tr>
+            <tr><td>Component move / rotate</td><td class="ok">No (appearance follows transform)</td></tr>
+            <tr><td>Lamp on / off</td><td class="ok">No (lighting at render time)</td></tr>
+            <tr><td>Material edit on component</td><td>Yes (local to component)</td></tr>
+            <tr><td>Geometry edit</td><td>Yes (scoped dirty region)</td></tr>
+            <tr><td>Quality tier upgrade</td><td>Yes (progressive compile)</td></tr>
+          </tbody>
+        </table>
+
+        <p>Demo house: desk material change recompiles desk only (18 components unchanged); chair move → 0 recompiles; six lighting states → 0 intrinsic recompiles.</p>
+      </section>
+
+      <section class="paper-section" id="neural">
+        <h2>12. Neural Rendering</h2>
+        <p>The primary neural view is <strong>structure-conditioned deferred PBR</strong>, not an egocentric video generative model. Waypoint (2.3B autoregressive) was audited and rejected: wrong task, ~4 s/frame, noisy output. It remains an experimental backend only.</p>
+
+        <table class="benchmark paper-table">
+          <thead><tr><th>Stage</th><th>Module</th></tr></thead>
+          <tbody>
+            <tr><td>G-buffer raycaster</td><td><code>vwm.observation</code></td></tr>
+            <tr><td>Semantic PBR materials</td><td><code>vwm.materials</code></td></tr>
+            <tr><td>Deferred renderer</td><td><code>vwm.deferred_render</code></td></tr>
+            <tr><td>Scene build vs reproject</td><td><code>vwm.scene_render</code></td></tr>
+            <tr><td>Material detail (grain, pores)</td><td><code>vwm.materials.material_detail</code></td></tr>
+            <tr><td>Component lighting</td><td><code>vwm.lighting</code></td></tr>
+            <tr><td>Camera response (ACES, bloom)</td><td><code>vwm.deferred_render._camera_response</code></td></tr>
+            <tr><td>Hallucination gate</td><td><code>vwm.geometry_gate</code></td></tr>
+            <tr><td>Optional SD-Turbo (strength 0.13)</td><td><code>vwm.neural_enhance</code></td></tr>
+          </tbody>
+        </table>
+
+        <p>Camera movement <strong>reprojects</strong> existing appearance (~15–21 ms) instead of rebuilding (~55–355 ms). Blender Cycles targets provide training supervision; silhouette IoU between VWM G-buffer and Cycles is <strong>0.97</strong> across v2+ milestones.</p>
+
+        <figure class="figure">
+          <img src="voxel_pointcloud.png" alt="Point cloud view of semantic voxel house.">
+          <figcaption><strong>Figure 3.</strong> Alternate observation mode (LiDAR-style point cloud) over the same authoritative world. View modes are interchangeable; simulation is not.</figcaption>
+        </figure>
+      </section>
+
+      <section class="paper-section" id="gaussians">
+        <h2>13. Gaussian Representations</h2>
+        <p>Appearance is unified behind <code>AppearanceRepresentation</code>:</p>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Representation</th><th>Median FPS (RTX 2060)</th><th>Coverage</th></tr></thead>
+          <tbody>
+            <tr><td><code>surface_bake</code> (primary)</td><td>82</td><td>Full scene</td></tr>
+            <tr><td><code>gaussians</code> (gsplat CUDA)</td><td>87</td><td>Components only (~11 ms)</td></tr>
+            <tr><td><code>hybrid</code></td><td>—</td><td>Deferred shell + Gaussian components, depth-composited</td></tr>
+          </tbody>
+        </table>
+
+        <p><code>gaussian_appearance.py</code> fits Gaussians from compiled surface bakes. Gaussians <strong>follow component transforms</strong> without refit. Depth is constrained against authoritative voxel depth to prevent wall leakage.</p>
+
+        <h3>13.1 VolSplat import path</h3>
+        <div class="diagram paper-diagram">recorded frames + poses + depth
+  → VolSplat
+  → splat-to-voxel
+  → candidate occupancy
+  → VoxelWorld (importer only)</div>
+        <p>VolSplat never becomes the runtime scene. <code>vwm.splat_voxelize</code> and <code>tools/vwm_splat_to_voxels.py</code> convert splats into voxel evidence with provenance.</p>
+      </section>
+
+      <section class="paper-section" id="dirty">
+        <h2>14. Dirty-Region Regeneration</h2>
+        <div class="diagram paper-diagram">Edit → hierarchical dirty detection
+  → invalidate matching neural artifacts
+  → rebuild ONLY dirty hierarchy nodes / components</div>
+
+        <p>Three granularities cooperate:</p>
+        <ul>
+          <li><code>DirtyRegionTracker</code>: axis-aligned bounds on flat edits.</li>
+          <li><code>HierarchicalDirtyTracker</code>: octree node hits in HAV.</li>
+          <li><code>ComponentDirtyTracker</code>: smallest semantic component affected.</li>
+        </ul>
+        <p>Progressive neural quality (INTERACTIVE → HIGH → FINAL) compiles dirty regions first under budget. Dormant regions sleep; camera focus wakes nearby components.</p>
+      </section>
+
+      <section class="paper-section" id="simulation">
+        <h2>15. Simulation and Semantics</h2>
+        <h3>15.1 Semantics</h3>
+        <p><code>SemanticNode</code> hierarchy: <code>World → Region → Building → Room → Object → Component</code>. Each node carries:</p>
+        <ul>
+          <li><strong>hard_facts</strong>: deterministic (material, dimensions, state)</li>
+          <li><strong>soft_hints</strong>: renderer conditioning (wear, style)</li>
+          <li>relationships, history, and live state</li>
+        </ul>
+        <p><code>context_compiler</code> builds hierarchical, budgeted prompts for AI agents from semantic trees, not raw voxels.</p>
+
+        <h3>15.2 Simulation</h3>
+        <p><code>VoxelWorld.simulate_tick(dt)</code> advances continuous state: doors auto-close, batteries drain, plants grow, weather evolves. <code>invoke_behavior</code> and <code>ai_act("open door")</code> route through component capabilities. Visualization observes state; it never originates behavior.</p>
+
+        <h3>15.3 Digital twins</h3>
+        <p>Sensors → event bus → semantic state (<code>vwm.sync</code>, <code>vwm.twin_bridge.TwinBridge</code>). Timeline replay (<code>vwm.timeline</code>) records every change for debugging, training datasets, and forensic analysis. Robotics interfaces share the same world model (<code>vwm.robotics</code>, <code>vwm.robot_nav</code>).</p>
+      </section>
+
+      <section class="paper-section" id="export">
+        <h2>16. Export and Import</h2>
+        <h3>16.1 Export (from authority only)</h3>
+        <p><code>export_io.py</code> writes:</p>
+        <ul>
+          <li><code>hav.json</code> hierarchy and LOD</li>
+          <li><code>components.json</code> semantic assemblies</li>
+          <li>blocks JSONL, world packs, timeline datasets, optional Gaussian exports</li>
+        </ul>
+        <p>Hierarchy is preserved unless a downstream consumer explicitly requires flattening.</p>
+
+        <h3>16.2 Import paths</h3>
+        <ul>
+          <li>Scan pipeline → HAV voxels with surface evidence</li>
+          <li>VolSplat / Gaussian → voxel occupancy (<code>vwm.reconstruction</code>)</li>
+          <li>Blender authoring targets (<code>vwm.blender_export</code>)</li>
+        </ul>
+        <p>All imports attach provenance and confidence; reconstruction module supports incremental updates.</p>
+      </section>
+
+      <section class="paper-section" id="methodology">
+        <h2>17. Development Methodology</h2>
+        <p>VWM development is evidence-driven and promotion-gated:</p>
+        <ol>
+          <li><strong>State the invariant</strong> (e.g., zero regeneration on camera move) before optimizing aesthetics.</li>
+          <li><strong>Build measurable proofs</strong> (<code>test_vwm_1000frame_proof.py</code>, <code>test_vwm_10kframe_proof_v22.py</code>) that count model and compiler invocations.</li>
+          <li><strong>Freeze scoring formulas</strong> (VWMScore v3) before ranking candidates.</li>
+          <li><strong>Run candidate ladders</strong> isolating one axis at a time (v2.2 candidates A–G).</li>
+          <li><strong>Promote only on Pareto improvement</strong> against the production default; v2.1 and v2.3 were completed but not promoted when standard metrics regressed.</li>
+          <li><strong>Document failures honestly</strong> in MODEL_CARD, MILESTONE_STATUS, FAILURE_ATLAS, and scan comparison markdown.</li>
+          <li><strong>Separate compilation from presentation</strong> so FPS optimizations cannot accidentally reintroduce per-frame inference.</li>
+        </ol>
+
+        <h3>17.1 Data engine (v2.3)</h3>
+        <p>Bottleneck identified as <strong>experience</strong>, not architecture: dataset grew 1,050 → 2,757 observations via rare-geometry factory (1.79 obs/s, crash-safe journal, active planner avoiding ~90% of Cycles work). v2.4 training was explicitly withheld until capture and scan milestones matured.</p>
+      </section>
+
+      <section class="paper-section" id="experiments">
+        <h2>18. Experiments and Benchmarks</h2>
+
+        <h3>18.1 VWMScore v3 (frozen)</h3>
+        <div class="paper-eq">$$\text{photo} = \max\left(0,\, 1 - \frac{\text{L1}}{\text{deferred\_L1}}\right)$$</div>
+        <div class="paper-eq">$$\text{geom} = 0.5 \cdot \text{SIS} + 0.5 \cdot \text{edge\_IoU}$$</div>
+        <div class="paper-eq">$$\text{VWMScore v3} = 0.34\,\text{photo} + 0.30\,\text{geom} + 0.13\,\text{liv} + 0.13\,\text{loc} - 3.0 \cdot \text{gate\_fail}$$</div>
+        <p>where liv penalizes intrinsic light-variance and loc penalizes unchanged-region drift under edits.</p>
+
+        <h3>18.2 StructuralIdentityScore</h3>
+        <p>Harmonic-mean aggregate over four axes measured against the G-buffer boundary map (never Cycles RGB):</p>
+        <ul>
+          <li><strong>boundary_recall</strong>: authoritative edges that survive as luminance edges</li>
+          <li><strong>boundary_precision</strong>: render edges on real structure (anti-hallucination)</li>
+          <li><strong>thin_survival</strong>: thin structures keep local contrast</li>
+          <li><strong>bleed_free</strong>: materials do not smear across seams</li>
+        </ul>
+
+        <h3>18.3 Appearance benchmark (standard held-out, 16 scenes)</h3>
+        <table class="benchmark paper-table">
+          <thead>
+            <tr><th>Metric</th><th>v2</th><th>v2.1</th><th>v2.2 (prod)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Photographic L1</td><td>0.0188</td><td>0.0143</td><td class="ok"><strong>0.0178</strong></td></tr>
+            <tr><td>Edge IoU</td><td>0.580</td><td>0.531</td><td class="ok"><strong>0.691</strong></td></tr>
+            <tr><td>StructuralIdentityScore</td><td>0.460</td><td>0.341</td><td class="ok"><strong>0.698</strong></td></tr>
+            <tr><td>Light-invariance var</td><td>0.0252</td><td>0.0131</td><td class="ok"><strong>0.0062</strong></td></tr>
+            <tr><td>Gate-fail rate</td><td>0.000</td><td>0.010</td><td class="ok"><strong>0.000</strong></td></tr>
+            <tr><td><strong>VWMScore v3</strong></td><td>0.670</td><td>0.650</td><td class="ok"><strong>0.773</strong></td></tr>
+          </tbody>
+        </table>
+
+        <h3>18.4 Structural torture house</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Metric</th><th>v2</th><th>v2.1</th><th>v2.2</th></tr></thead>
+          <tbody>
+            <tr><td>SIS</td><td>0.568</td><td>0.511</td><td class="ok"><strong>0.768</strong></td></tr>
+            <tr><td>thin_survival</td><td>0.543</td><td>0.513</td><td class="ok"><strong>0.841</strong></td></tr>
+            <tr><td>Edge IoU</td><td>0.425</td><td>0.368</td><td class="ok"><strong>0.525</strong></td></tr>
+          </tbody>
+        </table>
+
+        <h3>18.5 v2.3 vs v2.2 (not promoted)</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Metric</th><th>v2.2</th><th>v2.3</th></tr></thead>
+          <tbody>
+            <tr><td>Photo L1 (standard)</td><td class="ok"><strong>0.0178</strong></td><td>0.0259 (+45%)</td></tr>
+            <tr><td>thin_survival (rare)</td><td>0.853</td><td class="ok"><strong>0.965</strong></td></tr>
+            <tr><td>Rare gate-fail</td><td>0.05</td><td class="ok"><strong>0.0</strong></td></tr>
+          </tbody>
+        </table>
+
+        <p>Full tables: <a href="benchmarks.html">benchmarks page</a>. Narratives: <a href="updates.html">project updates</a>.</p>
+      </section>
+
+      <section class="paper-section" id="limitations">
+        <h2>19. Limitations and Documented Failures</h2>
+
+        <h3>19.1 Failed iterations (measured)</h3>
+        <table class="benchmark paper-table">
+          <thead><tr><th>Failure</th><th>Evidence</th><th>Outcome</th></tr></thead>
+          <tbody>
+            <tr><td>Intrinsic-only v2</td><td>VWMScore 0.584 vs v1 0.792</td><td>Dual-head architecture</td></tr>
+            <tr><td>v2.1 promotion</td><td>Edge IoU 0.531, 1% gate fail</td><td>v2.2 developed</td></tr>
+            <tr><td>Aggressive structural losses (v2.2 B/D/E/F)</td><td>SIS 0.87–0.89 but L1 0.045–0.055</td><td>Gentle candidate G promoted</td></tr>
+            <tr><td>v2.3 promotion</td><td>Standard L1 +45%</td><td>v2.2 kept default</td></tr>
+            <tr><td>Frame-0 scale anchor</td><td>backproj 6.76, recall 0.39</td><td>Pooled calibration</td></tr>
+            <tr><td>Fused renderer memory leak</td><td>RSS 4.6 → 9.7 GB / 45 min</td><td><code>_insert_keyframe()</code> eviction</td></tr>
+            <tr><td>Waypoint neural backend</td><td>~4 s/frame, noise</td><td>Deferred PBR primary</td></tr>
+            <tr><td>Synthetic SIFT</td><td>0 matches on voxel renders</td><td>Domain gap confirmed</td></tr>
+          </tbody>
+        </table>
+
+        <h3>19.2 Persistent limitations</h3>
+        <ul>
+          <li>Dataset scale: 2,757 / 10,000 target observations; Cycles factory ~0.8–1.79 obs/s on RTX 2060 SUPER.</li>
+          <li>Monocular depth on synthetic renders: recall caps ~0.45–0.56 vs sensor 0.918.</li>
+          <li>Real multi-view fusion with small baselines: scale CoV ≈ 30 until walk-around, AR poses, or metric anchor.</li>
+          <li>Scan milestone partial: no loop closure, incremental rescan, semantic discovery, or live Luanti scan opening yet.</li>
+          <li>Appearance on scans: voxel-mean RGB only; full compiler atlas ladder not wired for scans.</li>
+          <li>In-Luanti live client acceptance not re-run (requires human walkthrough).</li>
+          <li>v2.4 not trained by explicit milestone rule.</li>
+        </ul>
+      </section>
+
+      <section class="paper-section" id="future">
+        <h2>20. Future Work</h2>
+        <ol>
+          <li><strong>Phone-native capture</strong> with ARKit/ARCore poses replacing webcam + monocular SfM.</li>
+          <li><strong>Metric anchors</strong> (known door width, LiDAR) on real scans for global scale resolution.</li>
+          <li><strong>Loop closure and bundle refinement</strong> for long trajectories.</li>
+          <li><strong>Held-out real-view photometric benchmark</strong> tying scan quality to appearance compiler inputs.</li>
+          <li><strong>Wire scan → appearance compiler</strong> progressive atlas on fused real geometry.</li>
+          <li><strong>Open scanned rooms in live Luanti client</strong> with authority sync intact.</li>
+          <li><strong>Complete 10k observation dataset</strong> and re-evaluate v2.4 candidacy under frozen VWMScore v3.</li>
+          <li><strong>Incremental rescan, dynamic-object rejection, semantic component discovery</strong> from capture.</li>
+          <li><strong>Exposure normalization and view-dependent appearance separation</strong> across multiview real captures.</li>
+        </ol>
+      </section>
+
+      <section class="paper-section" id="conclusion">
+        <h2>21. Conclusion</h2>
+        <p>Voxel World Model demonstrates that a persistent, authoritative voxel simulation can host reality capture, semantic behavior, and photorealistic observation without collapsing them into a single neural field. The zero-regeneration invariant is not aspirational: it is enforced by dependency fingerprints, proven to 10,000+ frames, and compatible with production-quality appearance (v2.2, VWMScore v3 0.773).</p>
+        <p>On capture, the pipeline reaches 0.918 surface recall when depth is reliable, runs end to end on real bedroom footage in 10.3 seconds, and cleanly separates domain-gap effects (synthetic vs real imagery) from architectural limits. The remaining gap to a metric walkable replica is capture quality: baselines, AR poses, and anchors, not a redesign of fusion or appearance.</p>
+        <p>Every layer is replaceable. The voxel world endures.</p>
+
+        <div class="highlight paper-callout">
+          <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
+        </div>
+      </section>
+
+      <section class="paper-section paper-refs" id="artifacts">
+        <h2>Artifacts and References</h2>
+        <ul class="paper-ref-list">
+          <li><code>ARCHITECTURE.md</code>, <code>vwm/architecture.md</code> — living architecture map</li>
+          <li><code>checkpoints/vwm_appearance_v2_2/MODEL_CARD.md</code> — production appearance model</li>
+          <li><code>checkpoints/vwm_appearance_v2_3/MILESTONE_STATUS.md</code> — v2.3 honest status</li>
+          <li><code>checkpoints/vwm_scan/DEPTH_SOURCE_COMPARISON.md</code> — controlled depth benchmark</li>
+          <li><code>checkpoints/vwm_scan/REALITY_CAPTURE_STATUS.md</code> — real webcam scan</li>
+          <li><code>vwm/volsplat_import.md</code>, <code>vwm/digital_twin.md</code></li>
+          <li>Site: <a href="benchmarks.html">benchmarks</a>, <a href="updates.html">updates</a>, <a href="index.html">home</a></li>
+        </ul>
+      </section>
+
+    </main>
+
+    <footer class="paper-footer">
+      <p><a href="index.html">← Home</a> · <a href="updates.html">Updates</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+    </footer>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+</body>
+</html>

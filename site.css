@@ -887,3 +887,193 @@ table.benchmark td:not(:first-child) {
     gap: 0.4rem;
   }
 }
+
+/* ── Technical paper page ── */
+
+.paper-page .paper-wrap {
+  max-width: 1040px;
+}
+
+.paper-header {
+  padding-bottom: 2rem;
+  margin-bottom: 0;
+  border-bottom: 2px solid var(--border);
+}
+
+.paper-header h1 {
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  line-height: 1.35;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.paper-type {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.paper-authors {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.paper-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.88rem;
+  padding-top: 0.5rem;
+}
+
+.paper-toc {
+  margin: 2rem 0 2.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--voxel-face);
+  border: 2px solid var(--voxel-edge);
+  box-shadow: 4px 4px 0 0 var(--voxel-shadow-deep);
+}
+
+.paper-toc .toc-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.paper-toc ol {
+  margin: 0;
+  padding-left: 1.35rem;
+  columns: 2;
+  column-gap: 2rem;
+}
+
+.paper-toc li {
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  break-inside: avoid;
+}
+
+.paper-body {
+  font-size: 1.02rem;
+}
+
+.paper-section {
+  margin-bottom: 3.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.paper-section:last-of-type {
+  border-bottom: none;
+}
+
+.paper-section > h2 {
+  font-size: 1.45rem;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+  scroll-margin-top: 1rem;
+}
+
+.paper-section > h3 {
+  font-size: 1.1rem;
+  margin: 1.75rem 0 0.75rem;
+  color: var(--text);
+}
+
+.paper-section p,
+.paper-section li {
+  margin-bottom: 0.85rem;
+}
+
+.paper-section ul,
+.paper-section ol {
+  margin: 0.75rem 0 1rem 1.25rem;
+}
+
+.paper-abstract {
+  padding: 1.25rem 1.5rem;
+  background: #0d1a14;
+  border: 2px solid var(--accent-dark);
+  box-shadow: 4px 4px 0 0 var(--accent-dark);
+  font-size: 0.98rem;
+}
+
+.paper-abstract p:last-child {
+  margin-bottom: 0;
+}
+
+.paper-diagram {
+  font-size: 0.82rem;
+  margin: 1.25rem 0;
+}
+
+.paper-table {
+  margin: 1.25rem 0;
+  font-size: 0.92rem;
+}
+
+.paper-table td.ok,
+.paper-table td.winner {
+  color: var(--accent);
+}
+
+.paper-eq {
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.paper-eq .katex-display {
+  margin: 0;
+}
+
+.paper-callout {
+  margin: 1.5rem 0;
+}
+
+.paper-rules li {
+  margin-bottom: 0.6rem;
+}
+
+.paper-pills {
+  margin: 1rem 0 1.25rem;
+}
+
+.paper-refs .paper-ref-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.paper-refs .paper-ref-list li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+  font-size: 0.88rem;
+}
+
+.paper-refs .paper-ref-list li:last-child {
+  border-bottom: none;
+}
+
+.paper-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border);
+}
+
+@media (max-width: 700px) {
+  .paper-toc ol {
+    columns: 1;
+  }
+
+  .paper-nav {
+    font-size: 0.82rem;
+  }
+}
