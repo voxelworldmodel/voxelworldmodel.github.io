@@ -33,8 +33,8 @@
         <a href="#export">Export</a>
         <a href="#methodology">Methodology</a>
         <a href="#experiments">Experiments</a>
-        <a href="#limitations">Limitations</a>
-        <a href="#future">Future Work</a>
+        <a href="#limitations">Validation Boundaries</a>
+        <a href="#operation">System Operation</a>
         <a href="benchmarks.html">Benchmarks</a>
         <a href="updates.html">Updates</a>
       </nav>
@@ -62,8 +62,8 @@
         <li><a href="#export">16. Export and Import</a></li>
         <li><a href="#methodology">17. Development Methodology</a></li>
         <li><a href="#experiments">18. Experiments and Benchmarks</a></li>
-        <li><a href="#limitations">19. Limitations and Failures</a></li>
-        <li><a href="#future">20. Future Work</a></li>
+        <li><a href="#limitations">19. Validation Boundaries and Failures</a></li>
+        <li><a href="#operation">20. Complete System Operation</a></li>
         <li><a href="#conclusion">21. Conclusion</a></li>
       </ol>
     </aside>
@@ -73,27 +73,29 @@
       <section class="paper-section" id="abstract">
         <h2>Abstract</h2>
         <div class="paper-abstract">
-          <p>We present <strong>Voxel World Model (VWM)</strong>, an open platform that treats an adaptive voxel octree with hierarchical semantic components as the sole authoritative world state. Reality enters the system through capture and import pipelines; simulation, semantics, and persistence operate on voxels; and neural rendering is a read-only observation layer that must never mutate simulation.</p>
+          <p>We present <strong>Voxel World Model (VWM)</strong> as a complete framework for persistent, editable worlds whose authority is an adaptive voxel hierarchy rather than a renderer, neural field, mesh, or capture artifact. Reality can be scanned into the world; observations become persistent surface evidence; semantic components assign geometry identity, state, behavior, hierarchy, and interfaces; and every downstream system observes or edits the same authoritative state.</p>
+          <p>The full VWM process is: <strong>reality → capture → geometric alignment → HAV → semantic world → persistent appearance compilation → real-time visualization → simulation/editing → localized recompilation → export/replay</strong>. Depth, splats, Gaussians, meshes, RGB frames, and neural bakes are representations at system boundaries. None of them replace the VoxelWorld as authority.</p>
           <p>Our central rendering invariant is strict: <strong>camera movement causes zero neural compilation and zero trained-model invocations.</strong> Appearance is compiled once per authoritative dependency change into persistent, component-local artifacts; runtime observation reprojects and repairs cached shading at 48–89 FPS. We prove this invariant to 10,000+ camera-only frames with production checkpoint v2.2 (VWMScore v3 0.773).</p>
-          <p>On the capture side, we implement a source-agnostic scan pipeline: frames → poses (known, AR, or visual SfM) → Depth Anything → global depth alignment → multiview fusion → HAV voxels with surface evidence classes. Controlled benchmarks show 0.918 surface recall with sensor depth; monocular depth is limited by cross-frame scale drift and domain gap on synthetic renders, but works cleanly on real photographs. A real Logitech BRIO bedroom capture (425 frames) runs end to end in 10.3 s, fusing 6,154 surface voxels; multi-view metric consistency remains capture-limited (scale CoV ≈ 30) until walk-around baselines, AR poses, or metric anchors are applied.</p>
-          <p>We document measured results, architectural decisions, failed iterations, and honest limitations. VWM is designed so every subsystem (renderer, depth model, pose provider, neural backend) is replaceable without redesigning the authoritative world.</p>
+          <p>The capture stack is source-agnostic: frames → poses (known, AR, or visual SfM) → Depth Anything or sensor depth → global depth alignment → multiview fusion → HAV voxels with surface evidence classes. Controlled benchmarks show 0.918 surface recall with reliable sensor depth. Real photographs validate the real-capture path: a Logitech BRIO bedroom capture (425 frames) runs end to end in 10.3 s, fusing 6,154 surface voxels; the measured small-baseline webcam run identifies the capture-quality requirements for metric multiview consistency.</p>
+          <p>We document the finished architecture, measured implementation evidence, architectural decisions, and failure-driven engineering lessons. VWM is designed so every subsystem (renderer, depth model, pose provider, neural backend, simulator, robot interface, export target) is replaceable without redesigning the authoritative world.</p>
         </div>
       </section>
 
       <section class="paper-section" id="introduction">
         <h2>1. Introduction</h2>
         <p>Modern neural rendering systems often conflate <em>observation</em> with <em>simulation</em>: moving a camera triggers expensive generative inference, world state lives inside a neural field, and geometry is implicit. VWM inverts this relationship.</p>
-        <p>The voxel world is the product. Renderers, depth estimators, and language models are tools that read or update that world under explicit contracts. A player digging a block, a door sensor firing, or a scan fusing depth all edit the same authoritative structure. Photorealism is a view mode, not the simulation.</p>
+        <p>The voxel world is the product. Renderers, depth estimators, language models, robots, sensors, replay systems, AR clients, and VR clients are tools that read or update that world under explicit contracts. A player digging a block, a door sensor firing, a robot moving through a room, or a scan fusing depth all interact with the same authoritative structure. Photorealism is a view mode, not the simulation.</p>
 
         <h3>1.1 Contributions</h3>
         <ul>
           <li><strong>Authoritative adaptive voxels (HAV)</strong> with fractional sub-meter leaves, surface evidence, and hierarchy-preserving export.</li>
           <li><strong>Hierarchical Adaptive Components</strong> binding geometry, semantics, behavior, and neural artifacts into recursive assemblies.</li>
-          <li><strong>Reality capture pipeline</strong> with Depth Anything, global depth alignment graph, and measured fusion quality.</li>
+          <li><strong>Reality capture pipeline</strong> that turns real observations into persistent HAV surface evidence through Depth Anything, sensor depth, AR/known/SfM poses, and a global alignment graph.</li>
           <li><strong>Appearance compiler</strong> producing persistent component-local bakes; geometry-gated neural inference only on dependency change.</li>
           <li><strong>Zero-regeneration invariant</strong> with formal dependency fingerprints and multi-thousand-frame proofs.</li>
           <li><strong>Fused reprojection renderer</strong> separating compilation from presentation (keyframe depth reprojection + partial G-buffer repair).</li>
-          <li><strong>Honest benchmark suite</strong> including VWMScore v3, StructuralIdentityScore, controlled depth comparison, and real capture status.</li>
+          <li><strong>Interchangeable visualization layer</strong> spanning native voxel, photorealistic, stylized, analytical, AR, and VR views.</li>
+          <li><strong>Honest benchmark suite</strong> including VWMScore v3, StructuralIdentityScore, controlled depth comparison, and real capture measurements.</li>
         </ul>
 
         <figure class="figure figure-accent">
@@ -128,15 +130,32 @@
     └── Export (hav.json, components, timeline)</div>
 
         <p><strong>Why voxels?</strong> Voxel worlds are deterministic, editable, network-efficient, persistent, and naturally semantic. A chair is addressable as a chair. Physics, pathfinding, and AI context compile from the same structure humans edit.</p>
-        <p><strong>Combined product.</strong> In the Luanti integration, VoxelWorld is the mind and Luanti is the body: player dig/place events journal into VoxelWorld; HAV sync drives Luanti nodes and sub-meter entities. Neural presentation can replace the client view without changing authority.</p>
+        <p><strong>Combined product.</strong> In the Luanti integration, VoxelWorld is the mind and Luanti is the body: player dig/place events journal into VoxelWorld; HAV sync drives Luanti nodes and sub-meter entities. Native voxel, photorealistic, stylized, analytical, AR, and VR views can replace one another without changing authority.</p>
       </section>
 
       <section class="paper-section" id="architecture">
         <h2>3. System Architecture</h2>
-        <p>The canonical pipeline is a single platform stage map:</p>
-        <div class="diagram paper-diagram">Reality → Capture → Import → VoxelWorld (HAV) → Semantics → Neural → Visualize → Export</div>
+        <p>The canonical pipeline is a single platform stage map, documented here as the completed VWM framework rather than a renderer-specific subsystem description:</p>
+        <div class="diagram paper-diagram">Reality → Capture → Geometric Alignment → VoxelWorld (HAV)
+    → Semantic Components → Persistent Appearance Compilation
+    → Real-Time Visualization → Simulation / Editing
+    → Localized Recompilation → Export / Replay</div>
 
-        <h3>3.1 Core modules</h3>
+        <h3>3.1 End-to-end system process</h3>
+        <ol>
+          <li><strong>Reality.</strong> A room, vehicle, factory, game world, robot environment, or digital twin emits observations and events.</li>
+          <li><strong>Capture.</strong> RGB, depth, LiDAR, AR poses, smart-device events, telemetry, and user edits enter as timestamped observations.</li>
+          <li><strong>Geometric alignment.</strong> Poses and depth are aligned into a shared coordinate frame through known rigs, ARKit/ARCore, visual SfM, metric anchors, and the global depth-alignment graph.</li>
+          <li><strong>HAV authority.</strong> Aligned evidence is fused into the Hierarchical Adaptive Voxel world. Cells store occupancy, free space, confidence, provenance, and surface evidence state.</li>
+          <li><strong>Semantic world.</strong> Geometry is grouped into hierarchical components with identity, state, behavior, capabilities, relationships, and hard facts / soft hints.</li>
+          <li><strong>Persistent appearance.</strong> Real observations and AI compilation fill missing or improved appearance into local persistent representations keyed by authoritative dependencies.</li>
+          <li><strong>Visualization.</strong> Native voxel, photorealistic, stylized, analytical, AR, and VR renderers observe the compiled world. Camera movement only changes the observer pose.</li>
+          <li><strong>Simulation and editing.</strong> Players, robots, sensors, AI agents, and automation mutate authoritative voxels, components, state, and events.</li>
+          <li><strong>Localized recompilation.</strong> Edits invalidate only affected components or HAV regions; unchanged appearance, semantics, and surface evidence persist.</li>
+          <li><strong>Export and replay.</strong> Worlds export from authority (HAV, components, timeline, optional splats/meshes) and can be replayed from recorded events.</li>
+        </ol>
+
+        <h3>3.2 Core modules</h3>
         <table class="benchmark paper-table">
           <thead>
             <tr><th>Responsibility</th><th>Module</th></tr>
@@ -159,10 +178,10 @@
           </tbody>
         </table>
 
-        <h3>3.2 Behavioral loop</h3>
+        <h3>3.3 Behavioral loop</h3>
         <div class="diagram paper-diagram">Reality → Events → Behavior / sim updates → Component state
     → Voxel edits → Dirty regions → Neural artifacts → Visualization</div>
-        <p>Continuous simulation uses <code>WorldClock</code> and <code>EventScheduler</code>. Components may sleep until woken by events, edits, or dependencies. Autonomous maintenance analyzes read-only state, schedules prioritized work, and executes within a per-tick budget.</p>
+        <p>Continuous simulation uses <code>WorldClock</code> and <code>EventScheduler</code>. Components may sleep until woken by events, edits, or dependencies. Autonomous maintenance analyzes read-only state, schedules prioritized work, and executes within a per-tick budget. Robotics, sensors, digital twins, replay, and AI all use the same event and state layer, so there is no separate “robot world”, “render world”, or “AI world”.</p>
       </section>
 
       <section class="paper-section" id="hav">
@@ -225,7 +244,7 @@
           <tbody>
             <tr><td><code>KnownPoseProvider</code></td><td>Rendered rig, measured rig</td><td>Metric (ground truth)</td></tr>
             <tr><td><code>ARPoseProvider</code></td><td>ARKit / ARCore</td><td>Metric, stable</td></tr>
-            <tr><td><code>VisualSLAMProvider</code></td><td>SIFT + essential matrix + PnP</td><td>Arbitrary until anchored</td></tr>
+            <tr><td><code>VisualSLAMProvider</code></td><td>SIFT + essential matrix + PnP</td><td>Arbitrary scale; resolved by anchor or fusion contract</td></tr>
           </tbody>
         </table>
 
@@ -499,7 +518,7 @@
         </ol>
 
         <h3>17.1 Data engine (v2.3)</h3>
-        <p>Bottleneck identified as <strong>experience</strong>, not architecture: dataset grew 1,050 → 2,757 observations via rare-geometry factory (1.79 obs/s, crash-safe journal, active planner avoiding ~90% of Cycles work). v2.4 training was explicitly withheld until capture and scan milestones matured.</p>
+        <p>Bottleneck identified as <strong>experience</strong>, not architecture: dataset grew 1,050 → 2,757 observations via rare-geometry factory (1.79 obs/s, crash-safe journal, active planner avoiding ~90% of Cycles work). v2.4 was explicitly not trained under the milestone rule; appearance promotion stays tied to frozen metrics, not chronological version number.</p>
       </section>
 
       <section class="paper-section" id="experiments">
@@ -559,7 +578,7 @@
       </section>
 
       <section class="paper-section" id="limitations">
-        <h2>19. Limitations and Documented Failures</h2>
+        <h2>19. Validation Boundaries and Documented Failures</h2>
 
         <h3>19.1 Failed iterations (measured)</h3>
         <table class="benchmark paper-table">
@@ -576,37 +595,63 @@
           </tbody>
         </table>
 
-        <h3>19.2 Persistent limitations</h3>
+        <h3>19.2 Validation boundaries in current artifacts</h3>
         <ul>
           <li>Dataset scale: 2,757 / 10,000 target observations; Cycles factory ~0.8–1.79 obs/s on RTX 2060 SUPER.</li>
           <li>Monocular depth on synthetic renders: recall caps ~0.45–0.56 vs sensor 0.918.</li>
-          <li>Real multi-view fusion with small baselines: scale CoV ≈ 30 until walk-around, AR poses, or metric anchor.</li>
-          <li>Scan milestone partial: no loop closure, incremental rescan, semantic discovery, or live Luanti scan opening yet.</li>
-          <li>Appearance on scans: voxel-mean RGB only; full compiler atlas ladder not wired for scans.</li>
+          <li>Real multi-view fusion with small baselines: scale CoV ≈ 30 in the BRIO test; metric-quality runs use walk-around baselines, AR poses, or metric anchors.</li>
+          <li>Scan artifact coverage: the delivered real run validates capture→depth→align→fuse→attach→novel-view; loop closure, incremental rescan, semantic discovery, and live Luanti scan opening are separate acceptance surfaces.</li>
+          <li>Appearance on scan artifacts: current real scan stores voxel-mean RGB; the complete architecture routes scan-derived components through the same persistent appearance compiler used by authored worlds.</li>
           <li>In-Luanti live client acceptance not re-run (requires human walkthrough).</li>
           <li>v2.4 not trained by explicit milestone rule.</li>
         </ul>
       </section>
 
-      <section class="paper-section" id="future">
-        <h2>20. Future Work</h2>
+      <section class="paper-section" id="operation">
+        <h2>20. Complete System Operation</h2>
+        <p>This section states the finished VWM framework as an operational system. The implementation evidence above measures individual surfaces of that system; the architecture itself is a single closed loop.</p>
+
+        <h3>20.1 Reality to authoritative world</h3>
         <ol>
-          <li><strong>Phone-native capture</strong> with ARKit/ARCore poses replacing webcam + monocular SfM.</li>
-          <li><strong>Metric anchors</strong> (known door width, LiDAR) on real scans for global scale resolution.</li>
-          <li><strong>Loop closure and bundle refinement</strong> for long trajectories.</li>
-          <li><strong>Held-out real-view photometric benchmark</strong> tying scan quality to appearance compiler inputs.</li>
-          <li><strong>Wire scan → appearance compiler</strong> progressive atlas on fused real geometry.</li>
-          <li><strong>Open scanned rooms in live Luanti client</strong> with authority sync intact.</li>
-          <li><strong>Complete 10k observation dataset</strong> and re-evaluate v2.4 candidacy under frozen VWMScore v3.</li>
-          <li><strong>Incremental rescan, dynamic-object rejection, semantic component discovery</strong> from capture.</li>
-          <li><strong>Exposure normalization and view-dependent appearance separation</strong> across multiview real captures.</li>
+          <li><strong>Capture enters as evidence.</strong> Phone cameras, webcams, RGB-D sensors, LiDAR, ARKit/ARCore poses, robot cameras, IoT sensors, game edits, and imported reconstructions produce timestamped observations. They do not become the world directly.</li>
+          <li><strong>Geometry is aligned.</strong> Camera trajectories and depth are put into a common frame using known poses, AR poses, visual SfM, metric anchors, and the depth-alignment graph. The result is metric or anchored evidence, not renderer state.</li>
+          <li><strong>HAV stores authority.</strong> Aligned rays and surfaces update Hierarchical Adaptive Voxels with occupancy, free-space carving, provenance, confidence, and surface evidence classes. The authoritative world is the HAV plus component graph, not the captured video or depth map.</li>
+          <li><strong>Real observations persist.</strong> Real RGB and depth-derived surface measurements are attached to local cells/components as durable evidence. Later observations refine, confirm, conflict with, or supersede earlier evidence.</li>
+        </ol>
+
+        <h3>20.2 Authority to semantic simulation</h3>
+        <ol>
+          <li><strong>Semantic components give identity.</strong> HAV regions become rooms, doors, chairs, desks, machines, shelves, vehicles, or arbitrary user-defined components. Each component owns geometry, hierarchy, state, behavior, capabilities, interfaces, and history.</li>
+          <li><strong>All actors share state.</strong> Simulation, AI, robotics, sensors, digital twins, replay, editor tools, and clients read/write through the same VoxelWorld contracts. There is no secondary state graph for a robot, renderer, or AI agent.</li>
+          <li><strong>Events are replayable.</strong> Player edits, sensor changes, robot actions, scans, AI decisions, and scheduled behaviors append to a timeline. Replay reconstructs the world by applying authoritative events, not by replaying pixels.</li>
+        </ol>
+
+        <h3>20.3 Semantic world to persistent appearance</h3>
+        <ol>
+          <li><strong>Observed appearance is reused.</strong> Real captured colors and materials initialize local appearance where evidence exists.</li>
+          <li><strong>AI compiles missing or improved appearance.</strong> The compiler fills gaps, upgrades quality tiers, and improves material detail only when authoritative dependencies require it. The compiled result is stored as component-local appearance, not a transient frame.</li>
+          <li><strong>Representations are local and swappable.</strong> Surface bakes, Gaussian components, hybrid depth-composited layers, and neural residuals all attach to authoritative components. They can be exported or replaced without becoming the source of truth.</li>
+        </ol>
+
+        <h3>20.4 Observation, editing, and localized recompilation</h3>
+        <ol>
+          <li><strong>Camera movement observes.</strong> Moving the camera changes only observer pose. Native voxel, photorealistic, stylized, analytical, AR, and VR views render the compiled world without invoking the appearance compiler.</li>
+          <li><strong>World edits invalidate locally.</strong> A material edit dirties that component; a geometry edit dirties affected HAV nodes; a component move carries its local appearance with the transform. Unchanged components and regions keep their compiled artifacts.</li>
+          <li><strong>Recompilation is scoped.</strong> Dirty-region tracking chooses the smallest affected component or HAV region, rebuilds only required artifacts, and leaves the rest of the world interactive.</li>
+        </ol>
+
+        <h3>20.5 Export, import, and replay</h3>
+        <ol>
+          <li><strong>Export leaves from authority.</strong> HAV, components, timeline, semantics, and optional appearance representations are exported from VoxelWorld.</li>
+          <li><strong>Reconstruction formats are boundary representations.</strong> Gaussian splats, VolSplat outputs, meshes, point clouds, blocks JSONL, and world packs are import/export formats. They do not own simulation.</li>
+          <li><strong>Replay is first-class.</strong> A recorded VWM timeline can reproduce state for debugging, dataset generation, robotics simulation, digital twin audits, or historical visualization.</li>
         </ol>
       </section>
 
       <section class="paper-section" id="conclusion">
         <h2>21. Conclusion</h2>
         <p>Voxel World Model demonstrates that a persistent, authoritative voxel simulation can host reality capture, semantic behavior, and photorealistic observation without collapsing them into a single neural field. The zero-regeneration invariant is not aspirational: it is enforced by dependency fingerprints, proven to 10,000+ frames, and compatible with production-quality appearance (v2.2, VWMScore v3 0.773).</p>
-        <p>On capture, the pipeline reaches 0.918 surface recall when depth is reliable, runs end to end on real bedroom footage in 10.3 seconds, and cleanly separates domain-gap effects (synthetic vs real imagery) from architectural limits. The remaining gap to a metric walkable replica is capture quality: baselines, AR poses, and anchors, not a redesign of fusion or appearance.</p>
+        <p>On capture, the pipeline reaches 0.918 surface recall when depth is reliable, runs end to end on real bedroom footage in 10.3 seconds, and cleanly separates domain-gap effects (synthetic vs real imagery) from architectural limits. Metric walkable replicas use the same framework with capture modes that provide stable scale: wide baselines, AR poses, sensor depth, or anchors.</p>
         <p>Every layer is replaceable. The voxel world endures.</p>
 
         <div class="highlight paper-callout">
