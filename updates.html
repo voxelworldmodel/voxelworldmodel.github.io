@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v23">Latest: Appearance v2.3</a>
+        <a href="#depth-scan">Latest: Depth scan</a>
+        <a href="#v23">Appearance v2.3</a>
         <a href="#v22">Appearance v2.2</a>
         <a href="#v21">Appearance v2.1</a>
         <a href="#v2">Appearance v2</a>
@@ -22,6 +23,86 @@
         <a href="benchmarks.html">Benchmarks</a>
       </nav>
     </header>
+
+    <article class="update" id="depth-scan">
+      <div class="update-meta">
+        <time datetime="2026-07-13">July 13, 2026</time>
+        <span class="badge badge-ok">Measured</span>
+      </div>
+      <h2>Depth Source Comparison, 3-Way Controlled Benchmark</h2>
+      <p>Same controlled VWM room (20-frame trajectory), same known camera poses, same fusion/voxelize/validation pipeline. Only the depth source changes. All monocular runs use one <strong>robust pooled calibration</strong> (single scale anchor across all frames).</p>
+
+      <div class="status-banner">
+        <h3>✅ Pipeline proven; monocular limited by domain + scale drift</h3>
+        <p>With reliable sensor depth the scan pipeline reaches <strong>0.918 surface recall</strong>. Monocular models top out ~0.45–0.56 on synthetic voxel renders — not because the pipeline fails, but because cross-frame scale drifts 47–57% and the flat-shaded input is out of distribution for models trained on real photos.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.918</span><span class="label">Surface recall (sensor)</span></div>
+        <div class="stat"><span class="value">0.17</span><span class="label">Backproj error (sensor)</span></div>
+        <div class="stat"><span class="value">0.564</span><span class="label">Recall (DA3 relative)</span></div>
+        <div class="stat"><span class="value">0.449</span><span class="label">Recall (DA2 metric)</span></div>
+        <div class="stat"><span class="value">2.5×</span><span class="label">Error cut (pooled vs frame-0 anchor)</span></div>
+        <div class="stat"><span class="value">0.76–0.96</span><span class="label">Per-frame depth correlation</span></div>
+      </div>
+
+      <h3>3-Way Comparison</h3>
+      <table class="benchmark">
+        <thead>
+          <tr>
+            <th>Depth source</th>
+            <th>Backproj err</th>
+            <th>Surface recall</th>
+            <th>IoU</th>
+            <th>Abs depth err</th>
+            <th>Scale CoV</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Depth source" class="ok">RGB-D / LiDAR (sensor)</td>
+            <td data-label="Backproj err" class="ok">0.17</td>
+            <td data-label="Surface recall" class="ok">0.918</td>
+            <td data-label="IoU" class="ok">0.636</td>
+            <td data-label="Abs depth err">—</td>
+            <td data-label="Scale CoV">—</td>
+          </tr>
+          <tr>
+            <td data-label="Depth source">DA3-SMALL (relative)</td>
+            <td data-label="Backproj err">1.99</td>
+            <td data-label="Surface recall">0.564</td>
+            <td data-label="IoU">0.229</td>
+            <td data-label="Abs depth err">1.99</td>
+            <td data-label="Scale CoV">0.47</td>
+          </tr>
+          <tr>
+            <td data-label="Depth source">DA2 Metric Hypersim Small</td>
+            <td data-label="Backproj err">2.37</td>
+            <td data-label="Surface recall">0.449</td>
+            <td data-label="IoU">0.178</td>
+            <td data-label="Abs depth err">2.37</td>
+            <td data-label="Scale CoV">0.57</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>See <a href="benchmarks.html#depth-compare">benchmarks</a> for trend indicators vs sensor ground truth.</p>
+
+      <h3>Three Honest Findings</h3>
+      <ol>
+        <li><strong>A methodology bug got caught.</strong> First metric run anchored scale on frame 0 (a scale outlier: 8.1 vs typical ~3.9), giving recall 0.39 and error 6.76. Robust pooled calibration across all frames cut error &gt;2.5×. Lesson baked in: never anchor scale on one frame.</li>
+        <li><strong>On synthetic input, DA3 relative slightly beats DA2 metric</strong> (recall 0.564 vs 0.449). Metric depth's absolute-scale advantage does not materialize because flat-shaded voxel renders are out of distribution for models trained on real indoor photos. Per-frame correlation is decent (0.76–0.96), but per-frame scale drifts 47–57% (CoV), which caps recall.</li>
+        <li><strong>Neither monocular model reaches sensor recall</strong> (~0.45–0.56 vs 0.918). The limiter is cross-frame scale inconsistency plus the synthetic domain gap, not the fusion pipeline. Next fair test: real phone frames + ARKit/ARCore poses where metric models see in-distribution imagery.</li>
+      </ol>
+
+      <h3>Answer: Does Monocular Metric Get Close Without a Sensor?</h3>
+      <p><strong>Not on this synthetic controlled test</strong> — monocular tops out around 0.5 recall. But the test is genuinely unfair to monocular models: they are trained on real photos and the input is non-photoreal voxel imagery. The correlations (0.76–0.96) say depth shape is largely right; cross-frame scale is what drifts.</p>
+
+      <div class="highlight">
+        <p><strong>Pipeline is proven ready:</strong> source-agnostic fusion, backprojection convention verified to 0.02, and 0.918 recall whenever depth is reliable. The honest next venue is real phone frames + ARKit/ARCore poses.</p>
+      </div>
+
+      <p class="footnote">Full write-up: <code>checkpoints/vwm_scan/DEPTH_SOURCE_COMPARISON.md</code>. Artifacts in <code>sensor/</code>, <code>ctrl/</code> (DA3), <code>metric/</code> (DA2).</p>
+    </article>
 
     <article class="update" id="v23">
       <div class="update-meta">
