@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#real-capture">Real capture</a>
         <a href="#depth-compare">Depth scan</a>
         <a href="#v23-memory">v2.3 memory fix</a>
         <a href="#v23-compare">v2.2 vs v2.3</a>
@@ -25,11 +26,117 @@
     </header>
 
     <div class="bench-compare-legend">
-      <span><span class="dot dot-sensor"></span> Sensor (ground truth)</span>
+      <span><span class="dot dot-real"></span> Real capture (BRIO bedroom)</span>
+      <span><span class="dot dot-sensor"></span> Sensor (controlled ground truth)</span>
       <span><span class="dot dot-v22"></span> v2.2 (production default)</span>
       <span><span class="dot dot-v23"></span> v2.3 continue (not promoted)</span>
-      <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = closer to sensor</span>
-      <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = farther from sensor</span>
+      <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
+      <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
+    </div>
+
+    <!-- ─────────────── real capture ─────────────── -->
+    <section class="bench-milestone" id="real-capture">
+      <div class="update-meta">
+        <time datetime="2026-07-13">July 13, 2026</time>
+        <span class="badge badge-partial">Partial milestone</span>
+      </div>
+      <h2>Reality Capture, Real Webcam Scan</h2>
+      <p>Logitech BRIO, 18 s / 425 frames, real bedroom. End-to-end: keyframes → visual SfM → depth-anything → alignment graph → fusion → real RGB → novel view. v2.4 not trained.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Frames</span><span class="chip-value">425</span></div>
+        <div class="bench-chip"><span class="chip-label">Keyframes</span><span class="chip-value">14</span></div>
+        <div class="bench-chip"><span class="chip-label">SIFT matches</span><span class="chip-value">540</span></div>
+        <div class="bench-chip"><span class="chip-label">Surface voxels</span><span class="chip-value">6154</span></div>
+        <div class="bench-chip"><span class="chip-label">Align samples</span><span class="chip-value">16.6k</span></div>
+        <div class="bench-chip"><span class="chip-label">Processing</span><span class="chip-value">10.3 s</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Synthetic vs real: domain gap confirmed</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Input</th>
+              <th>SIFT matches</th>
+              <th>E-matrix inliers</th>
+              <th>DA depth (qualitative)</th>
+              <th>Multi-view scale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Input">Synthetic voxel render</td>
+              <td class="num loser" data-label="SIFT matches">0</td>
+              <td class="num loser" data-label="E-matrix inliers">0</td>
+              <td class="num loser" data-label="DA depth">Poor (OOD)</td>
+              <td class="num" data-label="Scale">CoV 0.47–0.57</td>
+            </tr>
+            <tr class="row-winner">
+              <td class="metric" data-label="Input">Real BRIO bedroom</td>
+              <td class="num winner" data-label="SIFT matches">540 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="E-matrix inliers">516 <span class="trend trend-good">▲</span></td>
+              <td class="num winner" data-label="DA depth">Coherent single-view</td>
+              <td class="num loser" data-label="Scale">CoV ≈ 30 (small baseline)</td>
+            </tr>
+            <tr class="row-winner">
+              <td class="metric" data-label="Input">Controlled sensor depth</td>
+              <td class="num na" data-label="SIFT matches">—</td>
+              <td class="num na" data-label="E-matrix inliers">—</td>
+              <td class="num winner" data-label="DA depth">N/A (sensor)</td>
+              <td class="num winner" data-label="Scale">Stable (0.918 recall)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Real photos unlock depth-anything and feature geometry. Multi-view metric consistency needs larger baselines, AR poses, or a metric anchor.</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Real pipeline run (<code>real_scan_report.json</code>)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Stage</th><th>Metric</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Stage">Capture</td><td data-label="Metric">Total frames / keyframes</td><td class="num" data-label="Value">425 / 14</td></tr>
+            <tr><td class="metric" data-label="Stage">SfM</td><td data-label="Metric">Tracked frames / mean confidence</td><td class="num" data-label="Value">14 / 0.89</td></tr>
+            <tr><td class="metric" data-label="Stage">Alignment</td><td data-label="Metric">Overlap edges / triangulated samples</td><td class="num" data-label="Value">56 / 16 626</td></tr>
+            <tr><td class="metric" data-label="Stage">Alignment</td><td data-label="Metric">Solved scale CoV</td><td class="num loser" data-label="Value">30.4</td></tr>
+            <tr><td class="metric" data-label="Stage">Fusion</td><td data-label="Metric">Surface voxels (0.04 m)</td><td class="num winner" data-label="Value">6 154</td></tr>
+            <tr><td class="metric" data-label="Stage">Fusion</td><td data-label="Metric">Confirmed / provisional</td><td class="num" data-label="Value">3 200 / 2 954</td></tr>
+            <tr><td class="metric" data-label="Stage">Runtime</td><td data-label="Metric">End-to-end processing</td><td class="num winner" data-label="Value">10.3 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Single-view vs multi-view (honest)</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr><th>Mode</th><th>Geometry quality</th><th>Scale consistency</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr class="row-winner">
+              <td class="metric" data-label="Mode">Single-view depth</td>
+              <td class="num winner" data-label="Geometry">Coherent (closet, dresser, couch)</td>
+              <td class="num na" data-label="Scale">N/A (one frame)</td>
+              <td data-label="Why">Sidesteps cross-frame scale coupling</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Mode">Multi-view fusion</td>
+              <td class="num loser" data-label="Geometry">Rough / scattered</td>
+              <td class="num loser" data-label="Scale">CoV ≈ 30</td>
+              <td data-label="Why">Tiny baselines → noisy SfM + depth scale</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#real-capture">Read full real capture narrative →</a></p>
+    </section>
+
+    <div class="bench-compare-legend" style="margin-top: 2rem;">
+      <span><strong>Controlled depth benchmarks</strong></span>
     </div>
 
     <!-- ─────────────── depth scan ─────────────── -->

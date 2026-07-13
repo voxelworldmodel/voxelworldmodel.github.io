@@ -748,6 +748,7 @@ table.benchmark td:not(:first-child) {
 
 .bench-table .th-sensor { color: #fbbf24; }
 .bench-compare-legend .dot-sensor { background: #fbbf24; }
+.bench-compare-legend .dot-real { background: #a78bfa; }
 .bench-table .th-baseline { color: #888; }
 .bench-table .th-model { color: var(--accent); }
 

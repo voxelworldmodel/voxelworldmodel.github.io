@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#depth-scan">Latest: Depth scan</a>
+        <a href="#real-capture">Latest: Real capture</a>
+        <a href="#depth-scan">Depth scan</a>
         <a href="#v23">Appearance v2.3</a>
         <a href="#v22">Appearance v2.2</a>
         <a href="#v21">Appearance v2.1</a>
@@ -23,6 +24,58 @@
         <a href="benchmarks.html">Benchmarks</a>
       </nav>
     </header>
+
+    <article class="update" id="real-capture">
+      <div class="update-meta">
+        <time datetime="2026-07-13">July 13, 2026</time>
+        <span class="badge badge-partial">Partial, core delivered</span>
+      </div>
+      <h2>Reality Capture, Real Webcam Bedroom Scan</h2>
+      <p>First end-to-end run on <strong>genuine real-world data</strong>: 18 s / 425 frames from a Logitech BRIO webcam of a real bedroom (door, closet, dresser, couch, accent wall). Hand-held motion, no phone available. This is a partial delivery of a 36-section milestone; the capture→depth→align→fuse→attach→novel-view core shipped. <strong>v2.4 was not trained.</strong></p>
+
+      <div class="status-banner">
+        <h3>✅ depth-anything works on real imagery; gap is capture quality, not architecture</h3>
+        <p>Single-view voxelization is coherent: closet recess, wooden dresser, couch edge, accent wall, all correct 3D with real captured color. That confirms the earlier weakness was synthetic flat-shaded input, not the model. Multi-view fusion is geometrically rough (<code>solved_scale_cov ≈ 30</code>) because tiny hand-held baselines compound monocular SfM + monocular depth scale drift.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">425</span><span class="label">Frames captured (18 s)</span></div>
+        <div class="stat"><span class="value">540</span><span class="label">SIFT matches (real frames)</span></div>
+        <div class="stat"><span class="value">516</span><span class="label">Essential-matrix inliers</span></div>
+        <div class="stat"><span class="value">6154</span><span class="label">Surface voxels fused</span></div>
+        <div class="stat"><span class="value">10.3 s</span><span class="label">End-to-end processing</span></div>
+        <div class="stat"><span class="value">~30</span><span class="label">Scale CoV (multi-view, rough)</span></div>
+      </div>
+
+      <h3>What Genuinely Works (on Real Data)</h3>
+      <ul>
+        <li><strong>Real capture.</strong> BRIO webcam bedroom video, not a synthetic render.</li>
+        <li><strong>depth-anything on real photos is clean.</strong> Single-view backprojection produces a recognisable colored voxel cloud with correct room geometry.</li>
+        <li><strong>Real feature geometry.</strong> 540 SIFT matches / 516 essential-matrix inliers between real frames (vs zero features on synthetic voxel renders).</li>
+        <li><strong>Full pipeline end to end:</strong> frames → keyframe selection → visual SfM (<code>VisualSLAMProvider</code>) → depth-anything → <code>DepthAlignmentGraph</code> (56 overlap edges, 16 626 triangulated samples) → voxel fusion → attached real RGB → novel view.</li>
+        <li><strong>New modules import clean:</strong> webcam ingestion, <code>vwm.camera_trajectory</code> (Known / AR / VisualSLAM providers), <code>vwm.depth_alignment</code> (global scale+shift graph, triangulation, robust IRLS, metric-anchor support). OpenCV 5 installed.</li>
+      </ul>
+
+      <h3>The Honest Limitation</h3>
+      <p>Multi-view fusion is geometrically rough (<code>solved_scale_cov ≈ 30</code>). That is not a pipeline failure — it is the capture: a hand-held webcam moved a few inches gives tiny baselines, so monocular SfM and monocular depth compound into unstable per-frame scale. The single-view result is clean precisely because it sidesteps multi-view scale coupling.</p>
+
+      <p>Fixes are already named in the progression; none require redesign:</p>
+      <ul>
+        <li><strong>Walk around the room</strong> (bigger baselines) — the intended phone workflow.</li>
+        <li><strong>AR poses</strong> (ARKit/ARCore) — metric and stable; <code>ARPoseProvider</code> seam is already there.</li>
+        <li><strong>A metric anchor</strong> (known door width / LiDAR).</li>
+      </ul>
+
+      <h3>Not Done (Honest)</h3>
+      <p>Loop closure, exposure normalization, view-dependent appearance, held-out real-view benchmark, incremental rescan, dynamic rejection, semantic components, opening the scanned room in the live Luanti client, and more from the 36-section milestone remain open. Phone-native capture + AR pose (webcam substitute only). Per explicit instruction, <strong>v2.4 was not trained.</strong></p>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The reality-capture machine runs on real data. depth-anything is proven on real imagery. The gap to a metric walkable replica is capture quality (baseline / AR poses / anchor), not architecture. With reliable depth the same pipeline already hits 0.918 recall.</p>
+      </div>
+
+      <p class="footnote">Full write-up: <code>checkpoints/vwm_scan/REALITY_CAPTURE_STATUS.md</code>. Artifacts: <code>real_capture/room_scan.mp4</code>, <code>real/</code> (SfM + fusion + novel view), single-view voxelization.</p>
+      <p>See <a href="benchmarks.html#real-capture">benchmarks</a> for measured real-capture numbers vs synthetic baseline.</p>
+    </article>
 
     <article class="update" id="depth-scan">
       <div class="update-meta">

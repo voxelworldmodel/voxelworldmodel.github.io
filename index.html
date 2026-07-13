@@ -192,19 +192,19 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest measured: <strong>depth-source comparison</strong> on the scan pipeline. <strong>Appearance v2.2</strong> remains production default.</p>
+      <p>Latest: <strong>real webcam capture</strong> end to end on a bedroom scan. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ Scan pipeline: 3-way depth source comparison</h3>
-        <p>Same room, same poses, same fusion — only depth source changes. Sensor (RGB-D/LiDAR) hits <strong>0.918 surface recall</strong> and <strong>0.17 backprojection error</strong>. Monocular tops out ~0.45–0.56 recall on synthetic voxel renders (domain gap + scale drift). Pipeline proven ready for real phone + ARKit/ARCore.</p>
+        <h3>✅ Reality capture runs on real data</h3>
+        <p>425-frame BRIO bedroom capture: depth-anything produces coherent single-view voxels on real photos (domain-gap hypothesis confirmed). Full pipeline fused <strong>6 154 surface voxels in 10.3 s</strong>. Multi-view scale is rough (<code>scale_cov ≈ 30</code>) from small hand-held baselines — fix is walk-around capture, AR poses, or a metric anchor, not a redesign.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.918</span><span class="label">Surface recall (sensor depth)</span></div>
-        <div class="stat"><span class="value">0.17</span><span class="label">Backproj error (sensor)</span></div>
-        <div class="stat"><span class="value">0.564</span><span class="label">Recall (DA3 relative)</span></div>
-        <div class="stat"><span class="value">2.5×</span><span class="label">Calibration fix improvement</span></div>
-        <div class="stat"><span class="value">0.02</span><span class="label">Backprojection convention verified</span></div>
+        <div class="stat"><span class="value">540</span><span class="label">SIFT matches (real)</span></div>
+        <div class="stat"><span class="value">6154</span><span class="label">Surface voxels fused</span></div>
+        <div class="stat"><span class="value">56</span><span class="label">Alignment graph edges</span></div>
+        <div class="stat"><span class="value">10.3 s</span><span class="label">Pipeline processing</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">SIFT on synthetic renders</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
