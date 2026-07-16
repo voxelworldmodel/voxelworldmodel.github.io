@@ -77,6 +77,14 @@
         </figure>
       </div>
 
+      <h3>Experimental: AI Photoreal Upscale from Voxel Data</h3>
+      <p>As a qualitative experiment, the voxel reconstruction was passed through a generative image model to upscale it back toward a photoreal frame. The result looks convincing, but it is <strong>not a measurement</strong> and should be read with care: wherever the scan had thin evidence, the model is guessing.</p>
+
+      <figure class="figure figure-tall">
+        <img src="real_video_ai_upscale.png" alt="AI-upscaled photoreal render generated from the voxel reconstruction of the hallway, showing laundry area, trash can, tiled floor, and hallway.">
+        <figcaption><strong>Generative upscale of the voxel reconstruction (experimental).</strong> A generative model renders the reconstructed scene back to photoreal quality. Nearby, well-scanned surfaces (trash can, countertop, tile floor) track the real room closely. Distant regions were mostly single-view with weak depth evidence, so details there (the far room, appliances, wall items) may be <strong>hallucinated</strong> rather than reconstructed. This is presentation-layer speculation on top of the world, not part of the measured pipeline; VWM's own geometry-gated appearance compiler exists precisely to prevent this class of hallucination from entering the authoritative world.</figcaption>
+      </figure>
+
       <h3>Measured Results</h3>
       <table class="benchmark">
         <thead>
