@@ -100,6 +100,11 @@
         <div class="bench-note">Same pipeline, better capture motion. Forward-walking phone baselines fixed what tiny webcam baselines could not; the gauge-fix bug (negative aligned depth) was also found and fixed in this run.</div>
       </div>
 
+      <figure class="figure figure-accent figure-tall">
+        <img src="real_video_sidebyside.png" alt="Three keyframes showing original phone frame beside reconstructed voxel render from the same recovered pose.">
+        <figcaption><strong>The reprojection benchmark, visually.</strong> Each pair: real frame (left) vs reconstruction rendered from the same recovered pose (right). This is the source of the L1 0.076 / coverage 0.99 numbers above.</figcaption>
+      </figure>
+
       <div class="bench-panel">
         <div class="bench-panel-head">Full pipeline run (<code>reconstruction_report.json</code>)</div>
         <table class="bench-table benchmark">

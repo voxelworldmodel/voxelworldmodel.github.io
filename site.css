@@ -494,6 +494,21 @@ td:first-child {
     calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow-deep);
 }
 
+.figure-tall {
+  max-width: 420px;
+}
+
+.figure-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem var(--voxel-step) 2rem 0;
+}
+
+.figure-row .figure {
+  margin: 0;
+}
+
 footer {
   border-top: 1px solid var(--border);
   padding-top: 2rem;

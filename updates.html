@@ -49,8 +49,33 @@
         <div class="stat"><span class="value">13.7 s</span><span class="label">Processing (excl. world build)</span></div>
       </div>
 
+      <figure class="figure figure-accent figure-tall">
+        <img src="real_video_sidebyside.png" alt="Three keyframes of the real home walkthrough, each showing the original phone frame on the left and the reconstructed voxel render from the same recovered pose on the right.">
+        <figcaption><strong>Original vs reconstruction, same recovered poses.</strong> Left of each pair: real phone frame. Right: reconstructed voxels rendered from that keyframe's SfM pose. Trash can, stone floor, wood door, and countertop are recognisable; measured photometric L1 0.076 at 99% coverage.</figcaption>
+      </figure>
+
       <h3>Pipeline (All Real)</h3>
       <p>video → 155 frames @ 8 fps → 24 keyframes → visual SfM (OpenCV SIFT + essential + incremental PnP) → Depth Anything per keyframe → global depth-alignment graph (SIFT correspondences + two-view triangulation → robust per-frame scale/shift) → voxel fusion (occupancy + confidence + provenance) → semantic component proposals → persistent voxel-world data + observed-appearance atlas → all visualisations + reprojection metrics.</p>
+
+      <figure class="figure">
+        <img src="real_video_contact_sheet.png" alt="Contact sheet of the reconstruction pipeline stages: original frame, depth map, camera trajectory, point cloud, HAV voxels, components, and voxel novel views.">
+        <figcaption><strong>Pipeline contact sheet.</strong> Every stage of the run on real footage: original frame, Depth Anything depth, recovered camera trajectory (top-down), fused point cloud, HAV voxels, component proposals, and voxel novel views.</figcaption>
+      </figure>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="real_video_depth.png" alt="Depth Anything depth map of the hallway keyframe, hallway receding correctly into the distance.">
+          <figcaption><strong>Depth Anything on a real keyframe.</strong> Hallway recedes correctly.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_trajectory.png" alt="Top-down plot of the recovered camera trajectory through the home.">
+          <figcaption><strong>Recovered SfM trajectory</strong> (top-down), 24 keyframes, 0 lost.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_voxels.png" alt="Novel view of the reconstructed voxel world with real captured colors.">
+          <figcaption><strong>Voxel novel view</strong> with observed real color attached.</figcaption>
+        </figure>
+      </div>
 
       <h3>Measured Results</h3>
       <table class="benchmark">
