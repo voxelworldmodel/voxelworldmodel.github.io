@@ -50,7 +50,7 @@
         <div class="bench-chip"><span class="chip-label">Coverage</span><span class="chip-value">0.99</span></div>
         <div class="bench-chip"><span class="chip-label">SfM tracked</span><span class="chip-value">24/24</span></div>
         <div class="bench-chip"><span class="chip-label">Scale CoV</span><span class="chip-value">0.576</span></div>
-        <div class="bench-chip"><span class="chip-label">Surface voxels</span><span class="chip-value">137.7k</span></div>
+        <div class="bench-chip"><span class="chip-label">HAV leaves</span><span class="chip-value">38.3k</span></div>
         <div class="bench-chip"><span class="chip-label">Processing</span><span class="chip-value">13.7 s</span></div>
       </div>
 
@@ -97,7 +97,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="bench-note">Same pipeline, better capture motion. Forward-walking phone baselines fixed what tiny webcam baselines could not; the gauge-fix bug (negative aligned depth) was also found and fixed in this run.</div>
+        <div class="bench-note">Same pipeline, better capture motion. Forward walking fixed what tiny webcam baselines could not. Three bugs fixed in this run: gauge-normalisation (negative depth), NumPy 2.x <code>.ptp()</code>, and a slow per-voxel render loop (vectorised).</div>
       </div>
 
       <figure class="figure figure-accent figure-tall">
@@ -121,7 +121,34 @@
             <tr><td class="metric" data-label="Stage">Components</td><td data-label="Metric">Proposed (connected-component)</td><td class="num" data-label="Value">9</td></tr>
             <tr><td class="metric" data-label="Stage">Reprojection</td><td data-label="Metric">Photometric L1 vs original frames</td><td class="num winner" data-label="Value">0.076</td></tr>
             <tr><td class="metric" data-label="Stage">Reprojection</td><td data-label="Metric">Coverage</td><td class="num winner" data-label="Value">0.99</td></tr>
-            <tr><td class="metric" data-label="Stage">Runtime</td><td data-label="Metric">Processing (excl. world build)</td><td class="num winner" data-label="Value">13.7 s</td></tr>
+            <tr><td class="metric" data-label="Stage">Persistent world</td><td data-label="Metric">HAV leaves materialized</td><td class="num winner" data-label="Value">38 284</td></tr>
+            <tr><td class="metric" data-label="Stage">Runtime</td><td data-label="Metric">Reconstruction processing</td><td class="num winner" data-label="Value">13.7 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Bugs fixed in this run</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Bug</th><th>Symptom</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Bug">Gauge normalisation</td>
+              <td class="num loser" data-label="Symptom">Aligned depth went negative</td>
+              <td data-label="Fix">SfM poses define scale; no gauge normalisation</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Bug">NumPy 2.x <code>.ptp()</code></td>
+              <td class="num loser" data-label="Symptom">API break under NumPy 2</td>
+              <td data-label="Fix">Replaced with portable range call</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Bug">Per-voxel render loop</td>
+              <td class="num loser" data-label="Symptom">Slow novel-view / reprojection path</td>
+              <td data-label="Fix">Vectorised render path</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -144,19 +171,19 @@
               <td data-label="Fix">Metric anchor or AR poses</td>
             </tr>
             <tr>
+              <td class="metric" data-label="Weakness">HAV materialization cliff</td>
+              <td class="num loser" data-label="Measured">fills stall on large SfM span; in-process deadlock</td>
+              <td data-label="Fix">Separate process; reopen from <code>voxel_grid.npz</code></td>
+            </tr>
+            <tr>
               <td class="metric" data-label="Weakness">No free-space carving</td>
               <td class="num na" data-label="Measured">disabled for speed</td>
-              <td data-label="Fix">Re-enable, vectorised</td>
+              <td data-label="Fix">Re-enable + TSDF fusion</td>
             </tr>
             <tr>
               <td class="metric" data-label="Weakness">Weak component labels</td>
               <td class="num" data-label="Measured">extent-ratio heuristic, conf 0.4</td>
               <td data-label="Fix">Real semantic segmenter</td>
-            </tr>
-            <tr>
-              <td class="metric" data-label="Weakness">In-process world build deadlock</td>
-              <td class="num na" data-label="Measured">worked around</td>
-              <td data-label="Fix">Separate process (<code>vwm_build_world.py</code>)</td>
             </tr>
           </tbody>
         </table>

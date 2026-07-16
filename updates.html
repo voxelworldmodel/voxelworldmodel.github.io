@@ -45,8 +45,8 @@
         <div class="stat"><span class="value">0.99</span><span class="label">Reprojection coverage</span></div>
         <div class="stat"><span class="value">24 / 24</span><span class="label">SfM frames tracked (0 lost)</span></div>
         <div class="stat"><span class="value">0.576</span><span class="label">Scale CoV (was ~30 on webcam)</span></div>
-        <div class="stat"><span class="value">137 685</span><span class="label">Surface voxels</span></div>
-        <div class="stat"><span class="value">13.7 s</span><span class="label">Processing (excl. world build)</span></div>
+        <div class="stat"><span class="value">38 284</span><span class="label">HAV leaves (persistent world)</span></div>
+        <div class="stat"><span class="value">13.7 s</span><span class="label">Reconstruction processing</span></div>
       </div>
 
       <figure class="figure figure-accent figure-tall">
@@ -92,24 +92,28 @@
           <tr><td data-label="Stage">Components</td><td data-label="Metric">Proposed (connected-component)</td><td data-label="Value">9</td></tr>
           <tr><td data-label="Stage" class="ok">Reprojection</td><td data-label="Metric" class="ok">Photometric L1 (recon vs original)</td><td data-label="Value" class="ok"><strong>0.076</strong></td></tr>
           <tr><td data-label="Stage" class="ok">Reprojection</td><td data-label="Metric" class="ok">Coverage</td><td data-label="Value" class="ok"><strong>0.99</strong></td></tr>
+          <tr><td data-label="Stage" class="ok">Persistent world</td><td data-label="Metric" class="ok">HAV leaves materialized</td><td data-label="Value" class="ok"><strong>38 284</strong> (reopenable via npz)</td></tr>
+          <tr><td data-label="Stage">Runtime</td><td data-label="Metric">Reconstruction processing</td><td data-label="Value">13.7 s</td></tr>
         </tbody>
       </table>
 
       <h3>What Succeeded</h3>
       <ul>
-        <li><strong>This capture works where the webcam didn't.</strong> Forward-walking phone motion gives real baselines: SfM tracked all 24 frames (confidence 0.897) and the depth-alignment graph brought cross-frame scale CoV to 0.576 (vs the webcam's ~30). A gauge-fix bug (aligned depth going negative) was found and fixed; the SfM poses define the scale, so no gauge normalisation.</li>
+        <li><strong>This capture works where the webcam didn't.</strong> Forward walking gives real baselines: SfM tracked all 24 frames (confidence 0.897) and the depth-alignment graph brought scale drift from CoV ~30 down to 0.576.</li>
+        <li><strong>Three real bugs found and fixed along the way:</strong> a gauge-normalisation bug that drove aligned depth negative; a NumPy 2.x <code>.ptp()</code> break; and a slow per-voxel render loop (vectorised).</li>
         <li><strong>depth-anything on real imagery is clean</strong> (confirmed again): sharp depth maps, hallway receding correctly.</li>
-        <li><strong>End-to-end reconstruction with real appearance:</strong> colored point cloud, voxel reconstruction, novel views, and a same-pose reprojection that matches the originals.</li>
-        <li><strong>All requested artifacts exported:</strong> <code>artifacts/</code> (keyframes, aligned_depth.npz, fused_cloud.ply, voxel_world.npz, trajectory.jsonl), <code>viz/</code> (depth maps, trajectory, point cloud ×3 views, voxels ×3 views, components, side-by-side, contact sheet), <code>reconstruction_report.json</code>.</li>
+        <li><strong>End-to-end reconstruction with real appearance:</strong> colored point cloud, voxel reconstruction, novel views, and a same-pose reprojection that matches the originals (trash can, stone tile floor, wood door, hallway).</li>
+        <li><strong>Persistent world materialized:</strong> reconstruction written into HAV with <strong>38 284 leaves</strong>; full data reopenable via npz.</li>
+        <li><strong>All artifacts exported:</strong> <code>artifacts/</code> (keyframes, aligned_depth.npz, fused_cloud.ply, voxel_world.npz, trajectory.jsonl), <code>viz/</code> (depth, trajectory, point cloud ×3, voxels ×3, components, side-by-side, contact sheet), <code>reconstruction_report.json</code>, <code>RECONSTRUCTION_REPORT.md</code>.</li>
       </ul>
 
       <h3>What Failed or Is Weak (Honest)</h3>
       <ul>
-        <li><strong>Mostly single-view voxels</strong> (137 374 provisional vs 311 confirmed, mean 1.0 views/voxel). Forward walking down a hallway means each surface is seen briefly, so little multi-view confirmation: the geometry is a fan of thin shells, not thick confirmed surfaces. An orbit or back-and-forth capture would raise confirmation.</li>
-        <li><strong>Scale CoV 0.576 is still non-trivial.</strong> The alignment reduces but does not eliminate per-frame scale drift with relative monocular depth + monocular SfM scale. A metric anchor (known door width) or ARKit/ARCore poses would tighten it.</li>
-        <li><strong>No free-space carving</strong> in this run (disabled for speed), so no explicit occupied/free/unknown separation this pass.</li>
+        <li><strong>Mostly single-view voxels</strong> (137 374 provisional vs 311 confirmed, mean 1.0 views/voxel). Forward walking down a hallway means each surface is glimpsed briefly, so little multi-view confirmation: the geometry is thin fan-shells rather than thick confirmed surfaces.</li>
+        <li><strong>Scale CoV 0.576 is reduced but still non-trivial.</strong> Relative monocular depth + monocular SfM scale still drift; a metric anchor (known door width) or AR poses would tighten it.</li>
+        <li><strong>HAV materialization hit a real performance cliff</strong> with the dense / large-span voxel set (fills stall across the large SfM span). <code>VoxelWorld.create</code> also deadlocked against OpenCV / depth-anything under detached stdin. Worked around with a separate foreground process (<code>tools/vwm_build_world.py</code>), but the full-density live world is not materialized in-process — it is reopenable from <code>voxel_grid.npz</code>.</li>
+        <li><strong>No free-space carving</strong> in this run (disabled for speed), so no explicit occupied / free / unknown separation this pass.</li>
         <li><strong>Component labels are weak heuristics</strong> (extent-ratio → wall/floor/object at confidence 0.4), not a real semantic segmenter.</li>
-        <li><strong>Persistent VoxelWorld build runs as a separate clean process</strong> (<code>tools/vwm_build_world.py</code>) because building it in-process deadlocked against the OpenCV/depth-anything backend threads. A real integration wrinkle, worked around.</li>
       </ul>
 
       <h3>Not Done</h3>
@@ -118,13 +122,12 @@
       <h3>Next Improvements (Highest Leverage First)</h3>
       <ol>
         <li><strong>Capture motion:</strong> a slow orbit / back-and-forth (not just forward) → multi-view confirmation → thick confirmed surfaces, higher IoU.</li>
-        <li><strong>A metric anchor or AR poses</strong> → resolve residual scale drift, metric world.</li>
-        <li><strong>Re-enable free-space carving</strong> (vectorised) → occupied/free/unknown.</li>
-        <li><strong>TSDF-style fusion</strong> instead of point-splat voxels → watertight surfaces.</li>
+        <li><strong>A metric anchor</strong> (known door width) or AR poses → resolve residual scale drift → metric world.</li>
+        <li><strong>TSDF-style fusion + re-enabled carving</strong> → watertight surfaces and proper free / unknown space.</li>
       </ol>
 
       <div class="highlight">
-        <p><strong>Bottom line:</strong> The prediction from the webcam milestone held: give the same pipeline real baselines and it reconstructs a real home recognisably from its own recovered poses (L1 0.076 at 99% coverage). Remaining gaps are capture motion and metric anchoring, not architecture.</p>
+        <p><strong>Bottom line:</strong> The core thesis is proven on real data — real pixels placed on real solved surfaces, reprojecting to the originals (L1 0.076 at 99% coverage). The gaps now are capture geometry (orbit vs walk) and the HAV-scale engineering wrinkle, not the perception pipeline.</p>
       </div>
 
       <p class="footnote">Full write-up: <code>checkpoints/vwm_scan/real2/full/RECONSTRUCTION_REPORT.md</code>. Source: <code>video_2026-07-16_13-09-43.mp4</code>.</p>
