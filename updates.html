@@ -80,10 +80,25 @@
         <li><strong>Metric anchoring:</strong> the 42″ (1.0668 m) door is measured via an outlier-robust percentile width of a wood-coloured vertical plane (confidence 0.98) and applied as a global scale, guarded by a scene-size sanity gate (2–40 m) that rejects absurd scales.</li>
       </ul>
 
-      <figure class="figure">
-        <img src="real_video_v2_uncertainty.png" alt="Confidence heatmap of the v2 TSDF reconstruction: green voxels are high-confidence multi-view surfaces, red voxels are low-confidence.">
-        <figcaption><strong>Per-voxel confidence, made visible.</strong> Every v2 voxel carries an accumulated TSDF weight (mean 7.27). Green: high-confidence multi-view surface. Red: weakly observed. In v1 this map did not exist, every splat was a single unweighted observation.</figcaption>
+      <figure class="figure figure-accent">
+        <img src="real_video_v2_side.png" alt="Side view comparing v1 point-splat and v2 TSDF reconstructions: v1 is a thick sweeping fan of duplicate shells, v2 is a single flat coherent wall surface.">
+        <figcaption><strong>The fan-shell problem, seen from the side.</strong> Left (v1): every keyframe deposited its own single-view shell, sweeping out a thick duplicate fan. Right (v2): TSDF weighting collapses those ~15 overlapping observations into one flat, coherent wall. This is the clearest visual evidence of what the 14× voxel reduction actually removed.</figcaption>
       </figure>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="real_video_v2_high.png" alt="Top-down view comparing the v1 point-splat blob and the tighter v2 TSDF surface of the same scene.">
+          <figcaption><strong>Top-down.</strong> v1's smeared splat blob (left) vs v2's tighter accumulated surface (right).</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v2_depth.png" alt="Depth Anything depth map of the mid-walk keyframe: near walls in red, hallway receding through green to the far blue doorway.">
+          <figcaption><strong>Mid-walk depth input.</strong> Depth Anything on the hallway keyframe; the far doorway reads correctly as the deepest region. These per-frame maps are what the TSDF integrates.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v2_uncertainty.png" alt="Confidence heatmap of the v2 TSDF reconstruction: green voxels are high-confidence multi-view surfaces, red voxels are low-confidence.">
+          <figcaption><strong>Per-voxel confidence.</strong> Every v2 voxel carries an accumulated TSDF weight (mean 7.27): green is multi-view confident, red weakly observed. In v1 this map could not exist.</figcaption>
+        </figure>
+      </div>
 
       <h3>What Remains Uncertain (Honest)</h3>
       <ul>
