@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v2">Latest: TSDF v2</a>
+        <a href="#capture-v3">Latest: Hollow v3</a>
+        <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video reconstruction</a>
         <a href="#real-capture">Webcam capture</a>
         <a href="#depth-scan">Depth scan</a>
@@ -27,6 +28,80 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v3">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Proven, not asserted</span>
+      </div>
+      <h2>Reality-Capture v3, Hollow Interior + Live World Import</h2>
+      <p>Same canonical phone video, same authoritative pipeline order, now extended with an explicit <strong>occupancy stage</strong> (FREE / SURFACE / OCCUPIED / UNKNOWN), a free-space connectivity graph, and a working import into the live authoritative VoxelWorld. The central rule of this milestone — <em>a room is free space bounded by voxelized matter</em> — is achieved and <strong>proven, not asserted</strong>.</p>
+
+      <div class="status-banner">
+        <h3>✅ Verdict: HOLLOW</h3>
+        <p>The reconstructed hallway interior is connected FREE space bounded by SURFACE/OCCUPIED matter. Every camera pose sits in FREE air (<strong>centreline free fraction 1.0</strong>), a flood-fill from the camera reaches <strong>99.2%</strong> of free space as <strong>one connected walkable region</strong> (4 810 voxels — the hallway), and there are <strong>0 floating solid voxels</strong>: no false-occupied air anywhere.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">1.0</span><span class="label">Camera-centreline FREE fraction</span></div>
+        <div class="stat"><span class="value">99.2%</span><span class="label">Free space reached by flood-fill</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">False-occupied air voxels</span></div>
+        <div class="stat"><span class="value">15 177</span><span class="label">HAV leaves imported live (9.9 s)</span></div>
+        <div class="stat"><span class="value">4 810</span><span class="label">Voxels in walkable region</span></div>
+        <div class="stat"><span class="value">✓</span><span class="label">Spawn point in confirmed FREE air</span></div>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure figure-accent figure-pixel">
+          <img src="real_video_v3_floodfill.png" alt="Occupancy slice of the reconstructed hallway: green flood-filled free interior bounded by tan matter voxels.">
+          <figcaption><strong>The hollow rule, in one slice.</strong> Green: connected FREE interior reached by flood-fill from the camera. Tan: SURFACE/OCCUPIED matter bounding it. The room is carved air inside a matter shell, not a solid block.</figcaption>
+        </figure>
+        <figure class="figure figure-pixel">
+          <img src="real_video_v3_side.png" alt="Side occupancy slice through the reconstructed volume showing the thin matter shell, the interior, and surrounding unobserved space.">
+          <figcaption><strong>Side occupancy slice.</strong> Matter is a thin shell with bounded inferred thickness; unobserved space stays UNKNOWN, never filled solid.</figcaption>
+        </figure>
+      </div>
+
+      <h3>Proven (Measured)</h3>
+      <ul>
+        <li><strong>Occupancy classification of the TSDF volume:</strong> SURFACE 8 047 + OCCUPIED(inferred) 2 716 = matter, thin shells rather than solid blocks; FREE 4 850 carved air; UNKNOWN 29 387 unobserved and never filled solid.</li>
+        <li><strong>Hollow-space validation</strong> (<code>hollow_space_validation.json</code>): camera-centreline FREE fraction 1.0, flood-fill reaches 99.2% of free space as one connected region, 0 floating solid voxels.</li>
+        <li><strong>Bounded, provenance-tagged wall thickness:</strong> 2 716 voxels extruded ≤2 voxels behind surfaces, only into UNKNOWN, never into FREE, and labelled inferred rather than observed. No filled hallways, no giant slabs.</li>
+        <li><strong>Free-space connectivity graph</strong> (<code>free_space_graph.json</code>): one navigable component of 4 810 voxels — the walkable hallway — with a clearance (distance-to-surface) field computed.</li>
+        <li><strong>Live authoritative VoxelWorld import is operational.</strong> The previous HAV stall is fixed: 10 763 SURFACE+OCCUPIED voxels → <strong>15 177 HAV leaves in 9.9 s</strong> (1 090 fills/s). The fix was structural, not a tweak: TSDF yields a compact shell over a ~31³ span, versus v1's 137k splats over a 1 000-unit span. The world is native VoxelWorld/HAV state now, not just an NPZ.</li>
+        <li><strong>Free-space spawn:</strong> a spawn voxel in confirmed FREE space is exported, so the player materializes in air, not inside a wall.</li>
+      </ul>
+
+      <h3>v1 → v2 → v3</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v1 point-splat</th><th>v2 TSDF</th><th>v3 hollow</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric">Reprojection L1</td><td data-label="v1">0.0757</td><td data-label="v2">0.0543</td><td data-label="v3">0.0543 (same surfaces)</td></tr>
+          <tr><td data-label="Metric">Surface voxels</td><td data-label="v1">137 685</td><td data-label="v2">9 612</td><td data-label="v3">8 047</td></tr>
+          <tr><td data-label="Metric">FREE / OCC / UNKNOWN</td><td data-label="v1">none</td><td data-label="v2">4 416 / 9 612 / 24 283</td><td data-label="v3" class="ok"><strong>4 850 / 10 763 / 29 387</strong></td></tr>
+          <tr><td data-label="Metric">Hallway interior</td><td data-label="v1">solid shells</td><td data-label="v2">unvalidated</td><td data-label="v3" class="ok"><strong>HOLLOW</strong> (centreline free 1.0)</td></tr>
+          <tr><td data-label="Metric">False-occupied air</td><td data-label="v1">—</td><td data-label="v2">—</td><td data-label="v3" class="ok"><strong>0</strong></td></tr>
+          <tr><td data-label="Metric">Free connectivity</td><td data-label="v1">—</td><td data-label="v2">—</td><td data-label="v3" class="ok"><strong>0.992</strong> (1 region)</td></tr>
+          <tr><td data-label="Metric">Live VoxelWorld import</td><td data-label="v1" class="bad">stalled</td><td data-label="v2">not attempted</td><td data-label="v3" class="ok"><strong>10 763 vox / 15 177 leaves / 9.9 s</strong></td></tr>
+          <tr><td data-label="Metric">Spawn in free space</td><td data-label="v1">no</td><td data-label="v2">no</td><td data-label="v3" class="ok"><strong>yes</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Partial / Not Done (Honest)</h3>
+      <ul>
+        <li><strong>Live Luanti client walkthrough — not run.</strong> The free-space spawn, flood-fill proof, and walkable free-space graph establish that a player <em>would</em> spawn in air and traverse connected free space, but the interactive in-client walk with framebuffer capture needs a human session. The world is imported and ready.</li>
+        <li><strong>Restart persistence / export-import round-trip</strong> — not run this pass.</li>
+        <li><strong>Held-out real-view appearance validation, exposure normalisation, view-dependent appearance</strong> — not this pass.</li>
+        <li><strong>Explicit portals and multi-room segmentation:</strong> the free-space graph is built and is a single hallway region here; portal extraction and multi-room splitting are not emitted.</li>
+        <li><strong>Absolute metric scale stays best-effort</strong> (~2 m scene) from the compressed monocular cloud; relative geometry and hollowness are solid, absolute scale approximate.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The reconstructed world now obeys the hollow rule — free interior, matter boundary, zero false-occupied air — and imports into the live authoritative VoxelWorld with a valid free-space spawn. The remaining items are interactive (the Luanti walk) or iterative (appearance refinement, true metric scale), not blocked by the model; the single biggest lever is still a richer capture (orbit / AR poses). Full write-up in <code>checkpoints/vwm_scan/real2/v3/V3_REPORT.md</code>; reports in <code>hollow_space_validation.json</code>, <code>live_import_report.json</code>, <code>comparison_v1_v2_v3.json</code>. New module <code>vwm.occupancy</code>; all imports clean.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v2">
       <div class="update-meta">

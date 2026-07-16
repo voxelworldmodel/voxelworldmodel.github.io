@@ -455,6 +455,10 @@ td:first-child {
 .pending { color: var(--warn); }
 .bad { color: var(--warn); }
 
+.figure-pixel img {
+  image-rendering: pixelated;
+}
+
 .footnote {
   font-size: 0.88rem;
   color: #737373;

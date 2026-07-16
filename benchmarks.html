@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video</a>
         <a href="#real-capture">Webcam capture</a>
@@ -36,6 +37,119 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── reality-capture v3 (hollow + live import) ─────────────── -->
+    <section class="bench-milestone" id="capture-v3">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Proven, not asserted</span>
+      </div>
+      <h2>Reality-Capture v3, Hollow Interior + Live Import</h2>
+      <p>Same canonical video, pipeline extended with an occupancy stage (FREE / SURFACE / OCCUPIED / UNKNOWN), a free-space connectivity graph, and a working live VoxelWorld/HAV import. The rule <em>a room is free space bounded by voxelized matter</em> is measured, not asserted.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Verdict</span><span class="chip-value">HOLLOW</span></div>
+        <div class="bench-chip"><span class="chip-label">Centreline free</span><span class="chip-value">1.0</span></div>
+        <div class="bench-chip"><span class="chip-label">Flood-fill reach</span><span class="chip-value">99.2%</span></div>
+        <div class="bench-chip"><span class="chip-label">False-occ air</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">HAV import</span><span class="chip-value">9.9 s</span></div>
+        <div class="bench-chip"><span class="chip-label">Free spawn</span><span class="chip-value">yes</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">v1 → v2 → v3, same canonical video</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>v1 point-splat</th>
+              <th>v2 TSDF</th>
+              <th>v3 hollow</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Reprojection L1</td>
+              <td class="num loser" data-label="v1">0.0757</td>
+              <td class="num" data-label="v2">0.0543</td>
+              <td class="num winner" data-label="v3">0.0543 (same surfaces)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Surface voxels</td>
+              <td class="num loser" data-label="v1">137 685</td>
+              <td class="num" data-label="v2">9 612</td>
+              <td class="num winner" data-label="v3">8 047 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">FREE / OCC / UNKNOWN</td>
+              <td class="num na" data-label="v1">none</td>
+              <td class="num" data-label="v2">4 416 / 9 612 / 24 283</td>
+              <td class="num winner" data-label="v3">4 850 / 10 763 / 29 387</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Hallway interior</td>
+              <td class="num loser" data-label="v1">solid shells</td>
+              <td class="num na" data-label="v2">unvalidated</td>
+              <td class="num winner" data-label="v3">HOLLOW, centreline free 1.0</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">False-occupied air</td>
+              <td class="num na" data-label="v1">—</td>
+              <td class="num na" data-label="v2">—</td>
+              <td class="num winner" data-label="v3">0</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Free connectivity</td>
+              <td class="num na" data-label="v1">—</td>
+              <td class="num na" data-label="v2">—</td>
+              <td class="num winner" data-label="v3">0.992 (1 region)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Live VoxelWorld import</td>
+              <td class="num loser" data-label="v1">stalled</td>
+              <td class="num na" data-label="v2">not attempted</td>
+              <td class="num winner" data-label="v3">10 763 vox / 15 177 leaves / 9.9 s <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Spawn in free space</td>
+              <td class="num loser" data-label="v1">no</td>
+              <td class="num loser" data-label="v2">no</td>
+              <td class="num winner" data-label="v3">yes <span class="trend trend-good">▲</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">The HAV stall fix was structural, not a tweak: TSDF yields a compact shell over a ~31³ span versus v1's 137k splats over a 1 000-unit span, so live import now runs at 1 090 fills/s. Wall thickness (2 716 inferred voxels) extrudes ≤2 voxels behind surfaces, only into UNKNOWN, never into FREE, and is provenance-tagged as inferred.</div>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure figure-accent figure-pixel">
+          <img src="real_video_v3_floodfill.png" alt="Occupancy slice: green flood-filled free interior bounded by tan matter voxels.">
+          <figcaption><strong>Flood-fill proof.</strong> Green FREE interior (99.2% reached from the camera, one region) bounded by tan matter.</figcaption>
+        </figure>
+        <figure class="figure figure-pixel">
+          <img src="real_video_v3_side.png" alt="Side occupancy slice showing the thin matter shell and unobserved space left unknown.">
+          <figcaption><strong>Side slice.</strong> Thin matter shell with bounded inferred thickness; unseen space stays UNKNOWN.</figcaption>
+        </figure>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Not run this pass (honest)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Item</th><th>Status</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Item">Live Luanti client walkthrough</td><td class="num na" data-label="Status">not run</td><td data-label="Note">Needs interactive human session; world imported with free-space spawn, ready</td></tr>
+            <tr><td class="metric" data-label="Item">Restart persistence round-trip</td><td class="num na" data-label="Status">not run</td><td data-label="Note">Export-import round-trip deferred</td></tr>
+            <tr><td class="metric" data-label="Item">Held-out appearance / exposure norm</td><td class="num na" data-label="Status">not this pass</td><td data-label="Note">Iterative refinement, not blocked by the model</td></tr>
+            <tr><td class="metric" data-label="Item">Portals / multi-room segmentation</td><td class="num na" data-label="Status">not emitted</td><td data-label="Note">Free-space graph exists; this capture is a single hallway region</td></tr>
+            <tr><td class="metric" data-label="Item">Absolute metric scale</td><td class="num loser" data-label="Status">best-effort (~2 m)</td><td data-label="Note">Compressed monocular cloud; richer capture (orbit / AR poses) is the lever</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v3">Read full v3 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── reality-capture v2 (TSDF) ─────────────── -->
     <section class="bench-milestone" id="capture-v2">

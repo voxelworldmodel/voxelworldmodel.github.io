@@ -192,26 +192,32 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>Reality-Capture v2, true TSDF volumetric fusion</strong> on the same real phone walkthrough. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>Reality-Capture v3, hollow interior proven + live VoxelWorld import</strong> on the same real phone walkthrough. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ TSDF fusion: 14× fewer voxels, 28% better reprojection</h3>
-        <p>Point-splat fusion replaced with true TSDF volumetric fusion on the same canonical video: <strong>~15 observations accumulated per voxel</strong> merged 137k noisy splats into <strong>9 612 confident voxels</strong> that reproject at <strong>L1 0.0543 (−28%)</strong>. Free-space carving classifies every voxel occupied / free / unknown, watertightness reaches <strong>0.99</strong>, 8 RANSAC planes get wall/floor/ceiling labels, and a 42″-door anchor gives a best-effort metric scale.</p>
+        <h3>✅ The hallway is hollow — and imported into the live world</h3>
+        <p>The central rule — <em>a room is free space bounded by voxelized matter</em> — is now measured: every camera pose sits in FREE air (centreline free fraction <strong>1.0</strong>), flood-fill reaches <strong>99.2%</strong> of free space as one connected walkable region, and there are <strong>0 false-occupied air voxels</strong>. The previous HAV stall is fixed: <strong>10 763 voxels imported as 15 177 HAV leaves in 9.9 s</strong>, with a spawn point in confirmed FREE air.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.0543</span><span class="label">Reprojection L1 (−28% vs v1)</span></div>
-        <div class="stat"><span class="value">15.2</span><span class="label">Observations / voxel (was 1.0)</span></div>
-        <div class="stat"><span class="value">0.99</span><span class="label">Watertightness (backed fraction)</span></div>
-        <div class="stat"><span class="value">9 612</span><span class="label">Surface voxels (14× fewer)</span></div>
-        <div class="stat"><span class="value">8</span><span class="label">RANSAC planes labelled</span></div>
+        <div class="stat"><span class="value">1.0</span><span class="label">Camera-centreline FREE fraction</span></div>
+        <div class="stat"><span class="value">99.2%</span><span class="label">Free space reached by flood-fill</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">False-occupied air voxels</span></div>
+        <div class="stat"><span class="value">15 177</span><span class="label">HAV leaves imported live (9.9 s)</span></div>
+        <div class="stat"><span class="value">0.0543</span><span class="label">Reprojection L1 (from v2 TSDF)</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
-      <figure class="figure">
-        <img src="real_video_v2_compare.png" alt="Side-by-side comparison of the v1 point-splat reconstruction and the v2 TSDF reconstruction of the same hallway view.">
-        <figcaption><strong>v1 point-splat vs v2 TSDF, same video, same view.</strong> Left: 137k single-view splats stacked into fan shells. Right: 9.6k TSDF voxels averaging ~15 views each — sparser on screen but geometrically truer, with reprojection improving 28% anyway.</figcaption>
-      </figure>
+      <div class="figure-row">
+        <figure class="figure figure-pixel">
+          <img src="real_video_v3_floodfill.png" alt="Occupancy slice of the reconstructed hallway: green flood-filled free interior bounded by tan matter voxels.">
+          <figcaption><strong>The hollow rule, measured.</strong> Green: connected FREE interior. Tan: bounding matter. Carved air inside a shell, not a solid block.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v2_compare.png" alt="Side-by-side comparison of the v1 point-splat reconstruction and the v2 TSDF reconstruction of the same hallway view.">
+          <figcaption><strong>v1 point-splat vs v2 TSDF.</strong> 137k single-view splats (left) merged into 9.6k accumulated voxels (right), reprojection improving 28%.</figcaption>
+        </figure>
+      </div>
 
       <p>Full milestone reports and benchmark tables:</p>
       <a class="cta-link" href="paper.html">Technical paper →</a>
