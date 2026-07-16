@@ -14,7 +14,8 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
-        <a href="#real-capture">Real capture</a>
+        <a href="#real-video">Real video</a>
+        <a href="#real-capture">Webcam capture</a>
         <a href="#depth-compare">Depth scan</a>
         <a href="#v23-memory">v2.3 memory fix</a>
         <a href="#v23-compare">v2.2 vs v2.3</a>
@@ -27,13 +28,137 @@
     </header>
 
     <div class="bench-compare-legend">
-      <span><span class="dot dot-real"></span> Real capture (BRIO bedroom)</span>
+      <span><span class="dot dot-real"></span> Real capture (phone / webcam)</span>
       <span><span class="dot dot-sensor"></span> Sensor (controlled ground truth)</span>
       <span><span class="dot dot-v22"></span> v2.2 (production default)</span>
       <span><span class="dot dot-v23"></span> v2.3 continue (not promoted)</span>
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── real video reconstruction ─────────────── -->
+    <section class="bench-milestone" id="real-video">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">End to end, measured</span>
+      </div>
+      <h2>Real-Video Reconstruction, Phone Walkthrough</h2>
+      <p>Real phone walkthrough of a home (laundry area to hallway), 464×848, 19.4 s, 582 frames. No synthetic data. Full pipeline in <strong>13.7 s</strong> (excl. persistent-world build). v2.4 not trained.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Reprojection L1</span><span class="chip-value">0.076</span></div>
+        <div class="bench-chip"><span class="chip-label">Coverage</span><span class="chip-value">0.99</span></div>
+        <div class="bench-chip"><span class="chip-label">SfM tracked</span><span class="chip-value">24/24</span></div>
+        <div class="bench-chip"><span class="chip-label">Scale CoV</span><span class="chip-value">0.576</span></div>
+        <div class="bench-chip"><span class="chip-label">Surface voxels</span><span class="chip-value">137.7k</span></div>
+        <div class="bench-chip"><span class="chip-label">Processing</span><span class="chip-value">13.7 s</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Phone walkthrough vs BRIO webcam (same pipeline)</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>BRIO webcam (Jul 13)</th>
+              <th>Phone video (Jul 16)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Cross-frame scale CoV</td>
+              <td class="num loser" data-label="Webcam">≈30</td>
+              <td class="num winner" data-label="Phone">0.576 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Keyframes tracked</td>
+              <td class="num" data-label="Webcam">14</td>
+              <td class="num winner" data-label="Phone">24 / 24, 0 lost <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Mean pose confidence</td>
+              <td class="num" data-label="Webcam">0.89</td>
+              <td class="num winner" data-label="Phone">0.897 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Alignment edges / samples</td>
+              <td class="num" data-label="Webcam">56 / 16 626</td>
+              <td class="num winner" data-label="Phone">156 / 19 170 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Surface voxels</td>
+              <td class="num" data-label="Webcam">6 154</td>
+              <td class="num winner" data-label="Phone">137 685 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Reprojection L1 / coverage</td>
+              <td class="num na" data-label="Webcam">not measurable</td>
+              <td class="num winner" data-label="Phone">0.076 / 0.99</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Same pipeline, better capture motion. Forward-walking phone baselines fixed what tiny webcam baselines could not; the gauge-fix bug (negative aligned depth) was also found and fixed in this run.</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Full pipeline run (<code>reconstruction_report.json</code>)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Stage</th><th>Metric</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Stage">Capture</td><td data-label="Metric">Video frames / extracted / keyframes</td><td class="num" data-label="Value">582 / 155 / 24</td></tr>
+            <tr><td class="metric" data-label="Stage">SfM</td><td data-label="Metric">Frames tracked / mean confidence</td><td class="num winner" data-label="Value">24 / 24, 0.897</td></tr>
+            <tr><td class="metric" data-label="Stage">Alignment</td><td data-label="Metric">Overlap edges / triangulated samples</td><td class="num" data-label="Value">156 / 19 170</td></tr>
+            <tr><td class="metric" data-label="Stage">Alignment</td><td data-label="Metric">Solved cross-frame scale CoV</td><td class="num" data-label="Value">0.576</td></tr>
+            <tr><td class="metric" data-label="Stage">Fusion</td><td data-label="Metric">Point-cloud points</td><td class="num" data-label="Value">120 000</td></tr>
+            <tr><td class="metric" data-label="Stage">Fusion</td><td data-label="Metric">Surface voxels (confirmed)</td><td class="num" data-label="Value">137 685 (311)</td></tr>
+            <tr><td class="metric" data-label="Stage">Components</td><td data-label="Metric">Proposed (connected-component)</td><td class="num" data-label="Value">9</td></tr>
+            <tr><td class="metric" data-label="Stage">Reprojection</td><td data-label="Metric">Photometric L1 vs original frames</td><td class="num winner" data-label="Value">0.076</td></tr>
+            <tr><td class="metric" data-label="Stage">Reprojection</td><td data-label="Metric">Coverage</td><td class="num winner" data-label="Value">0.99</td></tr>
+            <tr><td class="metric" data-label="Stage">Runtime</td><td data-label="Metric">Processing (excl. world build)</td><td class="num winner" data-label="Value">13.7 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Honest weaknesses in this run</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Weakness</th><th>Measured</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Weakness">Single-view voxels</td>
+              <td class="num loser" data-label="Measured">137 374 provisional vs 311 confirmed</td>
+              <td data-label="Fix">Orbit / back-and-forth capture</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Weakness">Residual scale drift</td>
+              <td class="num" data-label="Measured">CoV 0.576</td>
+              <td data-label="Fix">Metric anchor or AR poses</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Weakness">No free-space carving</td>
+              <td class="num na" data-label="Measured">disabled for speed</td>
+              <td data-label="Fix">Re-enable, vectorised</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Weakness">Weak component labels</td>
+              <td class="num" data-label="Measured">extent-ratio heuristic, conf 0.4</td>
+              <td data-label="Fix">Real semantic segmenter</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Weakness">In-process world build deadlock</td>
+              <td class="num na" data-label="Measured">worked around</td>
+              <td data-label="Fix">Separate process (<code>vwm_build_world.py</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#real-video">Read full reconstruction narrative →</a></p>
+    </section>
 
     <!-- ─────────────── real capture ─────────────── -->
     <section class="bench-milestone" id="real-capture">

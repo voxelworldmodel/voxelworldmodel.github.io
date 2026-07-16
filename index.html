@@ -192,19 +192,19 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>real webcam capture</strong> end to end on a bedroom scan. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>real phone video reconstructed end to end</strong>, home walkthrough to voxel world. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ Reality capture runs on real data</h3>
-        <p>425-frame BRIO bedroom capture: depth-anything produces coherent single-view voxels on real photos (domain-gap hypothesis confirmed). Full pipeline fused <strong>6 154 surface voxels in 10.3 s</strong>. Multi-view scale is rough (<code>scale_cov ≈ 30</code>) from small hand-held baselines — fix is walk-around capture, AR poses, or a metric anchor, not a redesign.</p>
+        <h3>✅ Real home reconstructed and verified against its own footage</h3>
+        <p>582-frame phone walkthrough (laundry area to hallway): visual SfM tracked <strong>24 / 24 keyframes</strong>, depth alignment cut scale CoV from the webcam's ~30 to <strong>0.576</strong>, and the reconstruction reprojects onto the original frames at <strong>photometric L1 0.076 with 99% coverage</strong>. Trash can, stone floor, wood door, and countertop all recognisable. Processing: 13.7 s.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">540</span><span class="label">SIFT matches (real)</span></div>
-        <div class="stat"><span class="value">6154</span><span class="label">Surface voxels fused</span></div>
-        <div class="stat"><span class="value">56</span><span class="label">Alignment graph edges</span></div>
-        <div class="stat"><span class="value">10.3 s</span><span class="label">Pipeline processing</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">SIFT on synthetic renders</span></div>
+        <div class="stat"><span class="value">0.076</span><span class="label">Reprojection L1 (real frames)</span></div>
+        <div class="stat"><span class="value">0.99</span><span class="label">Reprojection coverage</span></div>
+        <div class="stat"><span class="value">24/24</span><span class="label">SfM keyframes tracked</span></div>
+        <div class="stat"><span class="value">137 685</span><span class="label">Surface voxels</span></div>
+        <div class="stat"><span class="value">13.7 s</span><span class="label">Pipeline processing</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 

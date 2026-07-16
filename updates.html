@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#real-capture">Latest: Real capture</a>
+        <a href="#real-video">Latest: Real video reconstruction</a>
+        <a href="#real-capture">Webcam capture</a>
         <a href="#depth-scan">Depth scan</a>
         <a href="#v23">Appearance v2.3</a>
         <a href="#v22">Appearance v2.2</a>
@@ -25,6 +26,85 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="real-video">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Measured, end to end</span>
+      </div>
+      <h2>Real-Video Reconstruction, Phone Walkthrough</h2>
+      <p>Full pipeline run on a <strong>real phone walkthrough</strong> of a home (laundry area to hallway): 464×848, 19.4 s, 582 frames. <strong>No synthetic data anywhere in the run.</strong> The forward-walking phone capture provides the real baselines the webcam test lacked.</p>
+
+      <div class="status-banner">
+        <h3>✅ Reconstruction reproduces the real room from recovered poses</h3>
+        <p>The reprojection test renders the reconstructed voxels from each original keyframe's recovered pose and compares against the real frame: <strong>photometric L1 0.076 at 99% coverage</strong>. Trash can, stone floor, wood door, and countertop are all recognisable in the side-by-side. Cross-frame scale CoV dropped from the webcam's ~30 to <strong>0.576</strong>.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.076</span><span class="label">Reprojection L1 (vs real frames)</span></div>
+        <div class="stat"><span class="value">0.99</span><span class="label">Reprojection coverage</span></div>
+        <div class="stat"><span class="value">24 / 24</span><span class="label">SfM frames tracked (0 lost)</span></div>
+        <div class="stat"><span class="value">0.576</span><span class="label">Scale CoV (was ~30 on webcam)</span></div>
+        <div class="stat"><span class="value">137 685</span><span class="label">Surface voxels</span></div>
+        <div class="stat"><span class="value">13.7 s</span><span class="label">Processing (excl. world build)</span></div>
+      </div>
+
+      <h3>Pipeline (All Real)</h3>
+      <p>video → 155 frames @ 8 fps → 24 keyframes → visual SfM (OpenCV SIFT + essential + incremental PnP) → Depth Anything per keyframe → global depth-alignment graph (SIFT correspondences + two-view triangulation → robust per-frame scale/shift) → voxel fusion (occupancy + confidence + provenance) → semantic component proposals → persistent voxel-world data + observed-appearance atlas → all visualisations + reprojection metrics.</p>
+
+      <h3>Measured Results</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Stage</th><th>Metric</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Stage">SfM</td><td data-label="Metric">Frames tracked</td><td data-label="Value">24 / 24 (0 lost)</td></tr>
+          <tr><td data-label="Stage">SfM</td><td data-label="Metric">Mean pose confidence</td><td data-label="Value">0.897</td></tr>
+          <tr><td data-label="Stage">Alignment</td><td data-label="Metric">Overlap edges / triangulated samples</td><td data-label="Value">156 / 19 170</td></tr>
+          <tr><td data-label="Stage">Alignment</td><td data-label="Metric">Solved cross-frame scale CoV</td><td data-label="Value">0.576</td></tr>
+          <tr><td data-label="Stage">Fusion</td><td data-label="Metric">Point-cloud points</td><td data-label="Value">120 000</td></tr>
+          <tr><td data-label="Stage">Fusion</td><td data-label="Metric">Surface voxels</td><td data-label="Value">137 685 (311 confirmed)</td></tr>
+          <tr><td data-label="Stage">Components</td><td data-label="Metric">Proposed (connected-component)</td><td data-label="Value">9</td></tr>
+          <tr><td data-label="Stage" class="ok">Reprojection</td><td data-label="Metric" class="ok">Photometric L1 (recon vs original)</td><td data-label="Value" class="ok"><strong>0.076</strong></td></tr>
+          <tr><td data-label="Stage" class="ok">Reprojection</td><td data-label="Metric" class="ok">Coverage</td><td data-label="Value" class="ok"><strong>0.99</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>What Succeeded</h3>
+      <ul>
+        <li><strong>This capture works where the webcam didn't.</strong> Forward-walking phone motion gives real baselines: SfM tracked all 24 frames (confidence 0.897) and the depth-alignment graph brought cross-frame scale CoV to 0.576 (vs the webcam's ~30). A gauge-fix bug (aligned depth going negative) was found and fixed; the SfM poses define the scale, so no gauge normalisation.</li>
+        <li><strong>depth-anything on real imagery is clean</strong> (confirmed again): sharp depth maps, hallway receding correctly.</li>
+        <li><strong>End-to-end reconstruction with real appearance:</strong> colored point cloud, voxel reconstruction, novel views, and a same-pose reprojection that matches the originals.</li>
+        <li><strong>All requested artifacts exported:</strong> <code>artifacts/</code> (keyframes, aligned_depth.npz, fused_cloud.ply, voxel_world.npz, trajectory.jsonl), <code>viz/</code> (depth maps, trajectory, point cloud ×3 views, voxels ×3 views, components, side-by-side, contact sheet), <code>reconstruction_report.json</code>.</li>
+      </ul>
+
+      <h3>What Failed or Is Weak (Honest)</h3>
+      <ul>
+        <li><strong>Mostly single-view voxels</strong> (137 374 provisional vs 311 confirmed, mean 1.0 views/voxel). Forward walking down a hallway means each surface is seen briefly, so little multi-view confirmation: the geometry is a fan of thin shells, not thick confirmed surfaces. An orbit or back-and-forth capture would raise confirmation.</li>
+        <li><strong>Scale CoV 0.576 is still non-trivial.</strong> The alignment reduces but does not eliminate per-frame scale drift with relative monocular depth + monocular SfM scale. A metric anchor (known door width) or ARKit/ARCore poses would tighten it.</li>
+        <li><strong>No free-space carving</strong> in this run (disabled for speed), so no explicit occupied/free/unknown separation this pass.</li>
+        <li><strong>Component labels are weak heuristics</strong> (extent-ratio → wall/floor/object at confidence 0.4), not a real semantic segmenter.</li>
+        <li><strong>Persistent VoxelWorld build runs as a separate clean process</strong> (<code>tools/vwm_build_world.py</code>) because building it in-process deadlocked against the OpenCV/depth-anything backend threads. A real integration wrinkle, worked around.</li>
+      </ul>
+
+      <h3>Not Done</h3>
+      <p>Live Luanti open of the scanned world; full appearance-compiler compilation (the observed-color atlas is the appearance here); loop closure; exposure normalisation; incremental rescan; held-out real-view LPIPS benchmark. Per prior instruction, <strong>v2.4 was not trained.</strong></p>
+
+      <h3>Next Improvements (Highest Leverage First)</h3>
+      <ol>
+        <li><strong>Capture motion:</strong> a slow orbit / back-and-forth (not just forward) → multi-view confirmation → thick confirmed surfaces, higher IoU.</li>
+        <li><strong>A metric anchor or AR poses</strong> → resolve residual scale drift, metric world.</li>
+        <li><strong>Re-enable free-space carving</strong> (vectorised) → occupied/free/unknown.</li>
+        <li><strong>TSDF-style fusion</strong> instead of point-splat voxels → watertight surfaces.</li>
+      </ol>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The prediction from the webcam milestone held: give the same pipeline real baselines and it reconstructs a real home recognisably from its own recovered poses (L1 0.076 at 99% coverage). Remaining gaps are capture motion and metric anchoring, not architecture.</p>
+      </div>
+
+      <p class="footnote">Full write-up: <code>checkpoints/vwm_scan/real2/full/RECONSTRUCTION_REPORT.md</code>. Source: <code>video_2026-07-16_13-09-43.mp4</code>.</p>
+      <p>See <a href="benchmarks.html#real-video">benchmarks</a> for phone vs webcam comparison tables.</p>
+    </article>
 
     <article class="update" id="real-capture">
       <div class="update-meta">
