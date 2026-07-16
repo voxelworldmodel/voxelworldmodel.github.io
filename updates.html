@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#real-video">Latest: Real video reconstruction</a>
+        <a href="#capture-v2">Latest: TSDF v2</a>
+        <a href="#real-video">Real video reconstruction</a>
         <a href="#real-capture">Webcam capture</a>
         <a href="#depth-scan">Depth scan</a>
         <a href="#v23">Appearance v2.3</a>
@@ -26,6 +27,83 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v2">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Measured, v1 vs v2</span>
+      </div>
+      <h2>Reality-Capture v2, TSDF Volumetric Fusion</h2>
+      <p>Quality-improvement pass on the <strong>same canonical phone video</strong> as the walkthrough milestone below. Point-splat fusion is replaced with <strong>true TSDF volumetric fusion</strong>, plus free-space carving, plane-based semantics, and a 42″-door metric anchor. Deterministic run, same authoritative pipeline order: Reality → Capture → Depth → Trajectory → Global Alignment → <strong>TSDF Fusion</strong> → HAV → Semantics → Components → Appearance → Viz → Export.</p>
+
+      <div class="status-banner">
+        <h3>✅ One accumulated surface instead of stacked shells</h3>
+        <p>Each voxel now averages a truncated signed distance over <strong>~15 views</strong> with weight accumulation, so repeated observations strengthen one surface instead of stacking duplicate single-view shells. 137k noisy splats merged into <strong>9.6k confident voxels</strong> that reproject <strong>28% more accurately</strong> (photometric L1 0.0757 → <strong>0.0543</strong>). That single change delivered confidence accumulation, duplicate-surface merging, and floater removal at once.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.0543</span><span class="label">Reprojection L1 (−28% vs v1)</span></div>
+        <div class="stat"><span class="value">15.2</span><span class="label">Observations / voxel (was 1.0)</span></div>
+        <div class="stat"><span class="value">0.99</span><span class="label">Watertightness (backed fraction)</span></div>
+        <div class="stat"><span class="value">9 612</span><span class="label">Surface voxels (14× fewer)</span></div>
+        <div class="stat"><span class="value">8</span><span class="label">RANSAC planes (wall/floor/ceiling)</span></div>
+        <div class="stat"><span class="value">0.0098</span><span class="label">m/unit via 42″ door (best-effort)</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v2_compare.png" alt="Side-by-side comparison of the v1 point-splat reconstruction (left, dense noisy splats) and the v2 TSDF reconstruction (right, sparser but coherent accumulated surface) of the same hallway.">
+        <figcaption><strong>v1 point-splat vs v2 TSDF, same video, same view.</strong> Left: 137 685 single-view splats stacked into fan shells. Right: 9 612 TSDF voxels averaging ~15 views each. The v2 surface is sparser on screen (coverage 0.49 vs 0.99) but truer: reprojection L1 improved 28% despite covering less of the frame.</figcaption>
+      </figure>
+
+      <h3>v1 → v2, Measured</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v1 (point-splat)</th><th>v2 (TSDF)</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric">Reprojection photometric L1</td><td data-label="v1">0.0757</td><td data-label="v2" class="ok"><strong>0.0543</strong></td><td data-label="Change" class="ok">−28%</td></tr>
+          <tr><td data-label="Metric">Observations accumulated / voxel</td><td data-label="v1">1.0</td><td data-label="v2" class="ok"><strong>15.2</strong></td><td data-label="Change" class="ok">15×</td></tr>
+          <tr><td data-label="Metric">Free / occupied / unknown</td><td data-label="v1">not classified</td><td data-label="v2" class="ok"><strong>4 416 / 9 612 / 24 283</strong></td><td data-label="Change" class="ok">new (carving on)</td></tr>
+          <tr><td data-label="Metric">Watertightness (backed fraction)</td><td data-label="v1">fan shells</td><td data-label="v2" class="ok"><strong>0.99</strong></td><td data-label="Change" class="ok">new</td></tr>
+          <tr><td data-label="Metric">Surface voxels</td><td data-label="v1">137 685</td><td data-label="v2" class="ok"><strong>9 612</strong></td><td data-label="Change" class="ok">14× fewer, more accurate</td></tr>
+          <tr><td data-label="Metric">Metric scale</td><td data-label="v1">arbitrary</td><td data-label="v2"><strong>0.0098 m/unit</strong> via 42″ door</td><td data-label="Change">new (best-effort)</td></tr>
+          <tr><td data-label="Metric">Render coverage</td><td data-label="v1">0.99</td><td data-label="v2" class="bad">0.49</td><td data-label="Change" class="bad">confident voxels cover less screen</td></tr>
+        </tbody>
+      </table>
+
+      <h3>What Genuinely Improved</h3>
+      <ul>
+        <li><strong>TSDF fusion works.</strong> Truncated-signed-distance averaging with weight accumulation over ~15 views per voxel merged 137k noisy splats into 9.6k voxels that reproject 28% more accurately. Duplicate-shell merging and floater removal fall out of the weighting; the 14× voxel reduction at <em>better</em> accuracy is the direct evidence.</li>
+        <li><strong>Free-space carving is on.</strong> Every voxel is classified OCCUPIED / FREE / UNKNOWN with confidence and provenance: 4 416 carved free, 24 283 correctly left UNKNOWN, never filled solid.</li>
+        <li><strong>Watertightness 0.99.</strong> 99% of surface voxels are backed by ≥2 occupied neighbours, coherent surfaces rather than floating splats.</li>
+        <li><strong>Plane-based semantics:</strong> sequential RANSAC found 8 dominant planes labelled wall / floor / ceiling / surface by geometry, each with inlier-count confidence (reported, not forced), plus wall thickness from parallel plane pairs.</li>
+        <li><strong>Metric anchoring:</strong> the 42″ (1.0668 m) door is measured via an outlier-robust percentile width of a wood-coloured vertical plane (confidence 0.98) and applied as a global scale, guarded by a scene-size sanity gate (2–40 m) that rejects absurd scales.</li>
+      </ul>
+
+      <figure class="figure">
+        <img src="real_video_v2_uncertainty.png" alt="Confidence heatmap of the v2 TSDF reconstruction: green voxels are high-confidence multi-view surfaces, red voxels are low-confidence.">
+        <figcaption><strong>Per-voxel confidence, made visible.</strong> Every v2 voxel carries an accumulated TSDF weight (mean 7.27). Green: high-confidence multi-view surface. Red: weakly observed. In v1 this map did not exist, every splat was a single unweighted observation.</figcaption>
+      </figure>
+
+      <h3>What Remains Uncertain (Honest)</h3>
+      <ul>
+        <li><strong>Absolute metric scale is only best-effort.</strong> The monocular SfM + depth point cloud is geometrically <em>compressed</em> (weak baselines relative to depth), so the door-derived scale (~2 m scene) is almost certainly still too small for a real hallway. The door detector passes its sanity gate with high inlier confidence, but the underlying cloud does not spread into correct hallway proportions. <strong>Relative geometry and every other improvement are solid; treat the absolute scale as approximate.</strong></li>
+        <li><strong>Render coverage dropped to 0.49</strong> (from 0.99), the direct cost of keeping 9.6k confident voxels instead of 137k noisy splats. The surface is truer but covers less screen when point-rendered; reprojection L1 is still better.</li>
+        <li><strong>No loop closure:</strong> the capture is a one-way forward walk with no revisit, so there is no loop to close (detected and reported, not invented).</li>
+        <li><strong>Scale-consistency CoV 0.576 unchanged:</strong> the alignment graph is geometric, not learned; it reduces but does not eliminate per-frame monocular scale drift.</li>
+      </ul>
+
+      <h3>Biggest Next Gains (Data, Not Code)</h3>
+      <ol>
+        <li><strong>A short back-and-forth / orbit pass</strong> over the same hallway → real baselines and multi-view overlap → the cloud spreads to true proportions, fixing both the absolute scale and the coverage.</li>
+        <li><strong>One in-frame metric measurement</strong> (ARKit depth on even one frame, or a ruler) → locks scale independent of fragile door detection.</li>
+        <li><strong>ARKit/ARCore device poses</strong> → removes monocular-SfM scale drift entirely (CoV → ~0).</li>
+      </ol>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The reconstruction is materially better geometrically — TSDF fusion solved the duplicate-shell problem and gave proper occupancy classification with a measured reprojection gain — but the fundamental scale/coverage ceiling comes from the single forward-walk capture, and lifting it needs a richer capture, not more code. Full write-up in <code>checkpoints/vwm_scan/real2/QUALITY_V2_REPORT.md</code>; artifacts and comparison images under <code>real2/v2/</code>. New modules <code>vwm.tsdf_fusion</code> and <code>vwm.plane_detection</code> import clean.</p>
+      </div>
+    </article>
 
     <article class="update" id="real-video">
       <div class="update-meta">
@@ -131,7 +209,7 @@
       <ol>
         <li><strong>Capture motion:</strong> a slow orbit / back-and-forth (not just forward) → multi-view confirmation → thick confirmed surfaces, higher IoU.</li>
         <li><strong>A metric anchor</strong> (known door width) or AR poses → resolve residual scale drift → metric world.</li>
-        <li><strong>TSDF-style fusion + re-enabled carving</strong> → watertight surfaces and proper free / unknown space.</li>
+        <li><strong>TSDF-style fusion + re-enabled carving</strong> → watertight surfaces and proper free / unknown space. <em>Shipped: see <a href="#capture-v2">Reality-Capture v2</a> above.</em></li>
       </ol>
 
       <div class="highlight">

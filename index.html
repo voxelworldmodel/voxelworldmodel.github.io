@@ -192,25 +192,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>real phone video reconstructed end to end</strong>, home walkthrough to voxel world. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>Reality-Capture v2, true TSDF volumetric fusion</strong> on the same real phone walkthrough. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ Real home reconstructed into a persistent HAV world</h3>
-        <p>582-frame phone walkthrough (laundry area to hallway): SfM tracked <strong>24 / 24 keyframes</strong>, scale CoV fell from ~30 to <strong>0.576</strong>, reconstruction reprojects at <strong>L1 0.076 / 99% coverage</strong>, and the world is materialized as <strong>38 284 HAV leaves</strong> (reopenable via npz). Three bugs fixed along the way. Processing: 13.7 s.</p>
+        <h3>✅ TSDF fusion: 14× fewer voxels, 28% better reprojection</h3>
+        <p>Point-splat fusion replaced with true TSDF volumetric fusion on the same canonical video: <strong>~15 observations accumulated per voxel</strong> merged 137k noisy splats into <strong>9 612 confident voxels</strong> that reproject at <strong>L1 0.0543 (−28%)</strong>. Free-space carving classifies every voxel occupied / free / unknown, watertightness reaches <strong>0.99</strong>, 8 RANSAC planes get wall/floor/ceiling labels, and a 42″-door anchor gives a best-effort metric scale.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.076</span><span class="label">Reprojection L1 (real frames)</span></div>
-        <div class="stat"><span class="value">0.99</span><span class="label">Reprojection coverage</span></div>
-        <div class="stat"><span class="value">24/24</span><span class="label">SfM keyframes tracked</span></div>
-        <div class="stat"><span class="value">38 284</span><span class="label">HAV leaves materialized</span></div>
-        <div class="stat"><span class="value">13.7 s</span><span class="label">Reconstruction processing</span></div>
+        <div class="stat"><span class="value">0.0543</span><span class="label">Reprojection L1 (−28% vs v1)</span></div>
+        <div class="stat"><span class="value">15.2</span><span class="label">Observations / voxel (was 1.0)</span></div>
+        <div class="stat"><span class="value">0.99</span><span class="label">Watertightness (backed fraction)</span></div>
+        <div class="stat"><span class="value">9 612</span><span class="label">Surface voxels (14× fewer)</span></div>
+        <div class="stat"><span class="value">8</span><span class="label">RANSAC planes labelled</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="real_video_contact_sheet.png" alt="Contact sheet of the real-video reconstruction pipeline: original frame, depth, trajectory, point cloud, HAV voxels, components, and voxel novel views.">
-        <figcaption><strong>Real home walkthrough, every pipeline stage.</strong> Original phone frame, Depth Anything depth, recovered camera trajectory, fused point cloud, HAV voxels, component proposals, and voxel novel views, all from one 19.4 s video.</figcaption>
+        <img src="real_video_v2_compare.png" alt="Side-by-side comparison of the v1 point-splat reconstruction and the v2 TSDF reconstruction of the same hallway view.">
+        <figcaption><strong>v1 point-splat vs v2 TSDF, same video, same view.</strong> Left: 137k single-view splats stacked into fan shells. Right: 9.6k TSDF voxels averaging ~15 views each — sparser on screen but geometrically truer, with reprojection improving 28% anyway.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

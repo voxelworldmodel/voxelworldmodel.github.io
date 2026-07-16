@@ -453,6 +453,7 @@ td:first-child {
 
 .ok { color: var(--accent); }
 .pending { color: var(--warn); }
+.bad { color: var(--warn); }
 
 .footnote {
   font-size: 0.88rem;

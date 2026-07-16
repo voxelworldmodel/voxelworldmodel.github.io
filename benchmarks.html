@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video</a>
         <a href="#real-capture">Webcam capture</a>
         <a href="#depth-compare">Depth scan</a>
@@ -35,6 +36,130 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── reality-capture v2 (TSDF) ─────────────── -->
+    <section class="bench-milestone" id="capture-v2">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">v1 vs v2, measured</span>
+      </div>
+      <h2>Reality-Capture v2, TSDF Fusion</h2>
+      <p>Same canonical phone video as the walkthrough below; fusion upgraded from point-splat to <strong>true TSDF volumetric fusion</strong> with free-space carving, plane-based semantics, and a 42″-door metric anchor. Deterministic run, same authoritative pipeline order.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Reprojection L1</span><span class="chip-value">0.0543</span></div>
+        <div class="bench-chip"><span class="chip-label">vs v1</span><span class="chip-value">−28%</span></div>
+        <div class="bench-chip"><span class="chip-label">Obs / voxel</span><span class="chip-value">15.2</span></div>
+        <div class="bench-chip"><span class="chip-label">Watertight</span><span class="chip-value">0.99</span></div>
+        <div class="bench-chip"><span class="chip-label">Surface voxels</span><span class="chip-value">9.6k</span></div>
+        <div class="bench-chip"><span class="chip-label">Scale</span><span class="chip-value">0.0098 m/u</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">v1 (point-splat) vs v2 (TSDF), same video</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>v1 point-splat</th>
+              <th>v2 TSDF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Reprojection photometric L1</td>
+              <td class="num loser" data-label="v1">0.0757</td>
+              <td class="num winner" data-label="v2">0.0543 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Observations accumulated / voxel</td>
+              <td class="num loser" data-label="v1">1.0</td>
+              <td class="num winner" data-label="v2">15.2 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Free / occupied / unknown voxels</td>
+              <td class="num na" data-label="v1">not classified</td>
+              <td class="num winner" data-label="v2">4 416 / 9 612 / 24 283</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Watertightness (backed fraction)</td>
+              <td class="num na" data-label="v1">fan shells</td>
+              <td class="num winner" data-label="v2">0.99</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Surface voxels</td>
+              <td class="num loser" data-label="v1">137 685</td>
+              <td class="num winner" data-label="v2">9 612 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Metric scale</td>
+              <td class="num na" data-label="v1">arbitrary</td>
+              <td class="num" data-label="v2">0.0098 m/unit via 42″ door (best-effort)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Render coverage</td>
+              <td class="num winner" data-label="v1">0.99</td>
+              <td class="num loser" data-label="v2">0.49 <span class="trend trend-bad">▼</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">TSDF weighting merges duplicate shells and removes floaters: 14× fewer voxels that reproject 28% more accurately. Coverage drop is the honest cost of keeping only confident voxels; L1 improves anyway. Absolute scale passes its sanity gate but the monocular cloud is geometrically compressed — treat scale as approximate.</div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v2_compare.png" alt="Side-by-side of v1 point-splat reconstruction and v2 TSDF reconstruction of the same hallway view.">
+        <figcaption><strong>v1 vs v2, same view.</strong> Left: 137k single-view splats stacked into fan shells. Right: 9.6k TSDF voxels averaging ~15 observations each — sparser on screen but geometrically truer.</figcaption>
+      </figure>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">New capabilities in v2</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Capability</th><th>Measured</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Capability">Free-space carving</td><td class="num winner" data-label="Measured">4 416 free / 24 283 unknown</td><td data-label="Note">Unseen space never filled solid; confidence + provenance per voxel</td></tr>
+            <tr><td class="metric" data-label="Capability">Watertightness</td><td class="num winner" data-label="Measured">0.99 backed fraction</td><td data-label="Note">99% of surface voxels backed by ≥2 occupied neighbours</td></tr>
+            <tr><td class="metric" data-label="Capability">Plane semantics</td><td class="num" data-label="Measured">8 RANSAC planes</td><td data-label="Note">wall / floor / ceiling by geometry, inlier-count confidence, wall thickness via parallel planes</td></tr>
+            <tr><td class="metric" data-label="Capability">Metric anchor</td><td class="num" data-label="Measured">42″ door, conf 0.98</td><td data-label="Note">Outlier-robust percentile width + scene-size sanity gate (2–40 m)</td></tr>
+            <tr><td class="metric" data-label="Capability">Voxel confidence</td><td class="num" data-label="Measured">mean weight 7.27</td><td data-label="Note">Real accumulated weight everywhere (v1: single unweighted observations)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Honest limits in v2</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Limit</th><th>Measured</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Limit">Absolute scale approximate</td>
+              <td class="num loser" data-label="Measured">~2 m scene, too small for a real hallway</td>
+              <td data-label="Fix">In-frame metric measurement (ARKit depth / ruler)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Limit">Render coverage</td>
+              <td class="num loser" data-label="Measured">0.49 (was 0.99)</td>
+              <td data-label="Fix">Back-and-forth / orbit pass spreads the cloud</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Limit">Scale-consistency CoV</td>
+              <td class="num" data-label="Measured">0.576 unchanged</td>
+              <td data-label="Fix">ARKit/ARCore poses remove SfM scale drift</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Limit">No loop closure</td>
+              <td class="num na" data-label="Measured">one-way walk, no revisit</td>
+              <td data-label="Fix">Detected + reported, not invented; capture with revisit</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v2">Read full v2 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── real video reconstruction ─────────────── -->
     <section class="bench-milestone" id="real-video">
