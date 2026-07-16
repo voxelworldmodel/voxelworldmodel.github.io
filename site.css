@@ -79,33 +79,33 @@ h1 {
 h1 .title-voxel-blocks {
   display: inline-flex;
   align-items: flex-end;
-  gap: 0.18em;
-  padding-top: 0.07em;
-  padding-right: 0.06em;
+  gap: 0.14em;
+  padding-top: 0.05em;
+  padding-right: 0.05em;
 }
 
 h1 .title-voxel-blocks .vletter {
   display: grid;
-  grid-template-rows: repeat(5, 0.16em);
-  grid-auto-columns: 0.16em;
-  gap: 0.045em;
+  grid-template-rows: repeat(5, 0.125em);
+  grid-auto-columns: 0.125em;
+  gap: 0.03em;
 }
 
 h1 .title-voxel-blocks b {
   display: block;
   position: relative;
-  width: 0.16em;
-  height: 0.16em;
+  width: 0.125em;
+  height: 0.125em;
   background: #3b82f6;
 }
 
 h1 .title-voxel-blocks b::before {
   content: "";
   position: absolute;
-  top: -0.05em;
-  left: 0.025em;
+  top: -0.04em;
+  left: 0.02em;
   width: 100%;
-  height: 0.05em;
+  height: 0.04em;
   background: #93c5fd;
   transform: skewX(-45deg);
 }
@@ -113,9 +113,9 @@ h1 .title-voxel-blocks b::before {
 h1 .title-voxel-blocks b::after {
   content: "";
   position: absolute;
-  top: -0.025em;
-  right: -0.05em;
-  width: 0.05em;
+  top: -0.02em;
+  right: -0.04em;
+  width: 0.04em;
   height: 100%;
   background: #1e3a8a;
   transform: skewY(-45deg);
