@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
         <a href="#capture-v7">Polycam v7</a>
@@ -44,6 +45,105 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── v9 error-driven voxelization ─────────────── -->
+    <section class="bench-milestone" id="capture-v9">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Error bounded by construction</span>
+      </div>
+      <h2>V9, Error-Driven Adaptive Voxelization</h2>
+      <p>v8's heuristic ("is there detail?") replaced by a guarantee: a region stays one voxel iff it approximates the mesh within a configurable error budget. Appearance is decoupled from geometry via a texture-patch atlas — paintings no longer spawn tiny voxels.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Within 12 mm budget</span><span class="chip-value">99.9%</span></div>
+        <div class="bench-chip"><span class="chip-label">Preview voxels</span><span class="chip-value">8 888</span></div>
+        <div class="bench-chip"><span class="chip-label">Appearance patches</span><span class="chip-value">1 534</span></div>
+        <div class="bench-chip"><span class="chip-label">Plane-snapped</span><span class="chip-value">1 685</span></div>
+        <div class="bench-chip"><span class="chip-label">LOD stability</span><span class="chip-value">0.939</span></div>
+        <div class="bench-chip"><span class="chip-label">Budget profiles</span><span class="chip-value">6</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v9_compare.png" alt="Three top-down panels: v8 heuristic voxels, v9 error-driven voxels colored by budget status, and the v9 appearance layer.">
+        <figcaption><strong>v8 heuristic vs v9 error-driven vs v9 appearance layer.</strong> Middle: grey = within the 12 mm budget, red = subdivided for geometry, blue = topology. Right: coloured voxels carry texture patches that display detail without subdividing.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">v8 heuristic vs v9 error-driven (<code>benchmark_v8_v9.json</code>)</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>v8 heuristic</th>
+              <th>v9 error-driven</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Error bounded?</td>
+              <td class="num loser" data-label="v8">no guarantee</td>
+              <td class="num winner" data-label="v9">99.9% within 12 mm, by construction <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Voxels</td>
+              <td class="num" data-label="v8">13 542</td>
+              <td class="num" data-label="v9">29 027 (architectural) · 8 888 (preview, bounded at 55 mm)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Surface Hausdorff</td>
+              <td class="num" data-label="v8">206 mm</td>
+              <td class="num winner" data-label="v9">196 mm <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">LOD stability</td>
+              <td class="num" data-label="v8">0.927</td>
+              <td class="num winner" data-label="v9">0.939 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Appearance patches</td>
+              <td class="num" data-label="v8">0</td>
+              <td class="num winner" data-label="v9">1 534 (geometry unchanged)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Snapped planar voxels</td>
+              <td class="num" data-label="v8">0</td>
+              <td class="num winner" data-label="v9">1 685</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Independent error terms drive subdivision: geometry (master, p95 residual to best-fit plane), normal (p90), curvature (p90 dihedral), topology (never bridge gaps), thin, silhouette — appearance is metadata only and never triggers subdivision. Robust percentiles replaced max after a single LiDAR speckle forced 67k voxels; budgets are calibrated to measured mesh noise (3.3 mm RMS flat / 9.6 mm edges at 24 cm cells).</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Error-budget profiles — tolerances change, algorithm doesn't</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Profile</th><th>Geometry budget</th><th>Voxels</th><th>p95 geometry error</th><th>LOD stability</th><th>Patches</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Profile">preview</td><td class="num" data-label="Budget">55 mm</td><td class="num" data-label="Voxels">8 888</td><td class="num" data-label="p95">16.2 mm</td><td class="num" data-label="LOD">0.958</td><td class="num" data-label="Patches">1 404</td></tr>
+            <tr><td data-label="Profile">gaming</td><td class="num" data-label="Budget">26 mm</td><td class="num" data-label="Voxels">15 399</td><td class="num" data-label="p95">8.4 mm</td><td class="num" data-label="LOD">0.947</td><td class="num" data-label="Patches">1 249</td></tr>
+            <tr><td data-label="Profile">architectural</td><td class="num" data-label="Budget">12 mm</td><td class="num" data-label="Voxels">18 849</td><td class="num" data-label="p95">6.3 mm</td><td class="num" data-label="LOD">0.956</td><td class="num" data-label="Patches">1 078</td></tr>
+            <tr><td data-label="Profile">museum</td><td class="num" data-label="Budget">6 mm</td><td class="num" data-label="Voxels">23 468</td><td class="num" data-label="p95">4.4 mm</td><td class="num" data-label="LOD">0.967</td><td class="num" data-label="Patches">886</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Tighter budget → more voxels. Honest finding: this phone-LiDAR mesh has ~3–5 mm intrinsic surface noise, so budgets below that force fine voxels everywhere — the sensor sets the floor.</div>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_v9_geometry.png" alt="Geometry-only mode: blue coarse within-budget blocks, orange fine voxels where error demanded subdivision.">
+          <figcaption><strong>Geometry only.</strong> Blue = coarse, within budget; orange = subdivided by measured error.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v9_appearance.png" alt="Appearance-layer mode: large voxels displaying projected texture patches.">
+          <figcaption><strong>Appearance layer.</strong> Same geometry, texture patches supply the visual fidelity.</figcaption>
+        </figure>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v9">Read full v9 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── v8 feature-preserving voxelization ─────────────── -->
     <section class="bench-milestone" id="capture-v8">

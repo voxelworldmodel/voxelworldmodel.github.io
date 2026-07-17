@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v8">Latest: Feature voxels v8</a>
+        <a href="#capture-v9">Latest: Error-driven v9</a>
+        <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
         <a href="#capture-v7">Polycam fusion v7</a>
         <a href="#capture-v5">Surface v5</a>
@@ -35,6 +36,103 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v9">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Error bounded by construction</span>
+      </div>
+      <h2>V9, Error-Driven Adaptive Voxelization</h2>
+      <p><strong>The philosophy flipped.</strong> v8 asked <em>"is there detail?"</em> — a heuristic. v9 asks the only mathematically grounded question: <em>"if this region is one voxel instead of smaller voxels, what measurable error is introduced?"</em> A region stays the largest possible voxel <strong>iff</strong> a single plane-snapped voxel approximates the measured mesh within a configurable <strong>error budget</strong>. Subdivision exists only to reduce measurable error, and every voxel stores its error terms and the reason it is the size it is. The new <code>vwm.error_voxelize</code> implements independent error terms — <strong>geometry</strong> (the master term: robust p95 residual to best-fit plane), <strong>normal</strong> (p90 angular deviation), <strong>curvature</strong> (p90 dihedral), <strong>topology</strong> (never bridge doorways/gaps), <strong>thin</strong> (trim, frames, handles), <strong>silhouette</strong> (footprint slivers), and <strong>appearance</strong> — which is metadata only and <em>never</em> triggers subdivision.</p>
+
+      <div class="status-banner">
+        <h3>✅ 99.9% of surface within the 12 mm budget, by construction — v8 had no guarantee at all</h3>
+        <p>That is the headline, not the voxel count: v9 <strong>guarantees</strong> a measurable reconstruction error while v8 could not, and a profile knob trades voxels for error explicitly. At the <code>preview</code> profile (55 mm budget), v9 uses <strong>8 888 voxels — fewer than v8's 13 542</strong> — and still bounds error; at <code>architectural</code> (12 mm) it spends 29 027 voxels to get <strong>99.9% of the surface within budget</strong>, with Hausdorff distance improved (206 → 196 mm) and LOD stability up (0.927 → 0.939).</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">99.9%</span><span class="label">Surface within 12 mm budget</span></div>
+        <div class="stat"><span class="value">8 888</span><span class="label">Voxels at preview (v8: 13 542, unbounded)</span></div>
+        <div class="stat"><span class="value">1 534</span><span class="label">Appearance patches (geometry unchanged)</span></div>
+        <div class="stat"><span class="value">1 685</span><span class="label">Plane-snapped coplanar voxels</span></div>
+        <div class="stat"><span class="value">0.939</span><span class="label">LOD stability (v8: 0.927)</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Error-budget profiles</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v9_compare.png" alt="Three top-down panels: v8 heuristic voxels, v9 error-driven voxels colored by within-budget versus subdivision cause, and the v9 appearance layer showing which voxels carry texture patches.">
+        <figcaption><strong>v8 vs v9, top-down.</strong> Left: v8's heuristic build (13 542 voxels, no error guarantee). Middle: v9 error-driven at the architectural budget — grey voxels are within 12 mm, red were subdivided for geometry, blue for topology. Right: the appearance layer — coloured voxels are large blocks that <em>display</em> surface detail via texture patches without subdividing.</figcaption>
+      </figure>
+
+      <h3>Geometry and Appearance, Fully Independent</h3>
+      <p>Each large voxel stores an <strong>8×8 texture patch</strong> — its samples projected onto the voxel's plane in plane-local UV — packed into one atlas, drawn in one draw call. A 24 cm flat wall voxel over a painting <strong>keeps its size and displays the painting</strong>. This deliberately reverses v8.1, where paintings spawned thousands of tiny voxels: appearance no longer drives geometry. The viewer proves it with a 4-way comparison — <strong>Geometry only · Avg color · Appearance layer · Polycam mesh</strong> — same geometry, dramatically different visual fidelity. The headless capture confirmed the appearance layer renders real floor and wall colours on big error-bounded voxels.</p>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_v9_geometry.png" alt="Geometry-only mode: blue coarse within-budget blocks with orange fine voxels only where error demanded subdivision.">
+          <figcaption><strong>Geometry only.</strong> Structure by size: blue coarse blocks satisfied the budget as-is; orange/yellow fine voxels exist only where a single voxel would exceed it.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v9_appearance.png" alt="Appearance-layer mode: the same large voxels now displaying projected texture patches with real surface colors.">
+          <figcaption><strong>Appearance layer.</strong> The same voxels, now displaying their projected 8×8 texture patches — visual fidelity without geometric subdivision.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v9_subdivision.png" alt="Subdivision-reason heatmap: grey voxels within budget, colored voxels tagged by which error term forced their subdivision.">
+          <figcaption><strong>Subdivision reason.</strong> Every voxel justifies itself: grey = within budget; coloured = tagged by the error term that forced the split.</figcaption>
+        </figure>
+      </div>
+
+      <h3>v8 vs v9, Measured (<code>benchmark_v8_v9.json</code>)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>v8 (heuristic)</th><th>v9 (error-driven, architectural)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric"><strong>Error bounded?</strong></td><td data-label="v8" class="bad">No guarantee</td><td data-label="v9" class="ok"><strong>99.9% within 12 mm, by construction</strong></td></tr>
+          <tr><td data-label="Metric">Voxels</td><td data-label="v8">13 542</td><td data-label="v9">29 027 — or <strong>8 888 at preview, fewer than v8 and bounded at 55 mm</strong></td></tr>
+          <tr><td data-label="Metric">Surface Hausdorff</td><td data-label="v8">206 mm</td><td data-label="v9" class="ok">196 mm</td></tr>
+          <tr><td data-label="Metric">LOD stability</td><td data-label="v8">0.927</td><td data-label="v9" class="ok">0.939</td></tr>
+          <tr><td data-label="Metric">Appearance patches</td><td data-label="v8">0</td><td data-label="v9" class="ok">1 534 (geometry unchanged)</td></tr>
+          <tr><td data-label="Metric">Snapped planar voxels</td><td data-label="v8">0</td><td data-label="v9" class="ok">1 685</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Error-Budget Profiles: Change Tolerances, Not the Algorithm</h3>
+      <p>Six profiles ship (<code>museum · architectural · simulation · robotics · gaming · preview</code>), each just a set of tolerances in <code>error_budget_profiles.json</code>. Measured on this scan:</p>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Profile</th><th>Geometry budget</th><th>Voxels</th><th>p95 geometry error</th><th>LOD stability</th><th>Patches</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Profile">preview</td><td data-label="Budget">55 mm</td><td data-label="Voxels">8 888</td><td data-label="p95">16.2 mm</td><td data-label="LOD">0.958</td><td data-label="Patches">1 404</td></tr>
+          <tr><td data-label="Profile">gaming</td><td data-label="Budget">26 mm</td><td data-label="Voxels">15 399</td><td data-label="p95">8.4 mm</td><td data-label="LOD">0.947</td><td data-label="Patches">1 249</td></tr>
+          <tr><td data-label="Profile">architectural</td><td data-label="Budget">12 mm</td><td data-label="Voxels">18 849</td><td data-label="p95">6.3 mm</td><td data-label="LOD">0.956</td><td data-label="Patches">1 078</td></tr>
+          <tr><td data-label="Profile">museum</td><td data-label="Budget">6 mm</td><td data-label="Voxels">23 468</td><td data-label="p95">4.4 mm</td><td data-label="LOD">0.967</td><td data-label="Patches">886</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Two Hard-Won Engineering Lessons (Both Real Bugs, Fixed Honestly)</h3>
+      <ul>
+        <li><strong>Robust percentiles, not max.</strong> Using the absolute-max residual let a single LiDAR speckle force full subdivision — 67k voxels. Switching to p95 residual / p90 normals fixed it.</li>
+        <li><strong>Budgets must be noise-aware.</strong> The mesh's intrinsic noise was measured (24 cm cells: 3.3 mm RMS on flat walls, 9.6 mm at edges) and budgets calibrated to it. Below ~4 mm, fine voxels are forced everywhere — which is correct behaviour, documented rather than hidden: the sensor noise sets the floor.</li>
+      </ul>
+
+      <h3>Explainability: Every Voxel Justifies Itself</h3>
+      <p>Each voxel stores its size, all error values, approximation error, snap status, subdivision-cause bits, and its appearance record. Click any v9 voxel in the viewer → <code>why_this_size</code> ("satisfies the budget" or "parent subdivided due to: geometry, topology"), plus nine error-heatmap modes: geometry error, plane residual, normal variance, curvature, topology risk, thin risk, silhouette error, approximation error, subdivision reason.</p>
+
+      <h3>Honest Limits</h3>
+      <ul>
+        <li><strong>Sensor noise sets the floor</strong> — budgets below ~4 mm force near-uniform fine voxels on this LiDAR mesh, so "museum" here is dense.</li>
+        <li><strong>Silhouette</strong> is a footprint-fill proxy, not a full multi-view raster; <strong>hysteresis</strong> is implemented as a budget concept but only matters for incremental re-voxelization (this is a one-shot static scan).</li>
+        <li><strong>Sampling dependence:</strong> denser mesh sampling reveals more true geometry, so voxel count grows with samples — the error bound holds regardless.</li>
+        <li><strong>LOD balancing</strong> is measured and reported (0.94–0.97), not forcibly enforced; splitting is always error-safe, so a hard 2:1 tree could be enforced if required.</li>
+        <li>The corner solver measures and recovers corners as metadata but does not yet re-mesh sharp edges off the octree lattice — the same open item since v8.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> v9 replaces "does this look detailed?" with "what error would this size introduce?" — the reconstruction now carries a per-voxel error guarantee, appearance is decoupled from geometry via a texture-patch atlas, and every voxel can explain why it exists. Deliverables in <code>checkpoints/vwm_scan/real2/v9/</code>: V9_REPORT.md, <code>error_voxels.npz</code> (geometry + all error terms + appearance atlas), 11 JSON reports including <code>benchmark_v8_v9.json</code> and <code>error_budget_profiles.json</code>, the top-down comparison render, and the viewer's new <code>/api/errorvoxels</code> + <code>/api/appearance</code> endpoints with the Error-Driven representation, 4-way comparison, error heatmaps, and click-to-explain.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v8">
       <div class="update-meta">

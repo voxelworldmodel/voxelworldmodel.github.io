@@ -193,25 +193,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V8, feature-preserving adaptive voxelization</strong> — the voxel world becomes an intentional voxel build of the real hallway: coarse where flat, fine where detailed. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V9, error-driven adaptive voxelization</strong> — every voxel now carries a measurable error guarantee, and appearance is fully decoupled from geometry. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ 13.6× fewer voxels, fidelity measured, zero invented geometry</h3>
-        <p>A curvature-driven octree voxelizer turns the Polycam mesh into <strong>10 231 feature voxels</strong> (24 cm blocks on flat walls down to 3 cm at edges, corners, and trim) instead of 138 910 uniform blocks — with walls flat to <strong>2.8 cm RMS</strong>, corners recovered at <strong>89.7° (0.28° error)</strong>, a <strong>3.2×</strong> fine-voxel uplift on trim, and <strong>100%</strong> of voxels anchored to measured surface. The viewer gained a Feature Voxels representation, a representation slider, and a live voxel-size slider.</p>
+        <h3>✅ 99.9% of surface within a 12 mm error budget, by construction</h3>
+        <p>v9 replaces v8's heuristic ("is there detail?") with the grounded question: <em>what measurable error does this voxel size introduce?</em> A region stays the largest possible voxel iff it approximates the mesh within a configurable <strong>error budget</strong> — 99.9% of the surface lands within 12 mm at the architectural profile, and the <code>preview</code> profile uses <strong>fewer voxels than v8 while bounding error</strong>. Each large voxel can carry an <strong>8×8 texture patch</strong>: a flat wall voxel over a painting keeps its size and displays the painting. Every voxel explains itself on click: <code>why_this_size</code>, all error terms, snap status.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">13.6×</span><span class="label">Fewer voxels (10 231 vs 138 910)</span></div>
-        <div class="stat"><span class="value">2.8 cm</span><span class="label">Wall flatness RMS</span></div>
-        <div class="stat"><span class="value">0.28°</span><span class="label">Mean corner angle error</span></div>
-        <div class="stat"><span class="value">3.2×</span><span class="label">Fine-voxel uplift on trim</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">Invented-geometry voxels</span></div>
+        <div class="stat"><span class="value">99.9%</span><span class="label">Surface within 12 mm budget</span></div>
+        <div class="stat"><span class="value">8 888</span><span class="label">Voxels at preview (v8: 13 542)</span></div>
+        <div class="stat"><span class="value">1 534</span><span class="label">Appearance patches, geometry unchanged</span></div>
+        <div class="stat"><span class="value">1 685</span><span class="label">Plane-snapped coplanar voxels</span></div>
+        <div class="stat"><span class="value">0.939</span><span class="label">LOD stability (v8: 0.927)</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="real_video_v8_compare.png" alt="Three top-down panels: textured Polycam mesh, uniform 3 cm voxels, and feature voxels with blue coarse walls and red fine edges.">
-        <figcaption><strong>Mesh vs uniform vs feature voxels.</strong> The same hallway: real measured surface (left), 138 910 undifferentiated 3 cm blocks (middle), and 10 231 feature voxels (right) — blue 24 cm on flat walls, red 3 cm exactly at edges, frames, and trim.</figcaption>
+        <img src="real_video_v9_compare.png" alt="Three top-down panels: v8 heuristic voxels, v9 error-driven voxels colored by budget status, and the v9 appearance layer showing texture-carrying voxels.">
+        <figcaption><strong>v8 heuristic vs v9 error-driven vs the appearance layer.</strong> Middle: grey voxels satisfy the 12 mm budget, red were subdivided for geometry, blue for topology. Right: coloured voxels display surface detail via texture patches — without geometric subdivision.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

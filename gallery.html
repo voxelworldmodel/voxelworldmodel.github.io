@@ -14,6 +14,7 @@
       <h1>Viewer Gallery</h1>
       <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
       <nav>
+        <a href="#g-v9">v9 error-driven</a>
         <a href="#g-v8">v8 feature voxels</a>
         <a href="#g-polycam">Polycam scan</a>
         <a href="#g-v7">v7 fusion</a>
@@ -25,6 +26,30 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <!-- ─────────────── v9 error-driven ─────────────── -->
+    <section id="g-v9">
+      <h2>v9, Error-Driven Voxels</h2>
+      <p>Every voxel bounded by a measurable error budget; appearance carried by texture patches, independent of geometry. The 4-way comparison: Geometry only · Avg color · Appearance layer · Polycam mesh. <a href="updates.html#capture-v9">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="viewer_v9_appearance.png" alt="Appearance-layer mode: large error-bounded voxels displaying projected texture patches.">
+          <figcaption><strong>Appearance layer.</strong> Large error-bounded voxels displaying their projected 8×8 texture patches — fidelity without subdivision.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v9_geometry.png" alt="Geometry-only mode: blue coarse within-budget blocks, orange fine voxels where error demanded subdivision.">
+          <figcaption><strong>Geometry only.</strong> Blue coarse blocks satisfied the budget; orange fine voxels exist only where error demanded.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v9_subdivision.png" alt="Subdivision-reason heatmap: grey within budget, colored by the error term that forced the split.">
+          <figcaption><strong>Subdivision reason.</strong> Grey = within budget; coloured = the error term that forced the split.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v9_compare.png" alt="Three-panel top-down comparison of v8, v9 error-driven, and the v9 appearance layer.">
+          <figcaption><strong>v8 vs v9 vs appearance layer.</strong> The top-down evaluation render.</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <!-- ─────────────── v8 feature voxels ─────────────── -->
     <section id="g-v8">
