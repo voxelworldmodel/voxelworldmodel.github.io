@@ -698,6 +698,7 @@ code {
   text-transform: uppercase;
   padding: 0.2rem 0.55rem;
   border: 2px solid var(--voxel-edge);
+  color: var(--text-muted);
   box-shadow: 2px 2px 0 0 var(--voxel-shadow-deep);
 }
 

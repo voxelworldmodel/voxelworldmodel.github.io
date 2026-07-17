@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap, Voxel World Model</title>
+  <meta name="description" content="The Voxel World Model roadmap from shipped milestones through the production Gaussian engine, world compilers, simulation, digital twins, and world intelligence.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <h1>Roadmap</h1>
+      <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
+      <nav>
+        <a href="#shipped">Shipped (→V12)</a>
+        <a href="#v13">V13</a>
+        <a href="#v14">V14</a>
+        <a href="#v15">V15</a>
+        <a href="#v16">V16</a>
+        <a href="#v17">V17</a>
+        <a href="#v18">V18</a>
+        <a href="#v19">V19</a>
+        <a href="#v20">V20</a>
+        <a href="#v21">V21+</a>
+        <a href="updates.html">Updates</a>
+        <a href="paper.html">Paper</a>
+      </nav>
+    </header>
+
+    <section>
+      <div class="status-banner">
+        <h3>Invariant across every future milestone</h3>
+        <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
+      </div>
+      <p>V1–V12 are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 onward is the planned production arc. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding in V10–V12 (interfaces, docs, or partial implementations) and become first-class products in the listed milestone.</p>
+    </section>
+
+    <!-- ─────────────── shipped ─────────────── -->
+    <section id="shipped">
+      <h2>Shipped Foundation (through V12)</h2>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Era</th><th>Milestones</th><th>What it established</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Era">Capture → world</td>
+            <td data-label="Milestones">Depth scan · real capture · TSDF v1–v5 · v7 Polycam · v8 feature voxels · v9 error-driven</td>
+            <td data-label="Established">Reality → HAV / TSDF / adaptive voxels; hollow free space; extracted surface; multi-source fusion; measured error budgets; appearance decoupled from geometry</td>
+          </tr>
+          <tr>
+            <td data-label="Era">Acceleration &amp; OS</td>
+            <td data-label="Milestones">SVO · V10 World Engine · V11 Runtime</td>
+            <td data-label="Established">Derived octree; universal upload; Components; revisions; evidence; dirty regions; scheduler; event bus; <code>CompiledRepresentation</code></td>
+          </tr>
+          <tr>
+            <td data-label="Era">Perception → Gaussians</td>
+            <td data-label="Milestones"><a href="updates.html#v12">V12</a></td>
+            <td data-label="Established">ReconstructionProvider stack; LingBot audited; ICP registration; chunked Gaussian scene + elliptical splat renderer (73k splats live)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─────────────── V13 ─────────────── -->
+    <article class="update" id="v13">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: V12 Gaussians</span>
+      </div>
+      <h2>V13 — Production Gaussian Engine</h2>
+      <p>Turn the V12 chunked Gaussian scene into a production visualization and streaming engine: LOD, VRAM-aware budgets, progressive compile, and quality paths that run when a real GPU and checkpoint exist — without inventing fake perception numbers beforehand.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>LOD &amp; frustum streaming</strong> — serve only visible / near chunks to the browser; distance and screen-space error drive splat density.</li>
+        <li><strong>VRAM / resource manager</strong> — adaptive budgets for splat counts, atlas sizes, and compile queues (profiles for desktop / laptop / headless).</li>
+        <li><strong>Progressive initial compile</strong> — replace the one-shot full pass (~7.3 s on the hallway) with background progressive chunk build + live partial views.</li>
+        <li><strong>Appearance-aware splat generation</strong> — consume v9 appearance patches and evidence confidence so flat walls stay coarse geometry with rich texture, not splat explosion.</li>
+        <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback (V12).</li>
+        <li><strong>Real LingBot quality lane</strong> — when CUDA + checkpoint are present, measure throughput, trajectory error, and VRAM honestly; keep the synthetic provider as the CI contract.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>Viewer streams Gaussians under a declared VRAM budget without dropping the authoritative world.</li>
+        <li>Incremental compile remains one-chunk for local edits; progressive initial compile is measurable.</li>
+        <li>Benchmarks separate synthetic plumbing from real-model perception quality.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V11 runtime compilers · V12 Gaussian scene &amp; splat renderer · optional: GPU + LingBot checkpoint for the quality lane.</p>
+    </article>
+
+    <!-- ─────────────── V14 ─────────────── -->
+    <article class="update" id="v14">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: V10/V12 registration</span>
+      </div>
+      <h2>V14 — Complete Registration &amp; Mapping</h2>
+      <p>Close multi-capture mapping for real: global consistency, loop closure, and windowed streaming alignment — so successive uploads and live streams land in one coherent world without silent overlaps.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Global pose graph</strong> — pairwise ICP (V12) becomes edges in a graph; optimize poses under measurement covariances.</li>
+        <li><strong>Loop closure</strong> — detect revisit constraints; reject false loops with geometric + appearance checks.</li>
+        <li><strong>Cross-capture registration as default</strong> — new uploads propose an alignment preview (accept / reject / manual), then merge observations into evidence rather than binning blindly in world frame (the V10 honest gap).</li>
+        <li><strong>Windowed streaming alignment</strong> — cross-window registration for long sequences; pending-alignment UX for ambiguous overlaps.</li>
+        <li><strong>Metric anchors as first-class</strong> — door widths, AR poses, known markers resolve absolute scale into the same graph.</li>
+        <li><strong>Map quality reports</strong> — drift, residual histograms, rejected edges — never a silent “success.”</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>Two non-overlapping scans of the same space merge only after accepted registration; conflicts update evidence, not overwrite.</li>
+        <li>Loop closure demonstrated on a multi-lap synthetic or real trajectory with measured residual reduction.</li>
+        <li>Drift over long sequences is reported when a real model path is available; synthetic GT remains the CI floor.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V12 ICP / Umeyama / pending alignment · V11 evidence (no-overwrite contradiction) · V10 Captures &amp; revisions.</p>
+    </article>
+
+    <!-- ─────────────── V15 ─────────────── -->
+    <article class="update" id="v15">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: V11 CompiledRepresentation</span>
+      </div>
+      <h2>V15 — World Compiler Framework</h2>
+      <p>Unify every derived representation under one compiler contract: mesh, Gaussians, navmesh, physics hulls, lighting caches, neural appearance packs — each a dirty-chunk consumer of the runtime, none a second world.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Single compiler registry</strong> — declare deps, priority, chunk schema, serialization, and event subscriptions once.</li>
+        <li><strong>Stock compilers</strong> — VoxelMesh &amp; SemanticCache (V11) · GaussianScene (V12/V13) · NavMesh · CollisionHulls · Lighting/Irradiance · optional NeuralAppearance / Style packs.</li>
+        <li><strong>Appearance-patch compiler</strong> — promote v9 atlas patches to a runtime-recompilable representation (marked Partial in V11).</li>
+        <li><strong>Compiler CI</strong> — each compiler has incremental correctness tests (identity/hash of untouched chunks) and a budget profile.</li>
+        <li><strong>Swap without downtime</strong> — compile dirty → atomic swap; viewers never see half-built chunks.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>Adding a new derived view = implementing <code>CompiledRepresentation</code> + tests; no bespoke sync loops.</li>
+        <li><code>docs/INCREMENTAL_MATRIX.md</code> moves Appearance and remaining Global rows toward Incremental with justification.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V11 runtime (dirty, scheduler, depgraph, events) · V12/V13 Gaussian compiler as the reference production consumer.</p>
+    </article>
+
+    <!-- ─────────────── V16 ─────────────── -->
+    <article class="update" id="v16">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: view wall + splat + appearance</span>
+      </div>
+      <h2>V16 — Universal Visualization Engine</h2>
+      <p>Make the homepage “User’s Chosen Reality” wall operational: Raster, Neural, and Analytics pipelines as interchangeable observers of the same world, selectable live without regenerating authority.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Renderer plugin API</strong> — each view mode is a package: inputs (compiled chunks + components + evidence), outputs (framebuffer / overlay), zero world mutation.</li>
+        <li><strong>Three lanes</strong> — Raster (native voxel, wireframe, collision, LOD) · Neural / photoreal / style (appearance packs, optional SD-class enhancers gated by metrics) · Analytics (thermal, semantic, cost, attention, coverage).</li>
+        <li><strong>Camera invariant preserved</strong> — camera motion never triggers neural recompilation; only world edits do (dirty regions).</li>
+        <li><strong>AR / VR / MR adapters</strong> — passthrough overlays and XR cameras as additional observers.</li>
+        <li><strong>Multi-view sync</strong> — same world revision across multiple clients; view choice is local.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>At least one renderer per lane ships with measured frame budgets and a “owns no world state” guarantee.</li>
+        <li>Switching view modes never changes voxel occupancy, components, or evidence.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V15 compilers · V11 zero-regen / dirty invariants · existing Three.js viewer as the engineering client.</p>
+    </article>
+
+    <!-- ─────────────── V17 ─────────────── -->
+    <article class="update" id="v17">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+      </div>
+      <h2>V17 — World Simulation</h2>
+      <p>Run deterministic physics, agents, and processes on the authoritative voxel world and its Components — simulation as a first-class citizen, not a side demo.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>WorldClock + EventScheduler</strong> — discrete, reproducible ticks; recorded timelines for replay.</li>
+        <li><strong>Physics on voxels &amp; Components</strong> — collision from SVO / hull compilers; gravity, constraints, simple fluids/airflow as optional solvers.</li>
+        <li><strong>Agent &amp; automation runtime</strong> — scripted and AI agents act through the same APIs as robots and players.</li>
+        <li><strong>Dirty-aware sim</strong> — world edits invalidate only affected sim islands; no full-world reset.</li>
+        <li><strong>Replay &amp; what-if branches</strong> — fork a revision, simulate, compare, optionally commit.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>Same initial revision + same inputs → identical sim trajectories (determinism test).</li>
+        <li>Walk / Fly collision in the viewer can optionally consume the production physics hull compiler.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V15 collision / navmesh compilers · V10 Components · V11 events &amp; revisions · SVO collision suite.</p>
+    </article>
+
+    <!-- ─────────────── V18 ─────────────── -->
+    <article class="update" id="v18">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+      </div>
+      <h2>V18 — Digital Twin Platform</h2>
+      <p>Keep real devices and spaces continuously synchronized into the same world: sensors propose observations, the twin stays editable and queryable, and actuation goes back out through explicit channels.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Live sensor adapters</strong> — RGB-D, LiDAR, IMU, IoT, industrial buses → Captures / observations with provenance.</li>
+        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded state changes emit actuation events (never silent).</li>
+        <li><strong>Multi-site federation</strong> — regions / buildings as hierarchical Components with sync policies.</li>
+        <li><strong>SLA &amp; health</strong> — sensor coverage, staleness, confidence decay (Evidence Engine aging) as first-class twin health metrics.</li>
+        <li><strong>Security &amp; tenancy</strong> — who may observe, edit, or actuate which Components.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>A live device stream updates evidence and Components without stopping the viewer or sim.</li>
+        <li><code>trace(point)</code> still reaches the originating Capture / device message.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V10 upload / Captures · V11 evidence aging · V14 registration for relocating sensors · V17 for actuated sim feedback.</p>
+    </article>
+
+    <!-- ─────────────── V19 ─────────────── -->
+    <article class="update" id="v19">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: V10 query + V11 evidence</span>
+      </div>
+      <h2>V19 — Spatial Database &amp; Query Engine</h2>
+      <p>Scale the world into a persistent spatial database: disk-backed evidence and revisions, indexed queries, and analytics that stay honest at city / campus scale.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Disk persistence</strong> — evidence, revisions, Captures, Components, compiler artifacts survive restart (closes V11 in-memory limit).</li>
+        <li><strong>Spatial &amp; semantic indexes</strong> — SVO + secondary indexes for materials, types, confidence, time, provider, capture.</li>
+        <li><strong>Query language v2</strong> — joins across Components / Captures / evidence / trajectories; streaming query results.</li>
+        <li><strong>Vectorized evidence</strong> — replace per-voxel Python dict hot paths for large worlds (V11 honest note).</li>
+        <li><strong>Analytics views</strong> — coverage, uncertainty maps, change detection between revisions as compiled analytics.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>Cold start restores an identical revision with checksummed artifacts.</li>
+        <li>Declared query SLAs on hallway-scale and a larger synthetic campus fixture.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V10 query API · V11 evidence / revisions · V15 artifact store · SVO as spatial accelerator.</p>
+    </article>
+
+    <!-- ─────────────── V20 ─────────────── -->
+    <article class="update" id="v20">
+      <div class="update-meta">
+        <time>Next</time>
+        <span class="badge">Planned</span>
+      </div>
+      <h2>V20 — Plugin SDK &amp; World Operating System</h2>
+      <p>Productize the World OS: a stable SDK so third parties ship providers, compilers, renderers, sensors, and tools without forking the core — the operating system for spatial worlds.</p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li><strong>Public SDK</strong> — typed APIs for providers, compilers, renderers, query extensions, and actuation; versioned compatibility.</li>
+        <li><strong>Plugin lifecycle</strong> — install, sandbox permissions, resource budgets, hot-reload where safe.</li>
+        <li><strong>World OS shell</strong> — graduate the viewer panels (upload, search, runtime, reconstruction) into a coherent operator UI with history / revision browsers.</li>
+        <li><strong>Packaging &amp; distribution</strong> — worlds as portable bundles (voxels + evidence + components + selected compiled views).</li>
+        <li><strong>Compliance hooks</strong> — audit logs for edits, uploads, and actuations.</li>
+      </ul>
+
+      <h3>Definition of done</h3>
+      <ul>
+        <li>An external sample plugin (provider or renderer) builds against the SDK and passes CI without core patches.</li>
+        <li>World bundle export / import round-trips with provenance intact.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V15–V16 plugin surfaces · V10–V12 server APIs · V19 persistence for durable worlds.</p>
+    </article>
+
+    <!-- ─────────────── V21+ ─────────────── -->
+    <article class="update" id="v21">
+      <div class="update-meta">
+        <time>Horizon</time>
+        <span class="badge">Horizon</span>
+      </div>
+      <h2>V21+ — World Intelligence &amp; Autonomous Planning</h2>
+      <p>Agents that understand, plan, and act inside the same authoritative world — using evidence, semantics, and simulation — without treating a neural render as reality.</p>
+
+      <h3>Themes (multi-milestone)</h3>
+      <ul>
+        <li><strong>World understanding</strong> — long-horizon semantic graphs, affordances, and task-relevant abstractions over Components.</li>
+        <li><strong>Autonomous planning</strong> — planners that query the spatial DB, simulate branches (V17), and propose edits or actuations with human-visible justification.</li>
+        <li><strong>Attention &amp; uncertainty-driven sensing</strong> — next-best-view / next-best-sensor policies that maximize evidence gain (ties to Evidence Engine confidence).</li>
+        <li><strong>Multi-agent coordination</strong> — robots, AIs, and humans sharing one revision timeline with conflict policies.</li>
+        <li><strong>Prediction layers</strong> — forecast views (occupancy, traffic, energy) as compiled analytics — always labeled predicted, never smuggled into authority.</li>
+        <li><strong>Continuous learning loops</strong> — experience from twins and sims feeds appearance / perception training under frozen metrics (same honesty rules as appearance v2.x).</li>
+      </ul>
+
+      <h3>Non-goals (still)</h3>
+      <ul>
+        <li>The renderer never becomes the simulator.</li>
+        <li>Generated imagery never silently becomes occupancy or Components.</li>
+        <li>Autonomy never skips provenance — every act traces to world state and policy.</li>
+      </ul>
+
+      <h3>Depends on</h3>
+      <p>V16–V20 as the operable platform · V11 evidence · V17 sim · V18 twins · V19 query scale.</p>
+    </article>
+
+    <section>
+      <h2>How to read this roadmap</h2>
+      <div class="diagram">V1–V9   Capture &amp; adaptive voxels (measured)
+V10–V11 World OS + runtime + evidence
+V12     Perception providers + Gaussians (scaffolded)
+   │
+   ▼
+V13     Production Gaussian engine
+V14     Global registration &amp; mapping
+V15     Unified world compilers
+V16     Interchangeable visualization
+V17     Simulation
+V18     Digital twins
+V19     Spatial database
+V20     Plugin SDK / World OS product
+   │
+   ▼
+V21+    World intelligence &amp; planning</div>
+      <div class="highlight">
+        <p><strong>Shipped milestones earn their place with tests and numbers.</strong> Planned milestones above are the intended product arc; dates are intentionally omitted until a milestone opens with a definition-of-done and an honest environment report — the same standard used for V8–V12.</p>
+      </div>
+      <p>
+        <a class="cta-link" href="updates.html">Shipped updates →</a>
+        <a class="cta-link" href="paper.html" style="margin-left: 0.5rem">Technical paper →</a>
+        <a class="cta-link" href="benchmarks.html" style="margin-left: 0.5rem">Benchmarks →</a>
+      </p>
+    </section>
+
+    <footer>
+      <p><a href="index.html">Home</a> · <a href="updates.html">Updates</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="gallery.html">Gallery</a> · <a href="paper.html">Paper</a> · <a href="roadmap.html">Roadmap</a> · <a href="https://github.com/voxelworldmodel">GitHub</a></p>
+    </footer>
+  </div>
+<script defer src="site.js"></script>
+</body>
+</html>
