@@ -14,9 +14,9 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v12">V12 Gaussians</a>
         <a href="#v11">V11 world runtime</a>
         <a href="#v10">V10 world engine</a>
-        <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
@@ -48,6 +48,51 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V12 streaming + Gaussians ─────────────── -->
+    <section class="bench-milestone" id="v12">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">72/72 tests</span>
+      </div>
+      <h2>V12, Streaming Reconstruction &amp; Persistent Gaussians</h2>
+      <p>Provider-driven streaming perception into the V11 evidence engine, ICP registration that closes the V10 gap, and a chunked persistent Gaussian scene with a real elliptical splat renderer. Real LingBot inference is unsupported here (no CUDA / no checkpoint) — and that is stated, not faked.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">72/72</span></div>
+        <div class="bench-chip"><span class="chip-label">Splats live</span><span class="chip-value">73 768</span></div>
+        <div class="bench-chip"><span class="chip-label">Gaussian chunks</span><span class="chip-value">268</span></div>
+        <div class="bench-chip"><span class="chip-label">ICP fitness</span><span class="chip-value">&gt;0.9</span></div>
+        <div class="bench-chip"><span class="chip-label">Scale recovery</span><span class="chip-value">2.5× exact</span></div>
+        <div class="bench-chip"><span class="chip-label">LingBot drift</span><span class="chip-value">0</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v12_gaussian.png" alt="Gaussian Splat (v12) representation: elliptical splat reconstruction of the hallway with Runtime panel showing gaussian_scene 268.">
+        <figcaption><strong>Gaussian Splat (v12).</strong> 73 768 elliptical splats from 268 compiled chunks — instanced quads with gaussian falloff, not point sprites.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Measured (<code>docs/V12_BENCHMARKS.md</code>) — synthetic GT + real algorithms</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th>Value</th><th>Basis</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Metric">ICP known-transform recovery</td><td class="num ok" data-label="Value">fitness &gt;0.9 · rmse &lt;0.05 · ~0° rot err</td><td data-label="Basis">synthetic GT</td></tr>
+            <tr><td data-label="Metric">Umeyama scale recovery</td><td class="num ok" data-label="Value">exact (2.5×)</td><td data-label="Basis">synthetic GT</td></tr>
+            <tr><td data-label="Metric">Non-overlap registration</td><td class="num ok" data-label="Value">rejected → pending alignment</td><td data-label="Basis">synthetic</td></tr>
+            <tr><td data-label="Metric">Gaussian full compile (hallway)</td><td class="num" data-label="Value">268 chunks / 73 768 splats / ~7.3 s</td><td data-label="Basis">measured</td></tr>
+            <tr><td data-label="Metric">Gaussian incremental (1 new voxel)</td><td class="num ok" data-label="Value">1 chunk recompiled · 23 unchanged</td><td data-label="Basis">measured</td></tr>
+            <tr><td data-label="Metric">Gaussian serialization</td><td class="num ok" data-label="Value">SHA-256 checksummed · corruption detected</td><td data-label="Basis">measured</td></tr>
+            <tr><td data-label="Metric">Real LingBot throughput / VRAM / traj error</td><td class="num bad" data-label="Value">NOT MEASURED</td><td data-label="Basis">needs GPU + checkpoint</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Unavailable hardware was never converted into a passing benchmark. The synthetic provider proves plumbing and math; LingBot’s perception quality is not claimed.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v12">Read full V12 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V11 world runtime ─────────────── -->
     <section class="bench-milestone" id="v11">

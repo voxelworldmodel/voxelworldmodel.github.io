@@ -254,25 +254,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V11, the Persistent World Runtime &amp; Evidence Engine</strong> — every change flows through one runtime that accumulates evidence, propagates dirtiness across six layers, and recompiles only affected chunks. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V12, Streaming Reconstruction &amp; Persistent Gaussian Scene</strong> — provider-driven perception into the evidence engine, ICP registration that closes the V10 gap, and 73 768 elliptical splats live in the viewer. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V11: evidence-backed voxels, event-driven recompiles — 47/47 tests</h3>
-        <p>Every voxel now carries <strong>evidence</strong> (positive/negative mass → confidence, provenance, estimated error); observations accumulate — agreement raises confidence, contradiction lowers it <em>without overwriting history</em>. A single GLB upload produced <strong>12 028 events</strong> and dirtied only <strong>31 chunks</strong>, with prioritized visible-first recompiles and a pub/sub event bus where nothing polls. New compiled representations (Gaussian scenes, navmeshes, neural caches) plug in by subscribing to runtime events — no bespoke synchronization.</p>
+        <h3>✅ V12: streaming → evidence → Gaussians — 72/72 tests · LingBot audited, not faked</h3>
+        <p>LingBot-Map is vendored and commit-pinned (Apache-2.0, 0 drift); a <code>ReconstructionProvider</code> stack streams frames into positive surface and bounded free-space evidence; real ICP + Umeyama recovers known transforms to <strong>fitness &gt;0.9 / rmse &lt;0.05</strong> and rejects non-overlap instead of silently merging. A chunked Gaussian scene — a V11 <code>CompiledRepresentation</code> — compiles the hallway to <strong>268 chunks / 73 768 splats</strong>, then recompiles exactly one chunk when a single voxel changes. The viewer draws real elliptical splats. Real LingBot inference needs CUDA + a checkpoint and is unsupported here — stated as such.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">47/47</span><span class="label">Tests (runtime + worldos + SVO)</span></div>
-        <div class="stat"><span class="value">12 028</span><span class="label">Events from one GLB upload</span></div>
-        <div class="stat"><span class="value">31</span><span class="label">Dirty chunks — no global rebuild</span></div>
-        <div class="stat"><span class="value">6</span><span class="label">Layers of dirty propagation</span></div>
-        <div class="stat"><span class="value">79 439</span><span class="label">Evidence-backed voxels, live</span></div>
+        <div class="stat"><span class="value">72/72</span><span class="label">Tests (25 V12 + prior suites)</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Elliptical splats live</span></div>
+        <div class="stat"><span class="value">268</span><span class="label">Gaussian chunks</span></div>
+        <div class="stat"><span class="value">&gt;0.9</span><span class="label">ICP fitness (synth GT)</span></div>
+        <div class="stat"><span class="value">12 028</span><span class="label">V11 events / upload (prior)</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v11_runtime.png" alt="VWM viewer with the Runtime Inspector panel: live evidence stats, dirty counts, scheduler queue, confidence histogram, and streaming event feed.">
-        <figcaption><strong>The Runtime Inspector, live in the viewer.</strong> Evidence stats, dirty state (5 671 voxels / 31 chunks), the scheduler queue, 12 028 event totals, the confidence histogram, and a streaming feed of <code>ChunkInvalidated</code> events — polled live from the runtime.</figcaption>
+        <img src="viewer_v12_gaussian.png" alt="VWM viewer in Gaussian Splat (v12) mode showing elliptical splat reconstruction of the hallway.">
+        <figcaption><strong>Gaussian Splat (v12), live in the viewer.</strong> 73 768 elliptical instanced-quad splats from 268 compiled chunks — the Runtime panel shows <code>gaussian_scene: 268</code>.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

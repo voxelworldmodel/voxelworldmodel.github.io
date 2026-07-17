@@ -14,6 +14,7 @@
       <h1>Viewer Gallery</h1>
       <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
       <nav>
+        <a href="#g-v12">V12 Gaussians</a>
         <a href="#g-v11">V11 Runtime</a>
         <a href="#g-v10">V10 World OS</a>
         <a href="#g-svo">SVO</a>
@@ -29,6 +30,18 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <!-- ─────────────── V12 Gaussians ─────────────── -->
+    <section id="g-v12">
+      <h2>V12, Gaussian Splat Scene</h2>
+      <p>Chunked persistent Gaussian scene derived from voxels + evidence — elliptical splat renderer, not point sprites. <a href="updates.html#v12">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="viewer_v12_gaussian.png" alt="Gaussian Splat (v12) elliptical reconstruction of the hallway with Runtime panel showing gaussian_scene 268.">
+          <figcaption><strong>Gaussian Splat (v12).</strong> 73 768 elliptical splats / 268 chunks — Runtime compilers line shows <code>gaussian_scene: 268</code>.</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <!-- ─────────────── V11 runtime ─────────────── -->
     <section id="g-v11">

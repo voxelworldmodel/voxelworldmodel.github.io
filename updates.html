@@ -14,9 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v11">Latest: V11 world runtime</a>
+        <a href="#v12">Latest: V12 streaming + Gaussians</a>
+        <a href="#v11">V11 world runtime</a>
         <a href="#v10">V10 world engine</a>
-        <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -39,6 +39,75 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v12">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">72/72 tests pass</span>
+      </div>
+      <h2>V12, Streaming Reconstruction, Registration &amp; Persistent Gaussian Scene</h2>
+      <p>V12 wires a <strong>ReconstructionProvider</strong> stack into the V11 runtime: perception → observations → evidence → authoritative voxels → incremental Gaussian scene. LingBot-Map is vendored and audited (Apache-2.0, commit-pinned); registration closes the V10 cross-capture gap; and a real elliptical Three.js splat renderer visualizes the derived scene. The Adaptive Voxel World remains the sole geometric source of truth. Boundaries are stated honestly throughout — this environment has <strong>no CUDA GPU and no LingBot checkpoint</strong>, so real-model inference is unsupported rather than faked.</p>
+
+      <div class="status-banner">
+        <h3>✅ 72/72 tests · 73 768 elliptical splats live · ICP fitness &gt;0.9 on synthetic GT</h3>
+        <p>Phase 0 vendored LingBot at commit <code>7ff6f3ed…</code> (36 modules, 0 drift under <code>vwm third-party verify lingbot-map</code>). The provider stack, streaming ingest, evidence signs, ICP+Umeyama registration, trajectory memory, keyframe policy, query extensions, and a chunked persistent Gaussian scene all run with working, tested code. The initial hallway compile produced <strong>268 chunks / 73 768 splats in ~7.3 s</strong>; thereafter one new voxel recompiles exactly one chunk (23 keep identity + content hash). The viewer’s <strong>Gaussian Splat (v12)</strong> representation draws real elliptical quads with a gaussian-falloff shader — not point sprites.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">72/72</span><span class="label">Tests (25 V12 + 47 prior)</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Elliptical splats served live</span></div>
+        <div class="stat"><span class="value">268</span><span class="label">Gaussian chunks (hallway)</span></div>
+        <div class="stat"><span class="value">&gt;0.9</span><span class="label">ICP fitness, rmse &lt;0.05 (synth GT)</span></div>
+        <div class="stat"><span class="value">2.5×</span><span class="label">Umeyama scale recovered exact</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">LingBot third-party drift</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v12_gaussian.png" alt="VWM viewer in Gaussian Splat (v12) mode: elliptical splat reconstruction of the hallway with Runtime panel showing gaussian_scene 268 chunks.">
+        <figcaption><strong>Gaussian Splat (v12), live.</strong> Real elliptical instanced quads oriented by each splat’s rotation/scale, with a fragment gaussian-falloff shader — 73 768 splats from 268 compiled chunks. The Runtime panel shows <code>gaussian_scene: 268</code> under compilers. Representation button and slider both say Gaussian Splat (v12).</figcaption>
+      </figure>
+
+      <h3>Phase 0 — LingBot Vendored &amp; Audited</h3>
+      <p>Cloned, commit-pinned (<code>7ff6f3ed0913d4d326f8f13bbb429c4ffc0195c2</code>), Apache-2.0 license preserved, 36-module source under <code>third_party/lingbot-map/</code>, full audit in <code>docs/LINGBOT_AUDIT.md</code>, and <code>vwm third-party verify lingbot-map</code> passes with zero drift. Adapter-only integration — no patches to upstream.</p>
+
+      <h3>Provider Stack (Goals 1–2)</h3>
+      <p>A <code>ReconstructionProvider</code> protocol with typed outputs, registry, and session model (<code>world.reconstruction.providers() / create_session / ingest_frames / ingest_video / ingest_camera_stream</code>). Two providers ship: a <strong>deterministic synthetic</strong> one that renders a real box-room (depth + RGB + confidence + exact poses, GPU-free) and drives the whole pipeline plus registration ground truth; and the <strong>real LingBot adapter</strong> that integrates at the <code>GCTStream</code> API level and reports a specific blocker via <code>availability()</code> when torch/CUDA/checkpoint are absent — it never fabricates predictions.</p>
+
+      <h3>Streaming → Evidence (Goals 3, 7, 8)</h3>
+      <p>Frame-by-frame ingest (video decoded incrementally, never whole-file), depth unprojection with explicit conventions, and positive surface + <strong>bounded negative free-space</strong> evidence into the V11 engine (never behind the surface). Confidence-weighted, full provenance per observation. Free-space retraction of low-confidence voxels is demonstrated. Nothing bypasses the Evidence Engine.</p>
+
+      <h3>Registration (Goals 5–6) — Closes the V10 Gap</h3>
+      <p>Real ICP (point-to-point / point-to-plane) + Umeyama scale+rigid, with an absolute-distance acceptance so non-overlapping clouds are rejected. Pending-alignment workflow: <code>world.registration().preview / accept / reject / set_manual_transform</code>. Measured on synthetic ground truth:</p>
+      <ul>
+        <li>Known 0.4 rad transform recovered to <strong>fitness &gt;0.9 / rmse &lt;0.05</strong></li>
+        <li><strong>2.5× scale recovered exactly</strong></li>
+        <li>Non-overlapping clouds <strong>rejected → pending alignment</strong> — never a silent merge</li>
+      </ul>
+
+      <h3>Persistent Gaussian Scene (Goals 12–16)</h3>
+      <p>Chunked, derived from voxels + appearance + evidence; a V11 <code>CompiledRepresentation</code>. Proven incremental: adding one voxel recompiles exactly one chunk; appearance-only edit recompiles one chunk with no geometry change; 23/24 chunks keep identity + content hash. Binary chunk serialization with SHA-256 checksums and corruption detection. And a real elliptical Three.js splat renderer — instanced quads + gaussian-falloff shader, not point sprites — served by <code>/api/gaussian</code>.</p>
+
+      <h3>Also Delivered</h3>
+      <ul>
+        <li><strong>Trajectory memory</strong> — <code>world.trajectories.list / get / pose_at / compare</code>, persisted per capture</li>
+        <li><strong>Keyframe policy</strong> — fixed_interval / motion / novelty / coverage / hybrid / lingbot_compatible</li>
+        <li><strong>Query extensions</strong> — <code>provider:…</code>, <code>is_keyframe==true</code> (plus V11 confidence / capture operators)</li>
+        <li><strong>17 docs</strong> covering providers, streaming, registration, Gaussians, LingBot audit/integration, and benchmarks</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>No CUDA GPU, no checkpoint here</strong> — real LingBot inference is unsupported; the adapter is contract-tested and the full pipeline is validated with the synthetic provider only. No fake real-model benchmarks were produced.</li>
+        <li><strong>Designed but not implemented this milestone:</strong> dynamic-scene safeguards, loop closure, LOD / frustum streaming, a full VRAM resource manager, and dedicated live-capture viewer panels — each flagged explicitly rather than faked.</li>
+        <li><strong>Registration is pairwise / bounded</strong> (no global pose-graph); long-sequence drift is not measured without the real model.</li>
+        <li><strong>Initial Gaussian compile</strong> is one full pass at server start (~7.3 s / 73k voxels); thereafter it is incremental. Background progressive initial compile is future work.</li>
+        <li>FlashInfer KV-cache is not installed; SDPA fallback is the documented default.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> LingBot supplies perception, the Evidence Engine decides belief, the Adaptive Voxel World owns reality, the SVO accelerates, Components preserve identity, the runtime coordinates, and the Gaussian scene visualizes — with real, tested code for every part that can run without proprietary GPU weights, and clear failures for the parts that cannot. To exercise the real LingBot path: a CUDA GPU + checkpoint, then <code>world.reconstruction.create_session(provider="lingbot-map", config=ProviderConfig(checkpoint_path=…))</code> — the same downstream pipeline already proven synthetically carries it through to voxels, SVO, and Gaussians. Deliverables: Phase-0 vendoring + audit, provider stack + synthetic + LingBot adapters, streaming ingest, ICP registration, trajectory/keyframe services, chunked Gaussian compiler + splat renderer, 25 new V12 tests (72 total), and 17 docs including <code>V12_REPORT.md</code> / <code>V12_BENCHMARKS.md</code>.</p>
+      </div>
+    </article>
 
     <article class="update" id="v11">
       <div class="update-meta">
