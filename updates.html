@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v3">Latest: Hollow v3</a>
+        <a href="#viewer">Latest: VWM Viewer</a>
+        <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video reconstruction</a>
         <a href="#real-capture">Webcam capture</a>
@@ -28,6 +29,72 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="viewer">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Working, measured</span>
+      </div>
+      <h2>QA Loop + Official Three.js VWM Viewer</h2>
+      <p>Two deliverables on top of the v3 hollow world: an <strong>automated QA loop</strong> that found and fixed real import/spawn defects with before/after measurements, and the <strong>official browser-based engineering client</strong> for the authoritative VoxelWorld — a Three.js viewer/editor that owns no world state of its own.</p>
+
+      <figure class="figure figure-accent figure-tall">
+        <img src="vwm_viewer_screenshot.png" alt="The VWM Three.js viewer rendering the reconstructed hallway in real-color mode, with rendering-mode buttons, a voxel inspector showing authoritative metadata, and a live debug/stats panel reporting 61 FPS and 15,613 voxels.">
+        <figcaption><strong>The VWM Viewer, live on the v3 world.</strong> Real-color mode with the hallway's observed appearance on instanced voxels. Top right: nine instant-switch rendering modes. Bottom left: click-to-inspect panel showing one voxel's authoritative metadata (class SURFACE, provenance observed_surface, metric position, neighbours, revision). Bottom right: live stats — 61 FPS, 15 613 voxels, SURFACE 8 047 / FREE 4 850, revision and dirty-region counters.</figcaption>
+      </figure>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">63</span><span class="label">FPS, 15 613 instanced voxels</span></div>
+        <div class="stat"><span class="value">13 / 15</span><span class="label">Acceptance criteria hit</span></div>
+        <div class="stat"><span class="value">9</span><span class="label">Render modes, instant switching</span></div>
+        <div class="stat"><span class="value">3×3×3</span><span class="label">Edit recompile scope (local)</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">QA iterations, defects fixed</span></div>
+        <div class="stat"><span class="value">0.992</span><span class="label">Free connectivity after QA fix (was 0.0)</span></div>
+      </div>
+
+      <h3>QA Loop: Real Defects, Measured Fixes</h3>
+      <p>Three autonomous QA iterations over the canonical v3 world, logged in <code>v3/qa/ENGINEERING_LOG.md</code>:</p>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Iteration</th><th>Defect found</th><th>Fix and measured result</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Iteration">1 → 2</td>
+            <td data-label="Defect"><strong>Critical:</strong> spawn out-of-bounds at (12, 22, −2) and 146 voxels dropped to negative coordinates — the import shifted by <code>solid.min</code> while free space extends below the solid bbox</td>
+            <td data-label="Fix" class="ok">Unified shift (min of solid, free, spawn) → <strong>0 dropped voxels</strong>, free connectivity <strong>0.0 → 0.992</strong>, spawn in-bounds and FREE</td>
+          </tr>
+          <tr>
+            <td data-label="Iteration">3</td>
+            <td data-label="Defect"><strong>Masked defect surfaced:</strong> spawn had no floor. Root cause, measured: only <strong>9%</strong> of free voxels have observed floor below — the forward walk rarely looked down</td>
+            <td data-label="Fix" class="ok"><code>find_standable_spawn</code> picks a FREE voxel above observed floor with head clearance → spawn (12,22,0) → <strong>(12,22,16)</strong>, floor 0.1 m below, valid</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="footnote">Honest note: broad floor coverage is a <strong>capture gap</strong> (fixable only by looking down while scanning), not invented by the fix. Remaining defects are capture-data limitations, not code bugs.</p>
+
+      <h3>The Viewer: One Source of Truth</h3>
+      <p>A Python server (<code>tools/vwm_viewer/server.py</code>) holds the authoritative v3 VoxelWorld and serves and edits it via <code>/api/world</code>, <code>/api/meta</code>, <code>/api/stats</code>, <code>/api/edit</code>. The Three.js client <strong>owns no world state</strong> — every voxel, class, colour, and metadata comes from the API, and edits POST back to the server, which mutates the authoritative grid. Three.js r128 is vendored locally, no external CDN. Camera movement triggers <strong>zero</strong> server or reconstruction calls — the zero-regeneration invariant, again, at the viewer level.</p>
+
+      <h3>Acceptance Criteria (13 / 15)</h3>
+      <ul>
+        <li>✅ Backend launches, viewer auto-opens in the browser, and loads the authoritative world directly.</li>
+        <li>✅ Displays the hollow hallway; FREE/OCCUPIED/UNKNOWN occupancy view (blue/orange/yellow), plus real-color, hollow (matter only), free-space, confidence heatmap, observation count, semantic, and wireframe — <strong>9 modes with instant switching</strong> (in-place instance recolour, no geometry rebuild).</li>
+        <li>✅ Orbit + fly camera (WASD / mouse-look), spawn-in-FREE-space.</li>
+        <li>✅ Click any voxel → inspector with authoritative metadata: class, provenance, confidence, neighbours, metric position, revision.</li>
+        <li>✅ Edit a voxel → the authoritative world changes: revision bumps, class counts change, with <strong>local 3×3×3 recompile scope and <code>global_rebuild=false</code></strong> — the local-recompile invariant proven on edit.</li>
+        <li>✅ 63 FPS measured rendering 15 613 instanced voxels (single draw call).</li>
+        <li>✅ Screenshots of all 8 visualization modes captured (<code>v3/viewer_shots/</code>).</li>
+        <li>⚠️ Live Luanti edit-reflection: partial — edits hit the shared authoritative world Luanti reads, but Luanti was not connected this session.</li>
+      </ul>
+
+      <h3>Honest Partial / Not Done</h3>
+      <p>The spec is enormous; these are laid out as extension points in <code>VIEWER_REPORT.md</code>: the full edit suite (component move/rotate/undo/merge), ~21 more debug overlays (TSDF slices, provenance, LOD, trajectory, navmesh), hierarchy panel, search, time controls, measurement tools, MP4 recording, WebXR, and WebSocket live-push (currently a 1 s poll; edits update instantly).</p>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The foundation is real — a working browser engineering client over the single authoritative VoxelWorld, not a second engine. It renders the hollow reconstructed hallway with real observed colour at 63 FPS, inspects any voxel's authoritative metadata, and proves the local-recompile invariant on every edit.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v3">
       <div class="update-meta">

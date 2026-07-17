@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video</a>
@@ -37,6 +38,71 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── QA loop + Three.js viewer ─────────────── -->
+    <section class="bench-milestone" id="viewer">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Working, measured</span>
+      </div>
+      <h2>QA Loop + Three.js VWM Viewer</h2>
+      <p>Automated QA over the v3 world (3 iterations, measured fixes) plus the official browser engineering client: a Three.js viewer/editor over the single authoritative VoxelWorld, which owns no world state of its own.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">FPS</span><span class="chip-value">63</span></div>
+        <div class="bench-chip"><span class="chip-label">Voxels</span><span class="chip-value">15 613</span></div>
+        <div class="bench-chip"><span class="chip-label">Acceptance</span><span class="chip-value">13/15</span></div>
+        <div class="bench-chip"><span class="chip-label">Render modes</span><span class="chip-value">9</span></div>
+        <div class="bench-chip"><span class="chip-label">Edit scope</span><span class="chip-value">3×3×3</span></div>
+        <div class="bench-chip"><span class="chip-label">Global rebuild</span><span class="chip-value">false</span></div>
+      </div>
+
+      <figure class="figure figure-accent figure-tall">
+        <img src="vwm_viewer_screenshot.png" alt="The VWM Three.js viewer rendering the reconstructed hallway in real-color mode with mode buttons, voxel inspector, and live stats panel.">
+        <figcaption><strong>The viewer on the v3 world, real-color mode.</strong> Live stats bottom right: 61 FPS, 15 613 voxels, SURFACE 8 047 / FREE 4 850. Bottom left: the click-to-inspect panel with one voxel's authoritative metadata.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">QA loop, defects fixed with before/after measurements</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Iteration</th><th>Defect</th><th>Measured result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Iteration">1 → 2</td>
+              <td class="num loser" data-label="Defect">Spawn out-of-bounds (12,22,−2); 146 voxels dropped; connectivity 0.0</td>
+              <td class="num winner" data-label="Result">Unified shift → 0 dropped, connectivity 0.992, spawn in-bounds <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Iteration">3</td>
+              <td class="num loser" data-label="Defect">Spawn had no floor (only 9% of free voxels have observed floor below)</td>
+              <td class="num winner" data-label="Result"><code>find_standable_spawn</code> → spawn on observed floor with head clearance <span class="trend trend-good">▲</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Remaining defects are capture-data limitations (floor coverage, absolute scale), not code bugs. Full log: <code>v3/qa/ENGINEERING_LOG.md</code>.</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Viewer measurements</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th>Value</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">Render performance</td><td class="num winner" data-label="Value">63 FPS</td><td data-label="Note">15 613 instanced voxels, single draw call, no culling needed</td></tr>
+            <tr><td class="metric" data-label="Metric">Mode switching</td><td class="num winner" data-label="Value">instant</td><td data-label="Note">9 modes, in-place instance recolour, no geometry rebuild</td></tr>
+            <tr><td class="metric" data-label="Metric">Edit round-trip</td><td class="num winner" data-label="Value">local 3×3×3</td><td data-label="Note">POST → authoritative mutation → revision++ → dirty region; <code>global_rebuild=false</code></td></tr>
+            <tr><td class="metric" data-label="Metric">Camera movement</td><td class="num winner" data-label="Value">0 server calls</td><td data-label="Note">Pure client render — the zero-regeneration invariant at the viewer level</td></tr>
+            <tr><td class="metric" data-label="Metric">World state in client</td><td class="num winner" data-label="Value">none</td><td data-label="Note">All state from <code>/api/world|meta|stats|edit</code>; Three.js r128 vendored, no CDN</td></tr>
+            <tr><td class="metric" data-label="Metric">Luanti edit-reflection</td><td class="num na" data-label="Value">partial</td><td data-label="Note">Edits hit the shared world Luanti reads; Luanti not connected this session</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#viewer">Read full viewer narrative →</a></p>
+    </section>
 
     <!-- ─────────────── reality-capture v3 (hollow + live import) ─────────────── -->
     <section class="bench-milestone" id="capture-v3">
