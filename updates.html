@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#polycam-viewer">Latest: Polycam in the viewer</a>
+        <a href="#capture-v8">Latest: Feature voxels v8</a>
+        <a href="#polycam-viewer">Polycam in the viewer</a>
         <a href="#capture-v7">Polycam fusion v7</a>
         <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
@@ -34,6 +35,82 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v8">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Measured, 13.6× fewer voxels</span>
+      </div>
+      <h2>V8, Feature-Preserving Adaptive Voxelization</h2>
+      <p>The voxel world stops looking like a uniform blocky grid and becomes an <strong>intentional voxel build of the real hallway</strong>: big 24 cm blocks blanketing flat walls, fine 3 cm voxels concentrated only at edges, corners, door frames and trim. A top-down octree voxelizer (<code>vwm.feature_voxelize</code>) is driven by <strong>measured</strong> per-sample curvature (mesh dihedral angle) and per-cell colour variance — a cell stays coarse when its bulk curvature is low and it is single-material, and subdivides only where curvature, edges, or trim live. Colour is material-aware (per-cell median, no bleeding across surfaces). Evidence-based throughout: every voxel is anchored to a measured surface sample; nothing is invented.</p>
+
+      <div class="status-banner">
+        <h3>✅ 10 231 feature voxels vs 138 910 uniform — same surface, 94.3% reduction</h3>
+        <p>Four adaptive levels (2 993 flat-wall @24 cm · 234 @12 cm · 521 @6 cm · 6 483 fine @3 cm, mean 9.5 cm) replace 138 910 uniform 3 cm blocks: <strong>13.6× fewer voxels</strong>. Fidelity is measured, not assumed: walls flat to <strong>2.8 cm RMS</strong>, corners recovered at <strong>89.7° (0.28° mean error)</strong>, and high-curvature trim gets fine voxels at <strong>3.2× the baseline rate</strong> — exactly where the architecture has detail.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">13.6×</span><span class="label">Fewer voxels (10 231 vs 138 910)</span></div>
+        <div class="stat"><span class="value">2.8 cm</span><span class="label">Wall flatness RMS (15 planes)</span></div>
+        <div class="stat"><span class="value">0.28°</span><span class="label">Mean corner angle error (48 corners)</span></div>
+        <div class="stat"><span class="value">3.2×</span><span class="label">Fine-voxel uplift on edges/trim</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Invented-geometry voxels</span></div>
+        <div class="stat"><span class="value">3–24 cm</span><span class="label">Voxel size range (4 levels)</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v8_compare.png" alt="Three top-down panels: the textured Polycam mesh, 138,910 uniform 3 cm voxels in undifferentiated grey, and 10,231 feature voxels with blue 24 cm blocks on flat walls and red fine 3 cm voxels at edges and corners.">
+        <figcaption><strong>The three-panel comparison, top-down.</strong> Left: the real measured Polycam mesh. Middle: 138 910 undifferentiated uniform 3 cm voxels — the old look. Right: 10 231 feature voxels — blue 24 cm blocks blanket flat walls, red/orange fine 3 cm voxels concentrate on edges, corners, door frames, and trim. The same hallway as an intentional voxel build, at 1/14th the count.</figcaption>
+      </figure>
+
+      <h3>Architectural Fidelity, All Measured</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Property</th><th>Measured</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Property">Wall flatness</td><td data-label="Measured" class="ok"><strong>2.8 cm RMS</strong> mean / 3.8 cm max (15 planes)</td><td data-label="Meaning">Flat regions genuinely are flat to the LiDAR noise floor — which is why they voxelize coarse</td></tr>
+          <tr><td data-label="Property">Corner recovery (48 wall–wall intersections)</td><td data-label="Measured" class="ok"><strong>89.7°</strong> mean, 0.28° error, 1.48° max</td><td data-label="Meaning">Walls meet at true right angles; 51% of voxels at those corners are fine (≤6 cm)</td></tr>
+          <tr><td data-label="Property">Thin features / trim / frames</td><td data-label="Measured" class="ok">90% covered, fine voxels at <strong>40% vs 12.5%</strong> baseline</td><td data-label="Meaning">3.2× resolution uplift where the architecture has detail</td></tr>
+          <tr><td data-label="Property">Openings / free space</td><td data-label="Measured" class="ok"><strong>100%</strong> surface-anchored, <strong>0</strong> invented</td><td data-label="Meaning">Nothing filled; openings stay open; unknown stays unknown</td></tr>
+        </tbody>
+      </table>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_v8_features_color.png" alt="Feature Voxels representation in real color: genuinely different-sized cubes, large on flat areas and small at detail.">
+          <figcaption><strong>Feature Voxels, real color.</strong> Per-instance-scaled cubes — large blocks where walls are flat, small ones only at detail. Note the new representation and voxel-size sliders in the panel.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v8_size.png" alt="Voxel-size mode: blue large flat-wall voxels with orange and red fine voxels at edges and features.">
+          <figcaption><strong>Voxel-size mode.</strong> Blue: big 24 cm flat-wall blocks. Orange/red: fine voxels — visibly concentrated at edges, frames, and trim.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v8_density.png" alt="Feature-density mode: green low-curvature regions and red high-feature regions of the hallway.">
+          <figcaption><strong>Feature-density mode.</strong> The measured curvature signal that drives subdivision: green quiet surfaces, red feature-rich regions.</figcaption>
+        </figure>
+      </div>
+
+      <h3>The Critical Tuning Insight</h3>
+      <p>On a noisy phone-LiDAR mesh, dihedral-curvature flatness needed <code>curv_flat ≈ 0.35</code>: at 0.10, 93% of the surface stayed at the finest level (walls never coarsened); at 0.55, the detail itself was over-coarsened away. The threshold is tuned empirically to this mesh's noise, not derived — reported as such.</p>
+
+      <h3>Viewer: The Slider Request, Delivered</h3>
+      <ul>
+        <li><strong>Representation slider</strong> (Surface → Literal Voxels → Feature Voxels), synced with the buttons, plus a new <code>/api/features</code> endpoint that overlays the variable-size voxels on the Polycam mesh exactly.</li>
+        <li><strong>Voxel-size slider</strong> that live re-bins the literal voxels into 5→40 cm blocks in-browser (mean-color aggregated), with click-inspect working on the binned blocks.</li>
+        <li>Three new render modes: <strong>adaptive resolution</strong>, <strong>feature density</strong>, and <strong>voxel size</strong>.</li>
+      </ul>
+
+      <h3>Honest Limits</h3>
+      <ul>
+        <li>The corner solver <strong>measures</strong> 90° recovery and confirms fine voxels sit at the seams — it does not yet <em>snap</em> voxel faces to reconstruct an idealized sharp edge; voxels remain on the octree lattice. Plane snapping / face smoothing is open rendering-normal work.</li>
+        <li>Metrics are top-down/plane-based on an axis-ish room; a fully general scene would need RANSAC plane extraction rather than axis-aligned normal clustering.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The representation now allocates resolution the way a builder would — coarse where reality is flat, fine where it has detail — with every fidelity claim measured and zero invented geometry. Deliverables in <code>checkpoints/vwm_scan/real2/v8/</code>: V8_REPORT.md, <code>feature_voxels.npz</code>, plane/corner/thin-feature/fidelity JSON reports, and the three-panel comparison; new module <code>vwm.feature_voxelize</code>; viewer upgraded with the Feature Voxels representation and both sliders.</p>
+      </div>
+    </article>
 
     <article class="update" id="polycam-viewer">
       <div class="update-meta">

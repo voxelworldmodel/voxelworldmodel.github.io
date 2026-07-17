@@ -193,25 +193,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>the Polycam scan, live in the VWM Viewer</strong> — the recognizable metric-scaled room as an extracted surface and 73 768 literal voxels, on top of the v7 multi-source fusion milestone. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V8, feature-preserving adaptive voxelization</strong> — the voxel world becomes an intentional voxel build of the real hallway: coarse where flat, fine where detailed. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ The real room, first-class in the engineering client</h3>
-        <p>The Polycam capture is served standalone by the same authoritative-world server: default view is the real textured mesh (<strong>30 974 vertices, 8K texture</strong> — countertop, wooden door, and closet all recognizable at the true 12.3 m scale), one click away from the <strong>73 768-voxel</strong> literal view with every render mode and per-voxel inspection. Beneath it, v7's fusion result stands: Polycam registered to the video world at <strong>0.030-voxel ICP median residual</strong>, exposing the monocular ~4.9× scale compression.</p>
+        <h3>✅ 13.6× fewer voxels, fidelity measured, zero invented geometry</h3>
+        <p>A curvature-driven octree voxelizer turns the Polycam mesh into <strong>10 231 feature voxels</strong> (24 cm blocks on flat walls down to 3 cm at edges, corners, and trim) instead of 138 910 uniform blocks — with walls flat to <strong>2.8 cm RMS</strong>, corners recovered at <strong>89.7° (0.28° error)</strong>, a <strong>3.2×</strong> fine-voxel uplift on trim, and <strong>100%</strong> of voxels anchored to measured surface. The viewer gained a Feature Voxels representation, a representation slider, and a live voxel-size slider.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">73 768</span><span class="label">Polycam literal voxels (5 cm)</span></div>
-        <div class="stat"><span class="value">30 974</span><span class="label">Surface vertices, 8K texture</span></div>
-        <div class="stat"><span class="value">12.3 m</span><span class="label">Hallway, correctly metric</span></div>
-        <div class="stat"><span class="value">0.030</span><span class="label">ICP median residual (v7 fusion)</span></div>
-        <div class="stat"><span class="value">4.9×</span><span class="label">Monocular scale error exposed</span></div>
+        <div class="stat"><span class="value">13.6×</span><span class="label">Fewer voxels (10 231 vs 138 910)</span></div>
+        <div class="stat"><span class="value">2.8 cm</span><span class="label">Wall flatness RMS</span></div>
+        <div class="stat"><span class="value">0.28°</span><span class="label">Mean corner angle error</span></div>
+        <div class="stat"><span class="value">3.2×</span><span class="label">Fine-voxel uplift on trim</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Invented-geometry voxels</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
-      <figure class="figure figure-tall">
-        <img src="polycam_viewer_hallway.png" alt="Fly-mode view down the voxelized Polycam hallway in real-color mode with the voxel inspector open.">
-        <figcaption><strong>Flying down the voxelized Polycam hallway.</strong> Literal Voxels, real-color mode, 64 FPS — with the inspector showing one clicked voxel's authoritative metadata (class, provenance, metric position).</figcaption>
+      <figure class="figure">
+        <img src="real_video_v8_compare.png" alt="Three top-down panels: textured Polycam mesh, uniform 3 cm voxels, and feature voxels with blue coarse walls and red fine edges.">
+        <figcaption><strong>Mesh vs uniform vs feature voxels.</strong> The same hallway: real measured surface (left), 138 910 undifferentiated 3 cm blocks (middle), and 10 231 feature voxels (right) — blue 24 cm on flat walls, red 3 cm exactly at edges, frames, and trim.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

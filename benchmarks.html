@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
         <a href="#capture-v7">Polycam v7</a>
         <a href="#capture-v5">Surface v5</a>
@@ -43,6 +44,84 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── v8 feature-preserving voxelization ─────────────── -->
+    <section class="bench-milestone" id="capture-v8">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Measured fidelity</span>
+      </div>
+      <h2>V8, Feature-Preserving Adaptive Voxelization</h2>
+      <p>The Polycam mesh voxelized by measured curvature: 24 cm blocks on flat walls, 3 cm voxels only at edges, corners, and trim. Every voxel anchored to a measured surface sample; zero invented geometry.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Feature voxels</span><span class="chip-value">10 231</span></div>
+        <div class="bench-chip"><span class="chip-label">vs uniform</span><span class="chip-value">13.6×</span></div>
+        <div class="bench-chip"><span class="chip-label">Wall RMS</span><span class="chip-value">2.8 cm</span></div>
+        <div class="bench-chip"><span class="chip-label">Corner error</span><span class="chip-value">0.28°</span></div>
+        <div class="bench-chip"><span class="chip-label">Trim uplift</span><span class="chip-value">3.2×</span></div>
+        <div class="bench-chip"><span class="chip-label">Invented</span><span class="chip-value">0</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v8_compare.png" alt="Three top-down panels: textured Polycam mesh, uniform 3 cm voxels, and feature voxels with blue coarse walls and red fine edges.">
+        <figcaption><strong>Mesh vs uniform vs feature voxels, top-down.</strong> 138 910 undifferentiated 3 cm blocks (middle) become 10 231 feature voxels (right): blue 24 cm on flat walls, red 3 cm at edges and frames.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Uniform @3 cm vs feature voxels, same surface</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Uniform @3 cm</th>
+              <th>Feature voxels (v8)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Voxel count</td>
+              <td class="num loser" data-label="Uniform">138 910</td>
+              <td class="num winner" data-label="Feature">10 231 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Size levels</td>
+              <td class="num" data-label="Uniform">1 (3 cm)</td>
+              <td class="num winner" data-label="Feature">4 (3 / 6 / 12 / 24 cm, mean 9.5 cm)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Level breakdown</td>
+              <td class="num na" data-label="Uniform">—</td>
+              <td class="num" data-label="Feature">2 993 @24 · 234 @12 · 521 @6 · 6 483 @3</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Fine voxels on high-curvature trim</td>
+              <td class="num" data-label="Uniform">12.5% (baseline)</td>
+              <td class="num winner" data-label="Feature">40% <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Surface-anchored voxels</td>
+              <td class="num" data-label="Uniform">100%</td>
+              <td class="num winner" data-label="Feature">100% (0 invented)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Fidelity measured from the mesh + emitted voxels, nothing assumed: 15 fitted planes flat to 2.8 cm RMS; 48 wall–wall corners at 89.7° (0.28° mean error, 1.48° max) with 51% fine voxels at the seams. Tuning insight: on noisy phone-LiDAR, <code>curv_flat ≈ 0.35</code> — 0.10 left 93% at the finest level, 0.55 over-coarsened the detail away.</div>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_v8_size.png" alt="Voxel-size mode: blue large flat-wall voxels, orange and red fine voxels at features.">
+          <figcaption><strong>Voxel-size mode.</strong> Blue coarse walls, red fine detail — resolution allocated where measured.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v8_density.png" alt="Feature-density mode: green quiet surfaces, red feature-rich regions.">
+          <figcaption><strong>Feature-density mode.</strong> The measured curvature signal that drives subdivision.</figcaption>
+        </figure>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v8">Read full v8 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── polycam scan in the viewer ─────────────── -->
     <section class="bench-milestone" id="polycam-viewer">

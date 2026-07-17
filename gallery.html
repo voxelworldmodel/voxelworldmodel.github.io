@@ -14,6 +14,7 @@
       <h1>Viewer Gallery</h1>
       <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
       <nav>
+        <a href="#g-v8">v8 feature voxels</a>
         <a href="#g-polycam">Polycam scan</a>
         <a href="#g-v7">v7 fusion</a>
         <a href="#g-v5">v5 surface</a>
@@ -24,6 +25,30 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <!-- ─────────────── v8 feature voxels ─────────────── -->
+    <section id="g-v8">
+      <h2>v8, Feature Voxels</h2>
+      <p>Adaptive voxelization by measured curvature: 24 cm blocks on flat walls, 3 cm at edges and trim — 13.6× fewer voxels, fidelity measured. <a href="updates.html#capture-v8">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="viewer_v8_features_color.png" alt="Feature Voxels representation in real color with genuinely different-sized cubes.">
+          <figcaption><strong>Feature Voxels, real color.</strong> Per-instance-scaled cubes; the new representation and voxel-size sliders in the panel.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v8_size.png" alt="Voxel-size mode: blue coarse flat-wall voxels, red fine voxels at features.">
+          <figcaption><strong>Voxel size.</strong> Blue 24 cm flat-wall blocks; orange/red fine voxels at edges and frames.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v8_density.png" alt="Feature-density mode: green quiet surfaces, red feature-rich regions.">
+          <figcaption><strong>Feature density.</strong> The measured curvature signal that drives subdivision.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v8_compare.png" alt="Three-panel top-down comparison of mesh, uniform voxels, and feature voxels.">
+          <figcaption><strong>Mesh vs uniform vs feature.</strong> The three-panel top-down evaluation render.</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <!-- ─────────────── polycam standalone ─────────────── -->
     <section id="g-polycam">
