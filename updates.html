@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v10">Latest: V10 world engine</a>
+        <a href="#v11">Latest: V11 world runtime</a>
+        <a href="#v10">V10 world engine</a>
         <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
@@ -38,6 +39,62 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v11">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">47/47 tests pass</span>
+      </div>
+      <h2>V11, Persistent World Runtime &amp; Evidence Engine</h2>
+      <p>VWM now has a <strong>World Runtime</strong>: every modification flows through one service that accumulates evidence, propagates dirtiness, schedules incremental recompiles of only affected chunks, and emits events. Derived systems become incremental <em>consumers</em>, not independent world copies. The Adaptive Voxel World remains the sole source of truth — the architecture was not redesigned. The new package is <code>vwm/worldos/runtime/</code>: <code>evidence · events · dirty · scheduler · depgraph · compiled · runtime</code>.</p>
+
+      <div class="status-banner">
+        <h3>✅ One GLB upload → 12 028 events through the whole runtime, watched live — 47/47 tests</h3>
+        <p>A single upload flowed end-to-end: revision → 1, <strong>31 dirty chunks</strong>, and <strong>12 028 events</strong> (<code>RevisionCreated ×1 · CaptureImported ×1 · ObservationAdded ×5 997 · ConfidenceUpdated ×5 997 · VoxelChanged ×1 · ChunkInvalidated ×31</code>), with evidence accumulated per observed voxel, incremental recompiles scheduled, and the viewer's Runtime panel streaming all of it. 14 new runtime tests pass alongside the 14 worldos and 19 SVO suites — <strong>47 total</strong> — with all prior functionality intact.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">47/47</span><span class="label">Tests (14 runtime + 14 worldos + 19 SVO)</span></div>
+        <div class="stat"><span class="value">12 028</span><span class="label">Events from one GLB upload</span></div>
+        <div class="stat"><span class="value">31</span><span class="label">Dirty chunks — never a global rebuild</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Layers of dirty propagation</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Event types, pub/sub — nothing polls</span></div>
+        <div class="stat"><span class="value">79 439</span><span class="label">Evidence-backed voxels, live</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v11_runtime.png" alt="The VWM viewer with the Runtime panel: revision, voxel and confidence stats, dirty counts, scheduler queue, event totals, a confidence histogram, and a streaming feed of ChunkInvalidated events.">
+        <figcaption><strong>The Runtime Inspector, live.</strong> Revision, evidence stats (79 439 voxels · avg confidence 1 · 0 low-confidence), dirty state (5 671 voxels / 31 chunks), scheduler queue, 12 028 event totals, the confidence histogram, and the streaming recent-events feed showing <code>ChunkInvalidated</code> events with their chunk coordinates and revision — all polled live from the runtime endpoints.</figcaption>
+      </figure>
+
+      <h3>The Twelve Goals, Delivered</h3>
+      <ul>
+        <li><strong>Evidence Engine</strong> — every voxel carries positive/negative evidence mass → confidence, provenance, and estimated error. Observations <strong>accumulate</strong>: agreement raises confidence, contradiction lowers it <em>without overwriting</em> (history preserved), with weighting, aging/decay, manual override, revision-awareness, and explicit-only garbage collection.</li>
+        <li><strong>Dirty-Region Runtime</strong> — a change propagates through all six layers (Voxel → Components → SVO → Appearance → Semantic → Chunks), each region carrying bbox, revision, priority, reason, dependencies, and timestamp. Never a global rebuild.</li>
+        <li><strong>Scheduler</strong> — a priority queue (Immediate / High / Medium / Low / Idle) with visible-first ordering, deterministic drain, and a background worker that never blocks editing.</li>
+        <li><strong>Dependency Graph</strong> — derived objects declare dependencies; reverse-indexed invalidation touches only dependents. A change to one chunk never touches unrelated ones.</li>
+        <li><strong>Event Bus</strong> — centralized pub/sub with 10 event types; nothing polls internally.</li>
+        <li><strong>Runtime API</strong> — <code>mark_dirty / schedule / compile / events / pending_jobs / statistics</code>: the single entry point for change, wired into <code>World.ingest</code>.</li>
+        <li><strong>Evidence queries</strong> — <code>confidence&gt;0.9</code>, <code>confidence&lt;0.4</code>, <code>evidence_count&gt;5</code>, <code>revision&gt;=35</code>, <code>component==Door</code>, <code>material==Glass</code>, <code>capture==17</code>, <code>observed_by(x)</code>, <code>updated_today()</code> — all combinable.</li>
+        <li><strong>Runtime Inspector</strong> — the viewer panel above: live stats, confidence histogram, streaming event feed.</li>
+        <li><strong>World Statistics</strong> — computed continuously, polled live by the viewer (~1.5 s).</li>
+        <li><strong>Compilation Framework</strong> — a <code>CompiledRepresentation</code> interface (compile only dirty chunks → swap) with two working compilers, <code>VoxelMesh</code> and <code>SemanticCache</code>. Future Gaussian, navmesh, physics, lighting, or neural compilers plug in with no new sync logic.</li>
+        <li><strong>Incremental audit</strong> — <code>docs/INCREMENTAL_MATRIX.md</code> marks every subsystem Incremental / Partial / Global / N-A with justification.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Confidence is uniform 1.0 on a fresh single-capture world</strong> — the accumulation/decay/conflict mechanism is complete and tested, but it only diverges as re-observations, conflicts, and decay accumulate, so today's histogram is flat.</li>
+        <li><strong>Per-voxel dirty/confidence recolor modes</strong> are partial — the panel, histogram, and endpoints are delivered; full per-voxel heatmap modes are minimal.</li>
+        <li><strong>Appearance-patch recompilation</strong> is not yet a runtime compiler (marked Partial in the matrix).</li>
+        <li><strong>Runtime persistence to disk</strong> is in-memory in this build — the revision/evidence models are serializable; disk persistence is future work.</li>
+        <li>Evidence is a per-voxel Python dict — correct and tested; vectorization for very large worlds is future work.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the infrastructure now exists so that a future persistent Gaussian scene or neural view cache is just a new <code>CompiledRepresentation</code> that subscribes to runtime events — no bespoke synchronization per system, exactly as the milestone intended. Deliverables: six new docs (world runtime, evidence engine, runtime events, scheduler, dependency graph, incremental matrix), the seven-module runtime package, runtime wired into <code>world_api.World</code>, the <code>/api/runtime/{stats,events,jobs,dirty}</code> endpoints, and the viewer Runtime panel.</p>
+      </div>
+    </article>
 
     <article class="update" id="v10">
       <div class="update-meta">

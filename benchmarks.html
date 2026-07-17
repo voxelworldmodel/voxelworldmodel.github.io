@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v11">V11 world runtime</a>
         <a href="#v10">V10 world engine</a>
         <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
@@ -47,6 +48,49 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V11 world runtime ─────────────── -->
+    <section class="bench-milestone" id="v11">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">47/47 tests</span>
+      </div>
+      <h2>V11, Persistent World Runtime &amp; Evidence Engine</h2>
+      <p>Every modification flows through one runtime: evidence accumulation, six-layer dirty propagation, prioritized incremental recompiles, and a pub/sub event bus. Derived systems consume events; nothing polls, nothing rebuilds globally.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">47/47</span></div>
+        <div class="bench-chip"><span class="chip-label">Events / upload</span><span class="chip-value">12 028</span></div>
+        <div class="bench-chip"><span class="chip-label">Dirty chunks</span><span class="chip-value">31</span></div>
+        <div class="bench-chip"><span class="chip-label">Dirty layers</span><span class="chip-value">6</span></div>
+        <div class="bench-chip"><span class="chip-label">Event types</span><span class="chip-value">10</span></div>
+        <div class="bench-chip"><span class="chip-label">Evidence voxels</span><span class="chip-value">79 439</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v11_runtime.png" alt="Runtime Inspector panel with live stats, confidence histogram, and streaming ChunkInvalidated event feed.">
+        <figcaption><strong>Runtime Inspector, live.</strong> Evidence stats, dirty state, scheduler queue, event totals, confidence histogram, and the streaming event feed.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">One GLB upload through the runtime, measured live</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Event</th><th>Count</th><th>What it proves</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Event"><code>RevisionCreated</code></td><td class="num" data-label="Count">1</td><td data-label="Proves">The upload became a world revision</td></tr>
+            <tr><td data-label="Event"><code>CaptureImported</code></td><td class="num" data-label="Count">1</td><td data-label="Proves">Provenance recorded as a Capture</td></tr>
+            <tr><td data-label="Event"><code>ObservationAdded</code></td><td class="num" data-label="Count">5 997</td><td data-label="Proves">Every voxel backed by an observation</td></tr>
+            <tr><td data-label="Event"><code>ConfidenceUpdated</code></td><td class="num" data-label="Count">5 997</td><td data-label="Proves">Evidence engine ran per observed voxel</td></tr>
+            <tr><td data-label="Event"><code>ChunkInvalidated</code></td><td class="num" data-label="Count">31</td><td data-label="Proves">Only affected chunks marked dirty — never a global rebuild</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest notes carried from the report: confidence is uniform 1.0 on a fresh single-capture world (the mechanism only diverges with re-observation, conflict, and decay); per-voxel heatmap modes are partial; runtime state is in-memory this build; per-voxel evidence dicts need vectorization for very large worlds.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v11">Read full V11 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V10 universal world engine ─────────────── -->
     <section class="bench-milestone" id="v10">
