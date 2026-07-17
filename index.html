@@ -254,25 +254,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>Sparse Voxel Octree integration</strong> — a derived acceleration structure for collision, ray queries, and hierarchical reasoning, built from the unchanged authoritative VoxelWorld. On top of v9's error-driven voxelization. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V10, the Universal World Engine</strong> — VWM behaves like a world operating system: drop in almost any capture or asset, and it becomes traceable observations in the authoritative world. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ SVO integrated: exact occupancy, 19/19 tests, ~25–60× faster incremental edits</h3>
-        <p>The MIT-licensed upstream was <strong>audited, not copied</strong> — algorithms adapted, architecture rejected, no upstream code compiled in. Occupancy is exact on all four benchmark scenes, thin-feature recall is <strong>1.00</strong>, doorways stay open (no collision bridges), and a small edit reflushes in <strong>19 ms</strong> vs a 1.2 s full rebuild. Collision queries run at <strong>95–148k/s</strong>; on sparse scenes the octree topology is <strong>7.6× smaller</strong> than a uniform grid. The viewer gained an SVO representation with 9 modes and click-to-inspect node metadata.</p>
+        <h3>✅ V10: universal ingest, persistent components, full provenance — 33/33 tests</h3>
+        <p>Upload → detect → route → observations → world: nine formats ingest end-to-end (glTF/GLB, OBJ, PLY, point clouds, Polycam zip, voxel npz, heightmaps), six more are routed with <strong>honest errors instead of fake success</strong>. Every upload creates a Capture, a world revision, and an incremental SVO update. Persistent Components reference voxels — never own geometry — and survive rescans with UUID identity intact. The definition of success, verified live: <code>trace(point)</code> walks <strong>voxel → SVO node → Component → observations → Capture → original file</strong>. Raycasts route through the SVO at <strong>4.3×</strong> the linear speed.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">19/19</span><span class="label">SVO tests pass</span></div>
-        <div class="stat"><span class="value">19 ms</span><span class="label">Incremental edit vs 1.2 s rebuild</span></div>
-        <div class="stat"><span class="value">95–148k</span><span class="label">Collision queries / second</span></div>
-        <div class="stat"><span class="value">7.6×</span><span class="label">Sparse topology vs uniform grid</span></div>
-        <div class="stat"><span class="value">99.9%</span><span class="label">v9 surface within 12 mm budget</span></div>
+        <div class="stat"><span class="value">33/33</span><span class="label">Tests (14 worldos + 19 SVO)</span></div>
+        <div class="stat"><span class="value">4.3×</span><span class="label">Raycast speedup via SVO</span></div>
+        <div class="stat"><span class="value">9</span><span class="label">Formats ingest end-to-end</span></div>
+        <div class="stat"><span class="value">237 697</span><span class="label">SVO nodes, live after GLB upload</span></div>
+        <div class="stat"><span class="value">rev 1</span><span class="label">World revision timeline active</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_svo_depth.png" alt="SVO Depth mode: nested wireframe octree boxes colored by level over the scanned hallway.">
-        <figcaption><strong>The octree, live in the viewer.</strong> SVO Depth mode — node boxes coloured by level, huge cells spanning empty space, subdividing only where the scanned hallway's surface lives. Empty-space skipping is what makes traversal fast.</figcaption>
+        <img src="viewer_v10_worldos.png" alt="VWM viewer with the new World OS panel: drag-and-drop upload zone, query search box, and live stats line.">
+        <figcaption><strong>The World OS panel, live in the viewer.</strong> Drag-and-drop upload, component query search (<code>type:door · material:wood · confidence&lt;0.8</code>), and the running stats line — voxels 79 439 · svo 237 697 nodes · components 3 · captures 1 · world rev 1.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

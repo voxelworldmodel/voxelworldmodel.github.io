@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#svo">Latest: SVO integration</a>
+        <a href="#v10">Latest: V10 world engine</a>
+        <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -37,6 +38,62 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v10">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">33/33 tests pass</span>
+      </div>
+      <h2>V10, Universal World Engine</h2>
+      <p>VWM now behaves like a <strong>world operating system</strong>: drag almost any capture or asset in, and the system classifies it, converts it to observations, updates the authoritative Adaptive Voxel World, incrementally rebuilds the SVO, updates Components and revisions, and visualizes it — with every rendered voxel traceable back to its original file. The architecture was not redesigned: the Adaptive Voxel World remains the single source of truth, and the SVO stays a derived, incrementally-maintained index.</p>
+
+      <div class="status-banner">
+        <h3>✅ Every voxel answers "where did you come from?" — the full trace chain, verified live</h3>
+        <p><code>World.trace(point)</code> returns <strong>rendered voxel → SVO node → Component → observation history → Capture → original file</strong>, verified both in tests and against the live server. 33 automated tests pass (14 worldos + 19 SVO), a GLB upload landed 5 671 voxels as revision 1 end-to-end, and measured raycasts through the SVO run <strong>4.3× faster</strong> than linear cell-marching.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">33/33</span><span class="label">Tests pass (14 worldos + 19 SVO)</span></div>
+        <div class="stat"><span class="value">4.3×</span><span class="label">Raycast speedup via SVO</span></div>
+        <div class="stat"><span class="value">9</span><span class="label">Formats ingest end-to-end</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Formats routed with honest errors</span></div>
+        <div class="stat"><span class="value">5 671</span><span class="label">Voxels from live GLB upload (rev 1)</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Component edit operations</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v10_worldos.png" alt="The VWM viewer with the new World OS panel: drag-and-drop upload zone, query search box, and a live stats line reading voxels 79439, svo 237697 nodes, components 3, captures 1, world rev 1.">
+        <figcaption><strong>The World OS panel, live.</strong> Drag-and-drop upload (glb · gltf · obj · ply · zip · npz · las · tif · png…), a query search box (<code>wall · type:door · material:wood · confidence&lt;0.8</code>), and the running stats line: <strong>voxels 79 439 · svo 237 697 nodes · components 3 · captures 1 · world rev 1</strong> — the state after a live GLB upload into the scanned hallway world. All prior representations retained.</figcaption>
+      </figure>
+
+      <h3>Goal 1 — SVO Wired Through the Query Paths</h3>
+      <p>The <code>vwm.worldos.World</code> facade routes spatial queries to the SVO and semantics to Components, so callers never pick an index. <code>docs/SVO_INTEGRATION_MATRIX.md</code> audits every subsystem (VoxelWorld / SVO / both / neither). Measured on the hallway (73 768 voxels): <strong>raycast 7 076 q/s vs 1 654 linear — 4.3× faster</strong> from empty-node skipping, a win that carries to picking, floor/wall probes, visibility, and line-of-sight. Stated honestly: SVO <code>nearest_occupied</code> is currently <em>slower</em> than a vectorized numpy scan at this scale (83 vs 564 q/s) — a Morton neighbour-search optimization is future work, documented rather than hidden. Edits stay on the authoritative world; the incremental dirty-subtree flush keeps the index in sync.</p>
+
+      <h3>Goal 2 — Persistent Components</h3>
+      <p>A Component owns <strong>metadata</strong> and <strong>references</strong> voxels — never geometry — and is distinct from the pre-existing simulation <code>WorldComponent</code>. Full field set (uuid, type, name, parent/children, voxel+SVO refs, material, appearance, confidence, tags, relationships, observation history, bounds), full editing (create · rename · set-type · merge without duplication · split · reassign · delete), a relationship graph (contains / supports / mounted_on / adjacent / …), and JSON round-trip. <strong>Components survive rescans</strong>: geometry changes update the referenced voxels while UUID identity persists — tested, not assumed.</p>
+
+      <h3>Goal 3 — Universal Upload Pipeline</h3>
+      <p><code>Upload → Detect (extension + magic bytes) → Route → Observations → VoxelWorld</code>. Working end-to-end for glTF/GLB, OBJ, PLY meshes, PLY/XYZ point clouds, Polycam zip, VWM voxel npz, and image heightmaps. LAS/LAZ, video, USD/USDZ, FBX, Gaussian splats, and COLMAP are <strong>routed with specific honest errors</strong> — they need their runtimes or a heavy offline job, and they say so rather than faking success. Every upload creates a <strong>Capture + world revision + incremental SVO update</strong>, driven by an async job queue with progress, ETA, and retry.</p>
+
+      <h3>Query Language, World API, Revisions</h3>
+      <ul>
+        <li><strong>Query language:</strong> <code>wall</code>, <code>type:door</code>, <code>material:wood</code>, <code>confidence&lt;0.8</code>, <code>capture:polycam</code>, <code>room:kitchen</code>, <code>uuid:…</code></li>
+        <li><strong>World API:</strong> <code>find_components</code>, <code>raycast</code>, <code>nearest_surface</code>, <code>find_by_material</code>, <code>find_room</code>, <code>find_observations</code>, <code>find_all_doors/rooms</code>, <code>find_uncertain</code>, <code>largest_room</code>, <code>components_touching</code>, <code>find_disconnected_regions</code>, <code>trace</code>, <code>ingest</code>.</li>
+        <li><strong>Revisions:</strong> a delta-based timeline with diff, undo, revert, and replay.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Cross-capture registration</strong> (ICP-aligning a new upload to the existing world) is not implemented — new captures bin in the world frame and may overlap; the single-asset and voxel-npz paths are exact.</li>
+        <li>Six formats are routed but need their runtimes (laspy, OpenUSD, FBX SDK) or a heavy offline job (video); they report specific errors, never fake results.</li>
+        <li>The component editor, capture-history browser, and revision browser have <strong>working endpoints but minimal front-end surfaces</strong> in this build — create/rename/merge/query all work via the API.</li>
+        <li>SVO <code>nearest_occupied</code> loses to vectorized numpy at small scale; optimization is future work.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> V10 makes VWM a persistent, queryable, extensible world database that ingests diverse spatial data with no format-specific user workflow — and every voxel in it can prove its provenance back to the file it came from. Deliverables: five new docs (integration matrix, upload pipeline, component system, query API, revisions), the seven-module <code>vwm.worldos</code> package, the viewer's World OS panel with its server endpoints, the 14-test worldos suite, and <code>wos_query_benchmark.json</code>.</p>
+      </div>
+    </article>
 
     <article class="update" id="svo">
       <div class="update-meta">

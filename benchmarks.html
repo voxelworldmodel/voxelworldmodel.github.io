@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v10">V10 world engine</a>
         <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
@@ -46,6 +47,72 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V10 universal world engine ─────────────── -->
+    <section class="bench-milestone" id="v10">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">33/33 tests</span>
+      </div>
+      <h2>V10, Universal World Engine</h2>
+      <p>The world-OS milestone: universal upload pipeline, persistent components, SVO-routed queries, revision timeline, and full provenance — <code>trace(point)</code> walks voxel → SVO node → Component → observations → Capture → original file, verified live.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">33/33</span></div>
+        <div class="bench-chip"><span class="chip-label">Raycast speedup</span><span class="chip-value">4.3×</span></div>
+        <div class="bench-chip"><span class="chip-label">Formats ingested</span><span class="chip-value">9</span></div>
+        <div class="bench-chip"><span class="chip-label">Honest-error routes</span><span class="chip-value">6</span></div>
+        <div class="bench-chip"><span class="chip-label">GLB upload</span><span class="chip-value">5 671 vox</span></div>
+        <div class="bench-chip"><span class="chip-label">World rev</span><span class="chip-value">1</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v10_worldos.png" alt="VWM viewer with the World OS panel: drag-and-drop upload, query search, and live stats line.">
+        <figcaption><strong>World OS panel.</strong> Upload, query search, and the live stats line: voxels 79 439 · svo 237 697 nodes · components 3 · captures 1 · world rev 1.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">SVO-routed queries vs linear baseline (<code>wos_query_benchmark.json</code>, 73 768 voxels)</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th>Linear baseline</th>
+              <th>Via SVO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Query">Raycast (carries to picking, probes, LOS)</td>
+              <td class="num" data-label="Linear">1 654 q/s</td>
+              <td class="num winner" data-label="SVO">7 076 q/s <span class="trend trend-good">▲</span> 4.3×</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Query">nearest_occupied</td>
+              <td class="num winner" data-label="Linear">564 q/s (numpy vectorized)</td>
+              <td class="num loser" data-label="SVO">83 q/s <span class="trend trend-bad">▼</span> honest loss</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Reported plainly: SVO nearest-neighbour currently loses to a vectorized numpy scan at this scale; a Morton neighbour-search optimization is future work. Raycast-shaped queries are where the octree's empty-space skipping pays.</div>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Universal upload pipeline — format coverage</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Status</th><th>Formats</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Status" class="ok">End-to-end</td><td data-label="Formats">glTF / GLB · OBJ · PLY mesh · PLY/XYZ point cloud · Polycam zip · VWM voxel npz · image heightmap</td></tr>
+            <tr><td data-label="Status">Routed, honest error</td><td data-label="Formats">LAS/LAZ · video (offline SfM job) · USD/USDZ · FBX · Gaussian splats · COLMAP — specific reasons, never fake success</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Every successful upload creates a Capture + world revision + incremental SVO update, via an async job queue with progress, ETA, and retry.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v10">Read full V10 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── SVO integration ─────────────── -->
     <section class="bench-milestone" id="svo">
