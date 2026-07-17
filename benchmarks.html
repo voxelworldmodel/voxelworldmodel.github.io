@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#svo">SVO integration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
@@ -45,6 +46,59 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── SVO integration ─────────────── -->
+    <section class="bench-milestone" id="svo">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">19/19 tests</span>
+      </div>
+      <h2>Sparse Voxel Octree Integration</h2>
+      <p>A derived octree acceleration structure built from the unchanged authoritative VoxelWorld — algorithms audited and adapted from MIT-licensed <code>otaku690/SparseVoxelOctree</code>, no upstream code compiled in. Exact occupancy on all scenes; openings verified open.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">19/19</span></div>
+        <div class="bench-chip"><span class="chip-label">Incremental edit</span><span class="chip-value">19 ms</span></div>
+        <div class="bench-chip"><span class="chip-label">Collision</span><span class="chip-value">95–148k q/s</span></div>
+        <div class="bench-chip"><span class="chip-label">Sparse topology</span><span class="chip-value">7.6×</span></div>
+        <div class="bench-chip"><span class="chip-label">Thin recall</span><span class="chip-value">1.00</span></div>
+        <div class="bench-chip"><span class="chip-label">Compression</span><span class="chip-value">6.7–12×</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_svo_depth.png" alt="SVO Depth mode: nested wireframe octree boxes colored by level over the scanned hallway.">
+        <figcaption><strong>SVO Depth mode.</strong> Node boxes coloured by octree level — huge cells over empty space, fine cells only at the scanned surface (99 121 nodes served, depth 8).</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Four benchmark scenes (<code>artifacts/svo/benchmark.json</code>)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Scene</th><th>Voxels</th><th>Incremental vs full</th><th>Collision q/s</th><th>Ray q/s</th><th>Topology vs dense grid</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Scene">Hallway (real scan)</td><td class="num" data-label="Voxels">73 768</td><td class="num" data-label="Incr">19.6 ms / 1 223 ms</td><td class="num" data-label="Coll">101 607</td><td class="num" data-label="Ray">6 631</td><td class="num" data-label="Topo">0.25× (grid wins)</td></tr>
+            <tr><td data-label="Scene">Thin features</td><td class="num" data-label="Voxels">4 519</td><td class="num" data-label="Incr">6.3 ms / 40 ms</td><td class="num" data-label="Coll">148 629</td><td class="num" data-label="Ray">10 597</td><td class="num" data-label="Topo">~1×</td></tr>
+            <tr><td data-label="Scene">Large sparse</td><td class="num" data-label="Voxels">19 998</td><td class="num" data-label="Incr">9.1 ms / 1 550 ms</td><td class="num" data-label="Coll">94 939</td><td class="num" data-label="Ray">1 509</td><td class="num winner" data-label="Topo">7.6× smaller</td></tr>
+            <tr><td data-label="Scene">Dense indoor</td><td class="num" data-label="Voxels">13 256</td><td class="num" data-label="Incr">16.1 ms / 123 ms</td><td class="num" data-label="Coll">109 738</td><td class="num" data-label="Ray">4 963</td><td class="num" data-label="Topo">0.12× (grid wins)</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limitation, stated in the report: on a small dense surface shell a 1-byte dense grid is more compact in RAM. The SVO wins on sparse scaling, empty-space skipping, hierarchical aggregates, and incremental maintenance — its advantage grows with sparsity. Accuracy verified on every scene: 0 false-occupied, 0 false-empty, thin recall 1.00, doorways open.</div>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_svo_leaves.png" alt="SVO Leaves mode: solid green occupied leaf shell of the hallway.">
+          <figcaption><strong>Leaves.</strong> The occupied leaf shell the collision suite queries.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_interior.png" alt="SVO Interior mode: gold wireframe hierarchy nodes above the leaves.">
+          <figcaption><strong>Interior.</strong> Aggregate nodes that let traversal skip empty space.</figcaption>
+        </figure>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#svo">Read full SVO narrative →</a></p>
+    </section>
 
     <!-- ─────────────── v9 error-driven voxelization ─────────────── -->
     <section class="bench-milestone" id="capture-v9">

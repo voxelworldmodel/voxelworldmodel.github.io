@@ -14,6 +14,7 @@
       <h1>Viewer Gallery</h1>
       <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
       <nav>
+        <a href="#g-svo">SVO</a>
         <a href="#g-v9">v9 error-driven</a>
         <a href="#g-v8">v8 feature voxels</a>
         <a href="#g-polycam">Polycam scan</a>
@@ -26,6 +27,30 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <!-- ─────────────── SVO ─────────────── -->
+    <section id="g-svo">
+      <h2>Sparse Voxel Octree</h2>
+      <p>The derived acceleration structure over the authoritative world: 99 121 nodes at depth 8, exact occupancy, click-to-inspect metadata. <a href="updates.html#svo">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="viewer_svo_depth.png" alt="SVO Depth mode: nested wireframe octree boxes colored by level.">
+          <figcaption><strong>Depth.</strong> The hierarchy coloured by level — sparse where empty, fine at the surface.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_leaves.png" alt="SVO Leaves mode: solid green occupied leaf shell.">
+          <figcaption><strong>Leaves.</strong> The occupied leaf shell with per-leaf collision, material, and appearance refs.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_interior.png" alt="SVO Interior mode: gold wireframe hierarchy nodes.">
+          <figcaption><strong>Interior.</strong> Aggregate nodes above the leaves — the empty-space-skipping machinery.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_collision.png" alt="SVO Collision mode: leaves carrying collision geometry in red.">
+          <figcaption><strong>Collision.</strong> What physics queries see; openings verified open.</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <!-- ─────────────── v9 error-driven ─────────────── -->
     <section id="g-v9">

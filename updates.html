@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v9">Latest: Error-driven v9</a>
+        <a href="#svo">Latest: SVO integration</a>
+        <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
         <a href="#capture-v7">Polycam fusion v7</a>
@@ -36,6 +37,88 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="svo">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">19/19 tests pass</span>
+      </div>
+      <h2>Sparse Voxel Octree Integration, Audited Not Copied</h2>
+      <p>VWM now has a native <strong>Sparse Voxel Octree subsystem</strong> — a derived acceleration structure for collision, ray queries, and hierarchical spatial reasoning, built directly from the authoritative VoxelWorld. The MIT-licensed <code>otaku690/SparseVoxelOctree</code> is vendored <strong>unmodified</strong> in <code>third_party/</code> with its license intact, and <code>docs/SVO_UPSTREAM_AUDIT.md</code> classifies every file as reused, adapted, rewritten, or rejected. The useful <em>algorithms</em> were adapted — the compact flag+pointer node word, dominant-axis conservative rasterization, level-by-level flag/allocate construction, bottom-up attribute mipmap — re-implemented deterministically on the CPU. The legacy OpenGL/VCT architecture was rejected outright: <strong>no upstream C++/GLSL is compiled into VWM</strong>. The authoritative VoxelWorld is unchanged; the SVO is derived and rebuildable.</p>
+
+      <div class="status-banner">
+        <h3>✅ All Definition-of-Done items met — exact occupancy, 19/19 tests, ~25–60× incremental speedup</h3>
+        <p>Occupancy is <strong>exact</strong> on all four benchmark scenes (0 false-occupied, 0 false-empty), thin-feature recall is <strong>1.00</strong> with zero cracks, and doorway/window openings are preserved — no collision bridges. A small edit reflushes the octree incrementally in <strong>19 ms</strong> where a full rebuild takes 1.2 s, collision queries run at <strong>95–148k/s</strong>, and on a genuinely sparse scene the octree topology is <strong>7.6× smaller</strong> than a uniform dense grid.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">19/19</span><span class="label">Automated tests pass</span></div>
+        <div class="stat"><span class="value">19 ms</span><span class="label">Incremental edit vs 1.2 s full rebuild</span></div>
+        <div class="stat"><span class="value">95–148k</span><span class="label">Collision queries / second</span></div>
+        <div class="stat"><span class="value">7.6×</span><span class="label">Sparse topology vs uniform grid</span></div>
+        <div class="stat"><span class="value">1.00</span><span class="label">Thin-feature recall, 0 cracks</span></div>
+        <div class="stat"><span class="value">6.7–12×</span><span class="label">.vwm-svo compression</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_svo_depth.png" alt="SVO Depth mode: the octree hierarchy as nested wireframe boxes colored by level, from huge root cells down to fine pink leaf cells hugging the scanned hallway.">
+        <figcaption><strong>SVO Depth mode, live in the viewer.</strong> The whole octree as nested node boxes coloured by level — sparse giant cells spanning empty space, subdividing only where the scanned hallway's 73 768 surface voxels live (99 121 served nodes, depth 8). This empty-space skipping is exactly what makes ray traversal fast.</figcaption>
+      </figure>
+
+      <h3>The Native Subsystem (<code>vwm/python/vwm/svo/</code>)</h3>
+      <p>Nine modules: <code>svo_types</code>, <code>svo_builder</code> (builds directly from authoritative voxels via Morton order — no mesh round-trip — plus a conservative mesh path), <code>svo_traversal</code> (ray-march with empty-node skipping), <code>svo_collision</code> (point / sphere / AABB / capsule / swept / ray / segment / nearest / floor / wall), <code>svo_queries</code>, <code>svo_incremental</code> (dirty-subtree splice), <code>svo_serializer</code> (CRC-checked, versioned <code>.vwm-svo</code> binary), <code>svo_validation</code>, and <code>svo_gpu</code> (WGSL). Flat structure-of-arrays buffers serve CPU traversal, WebGPU upload, and serialization alike; the CPU is the deterministic reference.</p>
+
+      <h3>Verified, Not Assumed</h3>
+      <p>The 19 tests in <code>tools/test_vwm_svo.py</code> cover empty / single / full-root / sparse / disconnected / thin-wall / doorway / window / nested / negative-coords / large-bounds / max-depth / round-trip / determinism / CPU-traversal agreement / incremental==full / no-crossable-openings / no-cracks. Serialization round-trips deterministically, hollow interiors stay empty, and the hallway artifact was verified on load.</p>
+
+      <h3>Honest Benchmark (<code>docs/SVO_BENCHMARK.md</code>)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Scene</th><th>Voxels → nodes</th><th>Incremental vs full</th><th>Collision q/s</th><th>Topology vs dense grid</th><th>Compression</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Scene">Hallway (real scan)</td><td data-label="Nodes">73 768 → 202 825</td><td data-label="Incr" class="ok">19.6 ms vs 1 223 ms (62×)</td><td data-label="Collision">101.6k</td><td data-label="Topology" class="bad">0.25× (denser than grid)</td><td data-label="Compression">6.7×</td></tr>
+          <tr><td data-label="Scene">Thin features</td><td data-label="Nodes">4 519 → 13 065</td><td data-label="Incr" class="ok">6.3 ms vs 40 ms</td><td data-label="Collision" class="ok">148.6k</td><td data-label="Topology">~1×</td><td data-label="Compression" class="ok">12.0×</td></tr>
+          <tr><td data-label="Scene">Large sparse</td><td data-label="Nodes">19 998 → 630 825</td><td data-label="Incr" class="ok">9.1 ms vs 1 550 ms</td><td data-label="Collision">94.9k</td><td data-label="Topology" class="ok"><strong>7.6× smaller</strong></td><td data-label="Compression">—</td></tr>
+          <tr><td data-label="Scene">Dense indoor</td><td data-label="Nodes">13 256 → 32 729</td><td data-label="Incr" class="ok">16.1 ms vs 123 ms</td><td data-label="Collision">109.7k</td><td data-label="Topology" class="bad">0.12× (grid wins)</td><td data-label="Compression">—</td></tr>
+        </tbody>
+      </table>
+      <p>Stated plainly where the SVO loses: on a small <strong>dense</strong> surface shell, a 1-byte dense grid is more compact in RAM than the octree. The SVO's wins are sparse-world scaling, empty-space skipping, hierarchical aggregates, and fast incremental maintenance — and the memory advantage grows with sparsity.</p>
+
+      <h3>Viewer: SVO Representation, 9 Modes</h3>
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="viewer_svo_leaves.png" alt="SVO Leaves mode: the leaf shell of the octree rendered as a solid green surface of the hallway.">
+          <figcaption><strong>Leaves.</strong> The occupied leaf shell — every leaf carries occupancy, collision mask, material, normal, and an appearance reference.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_interior.png" alt="SVO Interior mode: the interior hierarchy nodes rendered as gold wireframe boxes over the hallway volume.">
+          <figcaption><strong>Interior.</strong> The hierarchy above the leaves — the aggregate nodes that let queries skip empty space wholesale.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_svo_collision.png" alt="SVO Collision mode: leaf nodes carrying collision geometry rendered in red.">
+          <figcaption><strong>Collision.</strong> What the physics queries actually see: leaves carry collision; openings stay open — verified, no bridges.</figcaption>
+        </figure>
+      </div>
+      <p>Modes: Off · Leaves · Interior · Depth · Occupancy · Collision · Confidence · Dirty · Traversal-cost, plus a WebGPU ray-march overlay. Click any node → index, depth, bounds, voxel size, child mask, leaf/interior flags, occupancy, confidence, source/svo revision, material and component refs, dirty flag. All prior representations (literal voxels, mesh, feature voxels, error-driven voxels, appearance layer) are retained.</p>
+
+      <h3>Appearance Separation Carried Forward</h3>
+      <p>The SVO stores geometric occupancy plus a <code>leaf_appearance_ref</code> into v9's independent appearance layer — never pixels. Big flat voxels keep coarse collision geometry while paintings and posters stay visible through the appearance layer. Collision reads geometry, not visual detail.</p>
+
+      <h3>WebGPU Status (Honest)</h3>
+      <p>The WGSL per-pixel traversal (<code>/api/svo/wgsl</code>) and GPU buffers (<code>/api/svo/gpu</code>) are served, and the viewer's overlay uploads and ray-marches them when <code>navigator.gpu</code> exists. Under the headless test harness (ANGLE/SwiftShader, no WebGPU) it falls back to a documented blocker message — the WebGL node-box visualization and the CPU reference traversal are fully working and authoritative. In a WebGPU-capable Chrome/Edge session the overlay ray-marches the SVO per pixel; that is the one path not fully executable in this environment.</p>
+
+      <h3>Not Done / Future</h3>
+      <ul>
+        <li>WebGPU <strong>compute-shader construction</strong> — concept documented; the CPU build is the reference.</li>
+        <li><strong>Brick leaves</strong> (brick_dim &gt; 1) are scaffolded in the format, but leaves are single-voxel today.</li>
+        <li>Background <strong>defragmentation</strong> of orphaned nodes after many incremental edits — currently reclaimed by the next full rebuild.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> VWM gained a derived, rebuildable octree acceleration structure with exact occupancy, verified thin-feature and opening preservation, fast incremental maintenance, and honest benchmarks that state where a dense grid wins. Deliverables: <code>third_party/SparseVoxelOctree/</code> (MIT, unmodified), four SVO docs (upstream audit, architecture, license attribution, benchmark), the nine-module subsystem, viewer integration, 19-test suite, benchmark tool, and the <code>artifacts/svo/</code> set (<code>hallway.vwm-svo</code>, <code>thin_features.vwm-svo</code>, metrics, <code>benchmark.json</code>).</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v9">
       <div class="update-meta">
