@@ -510,6 +510,17 @@ td:first-child {
   margin: 1.5rem var(--voxel-step) 2rem 0;
 }
 
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem var(--voxel-step) 2rem 0;
+}
+
+.gallery-grid .figure {
+  margin: 0;
+}
+
 .figure-row .figure {
   margin: 0;
 }

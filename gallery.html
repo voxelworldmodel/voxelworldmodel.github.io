@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viewer Gallery, Voxel World Model</title>
+  <meta name="description" content="Every rendering mode of the VWM Three.js viewer across the reality-capture milestones: real color, occupancy, hollow, free space, confidence, LOD, source provenance, and more.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <h1>Viewer Gallery</h1>
+      <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
+      <nav>
+        <a href="#g-polycam">Polycam scan</a>
+        <a href="#g-v7">v7 fusion</a>
+        <a href="#g-v5">v5 surface</a>
+        <a href="#g-v4">v4 adaptive</a>
+        <a href="#g-v3">v3 first viewer</a>
+        <a href="updates.html">Updates</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="paper.html">Technical Paper</a>
+      </nav>
+    </header>
+
+    <!-- ─────────────── polycam standalone ─────────────── -->
+    <section id="g-polycam">
+      <h2>The Polycam Scan, Standalone</h2>
+      <p>The LiDAR-metric Polycam capture served directly: extracted surface (30 974 verts, 8K texture) and 73 768 literal voxels at the true 12.3 m scale. <a href="updates.html#polycam-viewer">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="polycam_viewer_hallway.png" alt="Fly-mode view down the voxelized Polycam hallway in real-color mode with the voxel inspector open.">
+          <figcaption><strong>Real color, fly mode.</strong> Down the voxelized hallway with the inspector open on a SURFACE voxel.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_hallway2.png" alt="Fly-mode view of the bright end of the voxelized Polycam hallway.">
+          <figcaption><strong>Real color, fly mode.</strong> The bright end of the hallway in literal voxels.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_surface.png" alt="The full Polycam scan framed as the extracted textured surface mesh.">
+          <figcaption><strong>Extracted surface.</strong> The real textured mesh, the default representation.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_occupancy.png" alt="Occupancy mode: all voxels classified SURFACE, stats showing FREE 0.">
+          <figcaption><strong>Occupancy.</strong> All-SURFACE, FREE 0 — the surface-only import, honestly displayed.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_wireframe.jpg" alt="Wireframe mode exposing the voxel structure of the Polycam hallway.">
+          <figcaption><strong>Wireframe.</strong> Voxel structure exposed down the corridor.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ─────────────── v7 fusion ─────────────── -->
+    <section id="g-v7">
+      <h2>v7, Multi-Source Fusion</h2>
+      <p>Monocular video and the Polycam scan fused into one world. The source mode was added here: per-voxel provenance made visible. <a href="updates.html#capture-v7">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure figure-accent">
+          <img src="real_video_v7_sources.png" alt="Source mode: blue video-only voxels, orange Polycam-only voxels, green voxels observed by both.">
+          <figcaption><strong>Source (video/polycam).</strong> Blue video-only, orange Polycam-only, green both-agree — cross-source validation at a glance.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v7_real_color.png" alt="The fused world in real-color mode: Polycam texture on co-observed voxels, video color elsewhere.">
+          <figcaption><strong>Real color.</strong> The fused world; Polycam's 8K-texture color wins where co-observed.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v7_confidence.png" alt="Confidence heatmap of the fused world: green high-confidence multi-source voxels, red weakly observed.">
+          <figcaption><strong>Confidence.</strong> Green: strengthened by multiple sources. Red: single-observation voxels.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ─────────────── v5 surface ─────────────── -->
+    <section id="g-v5">
+      <h2>v5, Representation ≠ Storage</h2>
+      <p>The surface/voxel toggle was added here: two derived views of the same authoritative TSDF field. <a href="updates.html#capture-v5">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure">
+          <img src="viewer_v5_voxels.png" alt="The v5 world framed as literal voxels in real color.">
+          <figcaption><strong>Literal voxels.</strong> The storage view: 16 217 cubes with observed color.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v5_surface.png" alt="The same world as the marching-cubes extracted surface mesh.">
+          <figcaption><strong>Extracted surface.</strong> The same field through marching cubes — smooth, architectural, zero geometry invented.</figcaption>
+        </figure>
+        <figure class="figure figure-accent">
+          <img src="real_video_v5_compare.png" alt="Side-by-side: literal voxels and extracted surface of the same authoritative field.">
+          <figcaption><strong>The decisive comparison.</strong> Same authoritative field, two representations, side by side.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ─────────────── v4 adaptive ─────────────── -->
+    <section id="g-v4">
+      <h2>v4, Recognizable Adaptive Reconstruction</h2>
+      <p>Hole-filling (all fills provenance-tagged INFERRED) and adaptive detail levels, each with its own render mode. <a href="updates.html#capture-v4">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure">
+          <img src="viewer_v4_real_color.png" alt="The v4 world in real-color mode with continuous hole-filled surfaces.">
+          <figcaption><strong>Real color.</strong> Continuous surfaces after 427 enclosed holes were closed.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v4_occupancy.png" alt="Occupancy mode of the v4 world showing surface, free, and unknown classes.">
+          <figcaption><strong>Occupancy.</strong> SURFACE / FREE / UNKNOWN classification, free air untouched by the fills.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v4_hollow.png" alt="Hollow mode showing only matter voxels of the v4 world.">
+          <figcaption><strong>Hollow (matter only).</strong> The shell without air — thin surfaces, not solid blocks.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v4_adaptive.png" alt="Adaptive-resolution mode rendering coarse voxels larger and fine voxels smaller.">
+          <figcaption><strong>Adaptive resolution.</strong> Coarse flats rendered large, fine edges small — detail level as voxel size.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v4_lod.png" alt="LOD heatmap: blue coarse, green medium, red fine detail on edges and corners.">
+          <figcaption><strong>LOD heatmap.</strong> Red fine detail concentrating exactly on edges and corners.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v4_inferred.png" alt="Inferred-fill mode with every hole-fill voxel highlighted in pink.">
+          <figcaption><strong>Inferred fill.</strong> Every filled hole in pink — auditable provenance, separable at a glance.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ─────────────── v3 first viewer ─────────────── -->
+    <section id="g-v3">
+      <h2>v3, The First Viewer</h2>
+      <p>The original eight render modes on the hollow world, captured the day the Three.js client shipped. <a href="updates.html#viewer">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure">
+          <img src="viewer_v3_real_color.png" alt="The v3 world in real-color mode: observed colors on a sparse voxel shell.">
+          <figcaption><strong>Real color.</strong> Observed appearance on the pre-hole-fill shell — compare with v4 above.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_occupancy.png" alt="Occupancy mode of the v3 world.">
+          <figcaption><strong>Occupancy.</strong> The first FREE / SURFACE / OCCUPIED / UNKNOWN visualization.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_hollow.png" alt="Hollow mode showing only the matter voxels of the v3 world.">
+          <figcaption><strong>Hollow (matter only).</strong> The matter shell that bounds the walkable interior.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_free_space.png" alt="Free-space mode: the carved interior air of the hallway as a solid blue volume.">
+          <figcaption><strong>Free space.</strong> The carved air itself — 4 850 FREE voxels, the volume a player walks through.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_confidence.png" alt="Confidence heatmap of the v3 world.">
+          <figcaption><strong>Confidence.</strong> Accumulated TSDF weight per voxel as a red-green heatmap.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_observations.png" alt="Observation-count mode of the v3 world.">
+          <figcaption><strong>Observations.</strong> How many views contributed to each voxel.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_semantic.png" alt="Semantic mode with wall, floor, and surface labels in different colors.">
+          <figcaption><strong>Semantic.</strong> Plane-derived wall / floor / surface labels from the RANSAC pass.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="viewer_v3_wireframe.png" alt="Wireframe mode exposing the voxel geometry of the v3 world.">
+          <figcaption><strong>Wireframe.</strong> Every voxel's geometry as mesh lines over the observed colors.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <div class="highlight">
+      <p><strong>One client, one world, many views.</strong> Every image on this page came from the same viewer with the same contract: the browser owns no world state, every mode is an instant instance recolour of the authoritative voxels, and camera movement triggers zero regeneration.</p>
+    </div>
+
+    <footer>
+      <p><a href="index.html">Home</a> · <a href="updates.html">Project updates</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="paper.html">Technical paper</a> · <a href="https://github.com/voxelworldmodel">github.com/voxelworldmodel</a></p>
+    </footer>
+  </div>
+</body>
+</html>
