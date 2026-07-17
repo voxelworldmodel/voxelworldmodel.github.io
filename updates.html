@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v7">Latest: Polycam fusion v7</a>
+        <a href="#polycam-viewer">Latest: Polycam in the viewer</a>
+        <a href="#capture-v7">Polycam fusion v7</a>
         <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
@@ -32,6 +33,67 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="polycam-viewer">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Live in the viewer</span>
+      </div>
+      <h2>The Polycam Scan, Loaded Directly Into the VWM Viewer</h2>
+      <p>Follow-up to the v7 fusion milestone: the <strong>actual Polycam capture</strong> is now served standalone by the same authoritative-world server and explored live in the Three.js viewer — the recognizable room itself, correctly metric-scaled (12.3 m hallway), not the noisy monocular reconstruction.</p>
+
+      <div class="status-banner">
+        <h3>✅ The real room, walkable representations, one server</h3>
+        <p>Default view is the <strong>Extracted Surface</strong> — the real textured mesh (30 974 vertices / 49 475 faces, the 8K Polycam texture) with the stone countertop, wooden door, and closet all recognizable. One click on <strong>Literal Voxels</strong> switches to the <strong>73 768-voxel</strong> version of the same scan at 5 cm resolution, with every render mode (real color, occupancy, LOD heatmap, wireframe, …) and every voxel inspectable down to its provenance.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">73 768</span><span class="label">Literal voxels (5 cm, metric)</span></div>
+        <div class="stat"><span class="value">30 974</span><span class="label">Surface vertices (49 475 faces)</span></div>
+        <div class="stat"><span class="value">8K</span><span class="label">Polycam texture on the mesh</span></div>
+        <div class="stat"><span class="value">12.3 m</span><span class="label">Hallway, correctly metric</span></div>
+        <div class="stat"><span class="value">106×55×246</span><span class="label">Voxel grid dimensions</span></div>
+        <div class="stat"><span class="value">63</span><span class="label">FPS in fly mode</span></div>
+      </div>
+
+      <figure class="figure figure-accent figure-tall">
+        <img src="polycam_viewer_hallway.png" alt="Fly-mode view down the voxelized Polycam hallway in real-color mode, with the inspector panel showing one surface voxel's authoritative metadata.">
+        <figcaption><strong>Flying down the voxelized Polycam hallway, real-color mode.</strong> Literal Voxels representation: the scan's actual colors on 5 cm voxels — doorway light, red wall hangings, tiled floor. Bottom left: the inspector on one clicked voxel, showing class SURFACE, provenance <code>observed_surface</code>, metric position, appearance source <code>observed_rgb_atlas</code>, and its neighbours. 64 FPS.</figcaption>
+      </figure>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="polycam_viewer_surface.png" alt="The full Polycam scan framed in orbit mode as the extracted textured surface mesh.">
+          <figcaption><strong>Extracted Surface, the default view.</strong> The whole scan framed in orbit: the real textured mesh, 30 974 vertices with the 8K Polycam texture.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_occupancy.png" alt="The same scan in occupancy mode, all 73,768 voxels classified SURFACE, with the stats panel showing FREE 0.">
+          <figcaption><strong>Occupancy mode, honest by design.</strong> All 73 768 voxels classify SURFACE; the stats panel shows <strong>FREE 0</strong> — this import is surface-only, with no carved air yet (see below).</figcaption>
+        </figure>
+      </div>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="polycam_viewer_hallway2.png" alt="Fly-mode view of a bright section of the voxelized Polycam hallway in real-color mode.">
+          <figcaption><strong>Another fly-mode stop.</strong> The bright end of the hallway in Literal Voxels, real color — coarse-flat wall voxels tagged by the adaptive classifier.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_wireframe.jpg" alt="Wireframe render mode showing the voxel structure of the hallway as dense mesh lines.">
+          <figcaption><strong>Wireframe mode.</strong> The same corridor with structure exposed — every voxel's geometry visible as mesh lines, 65 FPS.</figcaption>
+        </figure>
+      </div>
+
+      <h3>What This Is (And Isn't)</h3>
+      <ul>
+        <li><strong>Same engineering client, same architecture.</strong> The authoritative-world server (<code>server.py --npz polycam_world/artifacts/occupancy_world.npz</code>) holds the scan; the browser owns no world state. All the v4/v5 machinery — representation toggle, render modes, orbit/fly/walk, inspector, edit with local recompile — works on the Polycam world unchanged.</li>
+        <li><strong>Both representations from one field:</strong> the extracted surface (the Polycam mesh) and the 73 768-voxel literal view are two derived views of the same imported scan, exactly the v5 representation-≠-storage contract.</li>
+        <li><strong>Surface-only, honestly:</strong> this direct import has <strong>FREE 0</strong> — no free-space carving has been run on it, so Walk mode has nothing to stand on yet and the occupancy view is all-SURFACE. Wiring free-space + a standable spawn for the Polycam world (so you can actually walk the scanned hallway) is the named next step.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The recognizable, metric-scaled room from the Polycam capture is now first-class in the VWM engineering client — surface and voxels, all render modes, full per-voxel inspection — served by the same one-source-of-truth server as every previous world. Free-space carving for walkability is next.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v7">
       <div class="update-meta">

@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#polycam-viewer">Polycam viewer</a>
         <a href="#capture-v7">Polycam v7</a>
         <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
@@ -41,6 +42,58 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── polycam scan in the viewer ─────────────── -->
+    <section class="bench-milestone" id="polycam-viewer">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Live in the viewer</span>
+      </div>
+      <h2>The Polycam Scan in the VWM Viewer</h2>
+      <p>The Polycam capture served standalone by the authoritative-world server — extracted surface by default, 73 768 literal voxels one click away, all render modes and per-voxel inspection working unchanged.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Voxels</span><span class="chip-value">73 768</span></div>
+        <div class="bench-chip"><span class="chip-label">Mesh verts</span><span class="chip-value">30 974</span></div>
+        <div class="bench-chip"><span class="chip-label">Texture</span><span class="chip-value">8192²</span></div>
+        <div class="bench-chip"><span class="chip-label">Scale</span><span class="chip-value">12.3 m</span></div>
+        <div class="bench-chip"><span class="chip-label">Grid</span><span class="chip-value">106×55×246</span></div>
+        <div class="bench-chip"><span class="chip-label">FPS</span><span class="chip-value">63</span></div>
+      </div>
+
+      <figure class="figure figure-accent figure-tall">
+        <img src="polycam_viewer_hallway.png" alt="Fly-mode view down the voxelized Polycam hallway in real-color mode with the voxel inspector open.">
+        <figcaption><strong>Literal Voxels, real color, fly mode.</strong> The Polycam scan voxelized at 5 cm, with per-voxel inspection (class SURFACE, provenance <code>observed_surface</code>, metric position) at 64 FPS.</figcaption>
+      </figure>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="polycam_viewer_occupancy.png" alt="Occupancy mode: all voxels classified SURFACE, stats panel showing FREE 0.">
+          <figcaption><strong>Occupancy mode.</strong> All-SURFACE, FREE 0 — this direct import is surface-only; carving is the named next step.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="polycam_viewer_wireframe.jpg" alt="Wireframe mode exposing the voxel structure of the hallway.">
+          <figcaption><strong>Wireframe mode.</strong> Voxel structure exposed down the corridor, 65 FPS.</figcaption>
+        </figure>
+      </div>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Direct Polycam import, measured</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th>Value</th><th>Note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">Extracted surface</td><td class="num winner" data-label="Value">30 974 verts / 49 475 faces</td><td data-label="Note">The real Polycam mesh with its 8192² texture, default view</td></tr>
+            <tr><td class="metric" data-label="Metric">Literal voxels</td><td class="num winner" data-label="Value">73 768 @ 5 cm</td><td data-label="Note">Grid 106×55×246, correctly metric (12.3 m hallway)</td></tr>
+            <tr><td class="metric" data-label="Metric">Render performance</td><td class="num winner" data-label="Value">63–65 FPS</td><td data-label="Note">Fly mode through the voxel hallway, all modes instant-switch</td></tr>
+            <tr><td class="metric" data-label="Metric">Free space</td><td class="num loser" data-label="Value">0 (surface-only)</td><td data-label="Note">No carving run on this import yet — Walk has nothing to stand on; next step</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#polycam-viewer">Read full narrative with all mode screenshots →</a></p>
+    </section>
 
     <!-- ─────────────── reality-capture v7 (polycam fusion) ─────────────── -->
     <section class="bench-milestone" id="capture-v7">

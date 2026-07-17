@@ -192,25 +192,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>Reality-Capture v7, Polycam multi-source fusion</strong> — monocular video and a LiDAR-metric Polycam scan now converge into the one persistent authoritative VoxelWorld. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>the Polycam scan, live in the VWM Viewer</strong> — the recognizable metric-scaled room as an extracted surface and 73 768 literal voxels, on top of the v7 multi-source fusion milestone. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ Two independent sources, one authoritative world</h3>
-        <p>The Polycam mesh registered to the video-built world at an <strong>ICP median residual of 0.030 voxels</strong> — sub-voxel proof that both reconstructions captured the same hallway — and <strong>exposed the true metric scale</strong>: the monocular world was compressed ~4.9× (real hallway 12.3 m). Fusion accumulated, never overwrote: mean confidence <strong>+15%</strong>, <strong>+528</strong> Polycam-only coverage voxels, <strong>2 818</strong> voxels cross-confirmed by both sources.</p>
+        <h3>✅ The real room, first-class in the engineering client</h3>
+        <p>The Polycam capture is served standalone by the same authoritative-world server: default view is the real textured mesh (<strong>30 974 vertices, 8K texture</strong> — countertop, wooden door, and closet all recognizable at the true 12.3 m scale), one click away from the <strong>73 768-voxel</strong> literal view with every render mode and per-voxel inspection. Beneath it, v7's fusion result stands: Polycam registered to the video world at <strong>0.030-voxel ICP median residual</strong>, exposing the monocular ~4.9× scale compression.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.030</span><span class="label">ICP median residual (voxels)</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Polycam literal voxels (5 cm)</span></div>
+        <div class="stat"><span class="value">30 974</span><span class="label">Surface vertices, 8K texture</span></div>
+        <div class="stat"><span class="value">12.3 m</span><span class="label">Hallway, correctly metric</span></div>
+        <div class="stat"><span class="value">0.030</span><span class="label">ICP median residual (v7 fusion)</span></div>
         <div class="stat"><span class="value">4.9×</span><span class="label">Monocular scale error exposed</span></div>
-        <div class="stat"><span class="value">+15%</span><span class="label">Mean confidence after fusion</span></div>
-        <div class="stat"><span class="value">2 818</span><span class="label">Cross-confirmed voxels</span></div>
-        <div class="stat"><span class="value">+528</span><span class="label">Polycam-only coverage</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
-      <figure class="figure">
-        <img src="real_video_v7_sources.png" alt="Viewer source mode showing blue video-only voxels, orange Polycam-only voxels, and green voxels observed by both sources.">
-        <figcaption><strong>Per-voxel provenance, source mode.</strong> Blue: video-only. Orange: Polycam-only coverage the walk missed. Green: both sources agree — independent methods reconstructing the same matter.</figcaption>
+      <figure class="figure figure-tall">
+        <img src="polycam_viewer_hallway.png" alt="Fly-mode view down the voxelized Polycam hallway in real-color mode with the voxel inspector open.">
+        <figcaption><strong>Flying down the voxelized Polycam hallway.</strong> Literal Voxels, real-color mode, 64 FPS — with the inspector showing one clicked voxel's authoritative metadata (class, provenance, metric position).</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
