@@ -127,7 +127,31 @@ Object:   Oscilloscope</div>
       <h2>Neural Rendering</h2>
       <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines, changing renderers never changes simulation.</p>
 
-      <h3>View Modes</h3>
+      <h3>The View Generator</h3>
+      <p>One authoritative world feeds a view generator; every rendering is just a different way of observing the same state.</p>
+      <div class="diagram">Reality
+        │
+        ▼
+═══════════════════════════════════════════
+   Authoritative Adaptive Voxel World
+───────────────────────────────────────────
+  Geometry       Materials      Semantics
+  Components     Relationships  Physics
+  Confidence     History        Sensors
+  Metadata       Observations   AI Knowledge
+═══════════════════════════════════════════
+        │
+        ▼
+   View Generator
+        │
+   ┌──────────────┼──────────────┐
+   ▼              ▼              ▼
+ Raster         Neural        Analytics
+ Renderer       Renderer      Renderer
+   └──────────────┼──────────────┘
+        │
+        ▼
+   User's Chosen Reality ↓</div>
       <div class="pill-grid">
         <span class="pill">Native Voxel</span>
         <span class="pill">Enhanced Voxel</span>
@@ -140,13 +164,51 @@ Object:   Oscilloscope</div>
         <span class="pill">Photorealistic</span>
         <span class="pill">Cinematic</span>
         <span class="pill">Wireframe</span>
+        <span class="pill">Bounding Boxes</span>
+        <span class="pill">Collision Geometry</span>
+        <span class="pill">Navigation Mesh</span>
+        <span class="pill">Occlusion View</span>
+        <span class="pill">Terrain Height Map</span>
+        <span class="pill">Slope Analysis</span>
+        <span class="pill">Topographic</span>
+        <span class="pill">Thermal</span>
+        <span class="pill">Infrared (IR)</span>
+        <span class="pill">Night Vision</span>
+        <span class="pill">Radar</span>
         <span class="pill">LiDAR Point Cloud</span>
-        <span class="pill">Gaussian Splat</span>
+        <span class="pill">Gaussian Splat View</span>
+        <span class="pill">Depth Buffer</span>
+        <span class="pill">Surface Normals</span>
+        <span class="pill">Material IDs</span>
+        <span class="pill">Lighting Buffers</span>
+        <span class="pill">Motion Vectors</span>
         <span class="pill">Semantic Segmentation</span>
-        <span class="pill">Thermal / IR</span>
+        <span class="pill">Object Classification</span>
+        <span class="pill">Instance Segmentation</span>
         <span class="pill">Physics View</span>
+        <span class="pill">Constraint Visualization</span>
+        <span class="pill">Fluid Simulation</span>
+        <span class="pill">Airflow</span>
+        <span class="pill">Electric Fields</span>
+        <span class="pill">Magnetic Fields</span>
+        <span class="pill">Heatmaps</span>
+        <span class="pill">Optimization Heatmap</span>
+        <span class="pill">GPU Cost</span>
+        <span class="pill">CPU Cost</span>
+        <span class="pill">Network Replication</span>
+        <span class="pill">Latency Heatmap</span>
+        <span class="pill">Pathfinding Cost</span>
         <span class="pill">AI Attention Maps</span>
-        <span class="pill">Mixed Reality</span>
+        <span class="pill">Knowledge Graph Overlay</span>
+        <span class="pill">Sensor Coverage</span>
+        <span class="pill">Security Coverage</span>
+        <span class="pill">Power Grid</span>
+        <span class="pill">Automation Flow</span>
+        <span class="pill">Historical Timeline</span>
+        <span class="pill">Future Prediction</span>
+        <span class="pill">Time-Lapse</span>
+        <span class="pill">Replay</span>
+        <span class="pill">Mixed Reality Overlay</span>
         <span class="pill">Custom User Views</span>
       </div>
 
