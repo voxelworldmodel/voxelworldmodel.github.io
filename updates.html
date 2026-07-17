@@ -101,6 +101,13 @@
         <li>Three new render modes: <strong>adaptive resolution</strong>, <strong>feature density</strong>, and <strong>voxel size</strong>.</li>
       </ul>
 
+      <figure class="figure figure-accent">
+        <video controls muted playsinline preload="metadata" poster="viewer_literal_voxels_poster.png">
+          <source src="viewer_literal_voxels_flythrough.mp4" type="video/mp4">
+        </video>
+        <figcaption><strong>Flying through the literal voxel space (24 s).</strong> First-person flight down the reconstructed hallway in Literal Voxels, real-color mode — the inspector pinned to a clicked voxel showing its authoritative metadata live (class SURFACE, adaptive level, provenance <code>observed_surface</code>, metric position). Every block on screen is a measured observation; the camera only observes, nothing regenerates.</figcaption>
+      </figure>
+
       <h3>Honest Limits</h3>
       <ul>
         <li>The corner solver <strong>measures</strong> 90° recovery and confirms fine voxels sit at the seams — it does not yet <em>snap</em> voxel faces to reconstruct an idealized sharp edge; voxels remain on the octree lattice. Plane snapping / face smoothing is open rendering-normal work.</li>

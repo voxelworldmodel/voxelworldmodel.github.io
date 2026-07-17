@@ -474,7 +474,8 @@ td:first-child {
     calc(var(--voxel-step) * 2) calc(var(--voxel-step) * 2) 0 0 var(--voxel-shadow);
 }
 
-.figure img {
+.figure img,
+.figure video {
   display: block;
   width: 100%;
   height: auto;
