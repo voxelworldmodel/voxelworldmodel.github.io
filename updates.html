@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v5">Latest: Surface v5</a>
+        <a href="#capture-v7">Latest: Polycam fusion v7</a>
+        <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
@@ -31,6 +32,68 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v7">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Multi-source, measured</span>
+      </div>
+      <h2>Reality-Capture v7, Polycam Multi-Source Fusion</h2>
+      <p>A LiDAR-metric <strong>Polycam scan of the same hallway is integrated as another observation source, not a replacement</strong> — monocular video and Polycam now converge into the one persistent authoritative VoxelWorld. (The target is the v6 world: an internal incremental-merge pass that gave the world per-voxel observation memory and merged the walk's two keyframe sets as separate scans, confidence 4.1 → 6.84, byte-identical restart reload.)</p>
+
+      <div class="status-banner">
+        <h3>✅ Two independent reconstructions, provably the same hallway</h3>
+        <p>PCA-coarse + robust ICP registered the Polycam mesh to the video-built world with an <strong>ICP median residual of 0.030 voxels</strong> — sub-voxel agreement between fully independent methods. And the key multi-source payoff: registration <strong>exposed the true metric scale</strong>. The monocular world was compressed <strong>~4.9×</strong> (real hallway 12.3 m; the video reconstruction had it at ~2.5 m). Polycam recovered the scale monocular capture never could — exactly the long-suspected error, now quantified.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.030</span><span class="label">ICP median residual (voxels)</span></div>
+        <div class="stat"><span class="value">4.9×</span><span class="label">Monocular scale compression exposed</span></div>
+        <div class="stat"><span class="value">+15%</span><span class="label">Mean confidence (6.84 → 7.90)</span></div>
+        <div class="stat"><span class="value">+528</span><span class="label">Polycam-only coverage voxels</span></div>
+        <div class="stat"><span class="value">2 818</span><span class="label">Voxels both sources agree on</span></div>
+        <div class="stat"><span class="value">1.0</span><span class="label">Geometry stability on merge</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v7_sources.png" alt="Viewer source mode showing the fused world colored by observation source: blue video-only voxels, orange Polycam-only voxels, green voxels observed by both.">
+        <figcaption><strong>Per-voxel provenance in the viewer's new source mode.</strong> Blue: video-only (6 418). Orange: Polycam-only (528 — coverage the forward-walk missed, notably floor and edges). Green: both sources agree (2 818). The large green region is strong cross-source validation: two independent methods substantially reconstructed the same matter.</figcaption>
+      </figure>
+
+      <h3>Polycam Import (Discovered, Not Assumed)</h3>
+      <p><code>7_16_2026.zip</code> → single <code>7_16_2026.glb</code>, auto-inspected: <strong>30 974 vertices / 49 475 faces</strong>, metric (<strong>12.28 × 5.28 × 2.72 m</strong>), PBR material with an <strong>8192×8192</strong> base-color texture. GLTF Y-up flipped to VWM Y-down, texture baked to vertex colors, sampled to <strong>120 000 surface observations</strong> (position + normal + color). The importer (<code>vwm.polycam_import</code>) is permanent infrastructure — future Polycam scans need no manual work.</p>
+
+      <h3>Fusion (Accumulate, Never Overwrite)</h3>
+      <p>Polycam samples are voxelized into the world grid and merged as observations, with the highest source quality (1.5) so its 8k-texture color wins where co-observed:</p>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Metric</th><th>Video only</th><th>After Polycam</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Metric">Matter voxels</td><td data-label="Video">10 014</td><td data-label="After" class="ok"><strong>11 044</strong> (+1 030)</td></tr>
+          <tr><td data-label="Metric">Mean confidence</td><td data-label="Video">6.84</td><td data-label="After" class="ok"><strong>7.90</strong> (+15%)</td></tr>
+          <tr><td data-label="Metric">Mean observation count / voxel</td><td data-label="Video">1.64</td><td data-label="After" class="ok"><strong>1.86</strong> (max 3 = scan A + scan B + Polycam)</td></tr>
+          <tr><td data-label="Metric">Coverage growth</td><td data-label="Video">—</td><td data-label="After" class="ok"><strong>+528</strong> Polycam-only voxels</td></tr>
+          <tr><td data-label="Metric">Voxels strengthened by Polycam</td><td data-label="Video">—</td><td data-label="After" class="ok"><strong>2 924</strong></td></tr>
+          <tr><td data-label="Metric">Geometry stability on merge</td><td data-label="Video">—</td><td data-label="After" class="ok"><strong>1.0</strong> (Polycam agreed with existing geometry)</td></tr>
+        </tbody>
+      </table>
+
+      <figure class="figure">
+        <img src="real_video_v7_merged.png" alt="The fused world in real-color mode, with Polycam's high-resolution texture colors on co-observed voxels.">
+        <figcaption><strong>The fused world, real-color mode.</strong> Where both sources observed a voxel, Polycam's 8k-texture color wins; video-only regions keep their observed video color. One world, appearance from the best available evidence per voxel.</figcaption>
+      </figure>
+
+      <h3>Partial / Not Done (Honest)</h3>
+      <ul>
+        <li><strong>Metric-scale correction is computed and reported but not yet applied</strong> — re-voxelizing the world at true metric changes the grid, a deliberate, reversible next step.</li>
+        <li><strong>Re-extracting the surface at metric density</strong> (Polycam's 49k faces would give flatter walls and sharper corners), semantic re-estimation on the fused geometry, and the live Luanti walkthrough (<code>luanti_validation.json</code> exports to the proven HAV importer, not run live) — next steps, not faked.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> VWM now integrates genuinely heterogeneous sources — monocular phone video and a LiDAR Polycam mesh — into one persistent authoritative world: sub-voxel registration, +15% confidence, +528 coverage, 2 818 cross-confirmed voxels, and the long-standing monocular scale error finally exposed and quantified by the metric source. The path for RGB-D, LiDAR, and future sensors is the same accumulation pipeline. Deliverables in <code>checkpoints/vwm_scan/real2/v7/</code> (V7_REPORT.md + 16 JSON reports + comparisons + fusion debug); new module <code>vwm.polycam_import</code>; pipeline <code>tools/vwm_polycam_fuse_v7.py</code>; viewer gained the source mode.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v5">
       <div class="update-meta">

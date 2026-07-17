@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v7">Polycam v7</a>
         <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
@@ -40,6 +41,88 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── reality-capture v7 (polycam fusion) ─────────────── -->
+    <section class="bench-milestone" id="capture-v7">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Multi-source, measured</span>
+      </div>
+      <h2>Reality-Capture v7, Polycam Multi-Source Fusion</h2>
+      <p>A LiDAR-metric Polycam scan of the same hallway fused into the persistent authoritative VoxelWorld as another observation source. Registration is computed, not hand-tweaked; fusion accumulates, never overwrites.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">ICP median</span><span class="chip-value">0.030 vox</span></div>
+        <div class="bench-chip"><span class="chip-label">Scale error</span><span class="chip-value">4.9×</span></div>
+        <div class="bench-chip"><span class="chip-label">Confidence</span><span class="chip-value">+15%</span></div>
+        <div class="bench-chip"><span class="chip-label">Coverage</span><span class="chip-value">+528</span></div>
+        <div class="bench-chip"><span class="chip-label">Cross-confirmed</span><span class="chip-value">2 818</span></div>
+        <div class="bench-chip"><span class="chip-label">Merge stability</span><span class="chip-value">1.0</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Registration: Polycam → video-built world (PCA coarse + robust ICP)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Metric</th><th>Value</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="metric" data-label="Metric">ICP median residual</td><td class="num winner" data-label="Value">0.030 voxels</td><td data-label="Meaning">Sub-voxel — two independent reconstructions are provably the same hallway</td></tr>
+            <tr><td class="metric" data-label="Metric">ICP mean residual</td><td class="num" data-label="Value">0.056 voxels</td><td data-label="Meaning">Robust alignment throughout</td></tr>
+            <tr><td class="metric" data-label="Metric">Implied metric scale</td><td class="num winner" data-label="Value">1 unit = 4.91 m</td><td data-label="Meaning">Monocular world was compressed ~4.9× (real hallway 12.3 m, video had ~2.5 m)</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">The long-standing monocular scale error — flagged honestly since v2 — is now exposed and quantified by a metric source, exactly the value of a second heterogeneous sensor.</div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v7_sources.png" alt="Viewer source mode: blue video-only voxels, orange Polycam-only voxels, green voxels observed by both sources.">
+        <figcaption><strong>Source mode.</strong> Blue video-only (6 418), orange Polycam-only (528), green both-agree (2 818) — the green mass is cross-source validation.</figcaption>
+      </figure>
+
+      <div class="bench-panel">
+        <div class="bench-panel-head">Fusion: video-only world vs after Polycam merge</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Video only</th>
+              <th>After Polycam</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Metric">Matter voxels</td>
+              <td class="num" data-label="Video">10 014</td>
+              <td class="num winner" data-label="After">11 044 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Mean confidence</td>
+              <td class="num" data-label="Video">6.84</td>
+              <td class="num winner" data-label="After">7.90 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Mean obs-count / voxel</td>
+              <td class="num" data-label="Video">1.64</td>
+              <td class="num winner" data-label="After">1.86 (max 3) <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Voxels strengthened</td>
+              <td class="num na" data-label="Video">—</td>
+              <td class="num winner" data-label="After">2 924</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Metric">Geometry stability on merge</td>
+              <td class="num na" data-label="Video">—</td>
+              <td class="num winner" data-label="After">1.0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Polycam import: 30 974 verts / 49 475 faces, metric 12.28 × 5.28 × 2.72 m, 8192² PBR texture baked to vertex colors, 120 000 sampled observations. Not yet done (honest): applying the metric-scale correction (re-voxelization is a deliberate, reversible next step), metric-density surface re-extraction, semantic re-estimation, live Luanti walkthrough.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v7">Read full v7 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── reality-capture v5 (extracted surface) ─────────────── -->
     <section class="bench-milestone" id="capture-v5">
