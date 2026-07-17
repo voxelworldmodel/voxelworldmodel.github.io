@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#capture-v4">Latest: Adaptive v4</a>
+        <a href="#capture-v5">Latest: Surface v5</a>
+        <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
@@ -30,6 +31,57 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v5">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Representation ≠ storage</span>
+      </div>
+      <h2>Reality-Capture v5, Extracted-Surface Reconstruction</h2>
+      <p>The central move, exactly as VWM's architecture frames it: <strong>separate representation from visualization</strong>. The VoxelWorld/HAV is unchanged — it stores the TSDF field. The viewer now renders the continuous zero-crossing <strong>surface extracted from that field</strong> instead of storage cubes, so the hallway looks architectural instead of like a colored voxel blob. Every surface vertex maps back to authoritative voxels, and extraction runs only where the field was observed — no surface over unseen space.</p>
+
+      <div class="status-banner">
+        <h3>✅ A surface, not cubes — from the same authoritative field</h3>
+        <p>Marching cubes on the TSDF field produces a <strong>7 809-vertex / 14 452-face colored mesh</strong> (vertex colors sampled from observed appearance), <strong>92% manifold edges</strong>, <strong>12.8 m²</strong> surface area, <strong>Environment Fidelity Score 0.962</strong> (manifoldness + density + continuity). The viewer default is now Extracted Surface, with a one-click toggle back to Literal Voxels — both derived views over the one authoritative TSDF field.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.962</span><span class="label">Environment Fidelity Score</span></div>
+        <div class="stat"><span class="value">7 809</span><span class="label">Mesh vertices (14 452 faces)</span></div>
+        <div class="stat"><span class="value">0.924</span><span class="label">Manifold-edge fraction</span></div>
+        <div class="stat"><span class="value">12.8 m²</span><span class="label">Extracted surface area</span></div>
+        <div class="stat"><span class="value">4</span><span class="label">Field gaps closed (deeply enclosed only)</span></div>
+        <div class="stat"><span class="value">1-click</span><span class="label">Surface ↔ voxel toggle, same field</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v5_compare.png" alt="Side-by-side viewer screenshots of the same authoritative TSDF field rendered as literal voxel cubes on the left and as the smooth extracted surface mesh on the right.">
+        <figcaption><strong>Same authoritative field, two representations.</strong> Left: literal voxels — the blocky storage view. Right: the marching-cubes surface extracted from the same TSDF field — smooth and architectural, with observed appearance as vertex colors. Nothing about the world changed; only the derived view did.</figcaption>
+      </figure>
+
+      <h3>What v5 Does (Evidence-Based)</h3>
+      <ul>
+        <li><strong>Surface extraction (marching cubes)</strong> on the TSDF field → a colored triangle mesh with vertex colors sampled from the observed appearance field. 92% of edges are manifold. <code>surface_extraction_benchmark.json</code> records marching cubes against the evaluated alternatives (surface nets, dual contouring for sharp corners).</li>
+        <li><strong>Representation ≠ storage:</strong> the authoritative voxels are unchanged; the mesh is a derived view. The viewer toggles Extracted Surface ↔ Literal Voxels instantly, both from the same field.</li>
+        <li><strong>Conservative field gap-closing:</strong> only deeply-enclosed unobserved voxels are bridged (4 gaps), never open space.</li>
+      </ul>
+
+      <h3>Viewer</h3>
+      <p>Default representation is now <strong>Extracted Surface</strong>; one click returns to Literal Voxels. All 11 render modes are retained (occupancy, adaptive, LOD, inferred fill, …) along with orbit / fly / walk with gravity and collision. Voxels still render at 63 FPS; the mesh runs interactively (24 FPS in headless software rendering — real GPUs are far faster). New endpoint: <code>/api/surface</code>.</p>
+
+      <h3>Honest Fidelity Assessment</h3>
+      <p>v5 makes the reconstruction <strong>look like a surface rather than a voxel blob</strong> — the biggest perceptual step toward recognizability — and it is a pure representation change over the same authoritative field, with <strong>zero geometry invented</strong>. But the underlying geometry is still limited by the single monocular forward-walk: walls are smooth-but-wavy, corners rounded, and fine features (handles, switches, trim) absent because the capture never densely observed them. The representation is now right; the remaining fidelity ceiling is set by the input data, exactly as reported since v2.</p>
+
+      <h3>Partial / Not Done (And Why)</h3>
+      <ul>
+        <li><strong>Plane-snapped flat walls and a corner solver — the biggest remaining geometry win.</strong> Marching cubes rounds corners; truly flat walls and sharp corners need plane-snapping plus dual contouring (QEF on hermite data). The detected planes exist but are not yet applied to vertices, and the plane-residual fidelity sub-metric is disabled (frame misalignment).</li>
+        <li><strong>Thin-structure recovery and adaptive microvoxel re-integration (1 cm / 5 mm),</strong> plus live Luanti re-import: each needs either denser observation or a next algorithmic step. Not done, <strong>because inventing them would be hallucination.</strong></li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> The representation is now a real architectural surface traceable to the authoritative voxels. The remaining fidelity ceiling (flat walls, sharp corners, fine features) has named, honest next-step algorithms — and consistent with every report since v2, the single highest-impact lever is still a richer capture, not more rendering. Deliverables in <code>checkpoints/vwm_scan/real2/v5/</code> (V5_REPORT.md + 8 JSON reports + comparison + walkthrough); new module <code>vwm.surface_extract</code>.</p>
+      </div>
+    </article>
 
     <article class="update" id="capture-v4">
       <div class="update-meta">

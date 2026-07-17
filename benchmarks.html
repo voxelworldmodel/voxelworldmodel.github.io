@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v5">Surface v5</a>
         <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
@@ -39,6 +40,78 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── reality-capture v5 (extracted surface) ─────────────── -->
+    <section class="bench-milestone" id="capture-v5">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">Representation ≠ storage</span>
+      </div>
+      <h2>Reality-Capture v5, Extracted-Surface Reconstruction</h2>
+      <p>The VoxelWorld/HAV is unchanged — it stores the TSDF field. The viewer now renders the continuous surface extracted from that field (marching cubes) instead of storage cubes. Extraction runs only where the field was observed; zero geometry invented.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Fidelity (EFS)</span><span class="chip-value">0.962</span></div>
+        <div class="bench-chip"><span class="chip-label">Vertices</span><span class="chip-value">7 809</span></div>
+        <div class="bench-chip"><span class="chip-label">Faces</span><span class="chip-value">14 452</span></div>
+        <div class="bench-chip"><span class="chip-label">Manifold edges</span><span class="chip-value">0.924</span></div>
+        <div class="bench-chip"><span class="chip-label">Area</span><span class="chip-value">12.8 m²</span></div>
+        <div class="bench-chip"><span class="chip-label">Gaps closed</span><span class="chip-value">4</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v5_compare.png" alt="Same authoritative TSDF field rendered as literal voxel cubes (left) and as the smooth extracted surface mesh (right) in the VWM viewer.">
+        <figcaption><strong>The decisive comparison.</strong> Same authoritative TSDF field: literal voxels (left) vs the extracted marching-cubes surface (right), vertex colors from observed appearance. A pure representation change; the world is untouched.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">v4 (literal voxels) vs v5 (extracted surface), same field</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr>
+              <th>Signal</th>
+              <th>v4 literal voxels</th>
+              <th>v5 extracted surface</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Signal">Representation rendered</td>
+              <td class="num" data-label="v4">11k+ storage cubes</td>
+              <td class="num winner" data-label="v5">7 809-vert / 14 452-face mesh</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Manifold-edge fraction</td>
+              <td class="num na" data-label="v4">n/a</td>
+              <td class="num winner" data-label="v5">0.924</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Surface area</td>
+              <td class="num na" data-label="v4">—</td>
+              <td class="num winner" data-label="v5">12.8 m²</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Environment Fidelity Score</td>
+              <td class="num na" data-label="v4">—</td>
+              <td class="num winner" data-label="v5">0.962</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Look</td>
+              <td class="num loser" data-label="v4">blocky blob</td>
+              <td class="num winner" data-label="v5">smooth architectural surface</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Authoritative world changed</td>
+              <td class="num" data-label="v4">—</td>
+              <td class="num winner" data-label="v5">no (derived view only)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Viewer default is now Extracted Surface with a one-click toggle to Literal Voxels, both from the same field via <code>/api/surface</code>. Honest limits: walls are smooth-but-wavy and corners rounded (marching cubes) — plane-snapping + dual contouring is the named next step; fine features need a capture that observed them. Nothing was faked.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v5">Read full v5 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── reality-capture v4 (recognizable adaptive) ─────────────── -->
     <section class="bench-milestone" id="capture-v4">

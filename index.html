@@ -192,25 +192,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>Reality-Capture v4, recognizable adaptive reconstruction</strong> — continuous surfaces and adaptive detail with zero invented geometry, walkable in the upgraded viewer. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>Reality-Capture v5, extracted-surface reconstruction</strong> — the viewer now renders a continuous surface extracted from the authoritative TSDF field instead of storage cubes. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ Environment Identity Score +47%, zero invented geometry</h3>
-        <p>All <strong>427 enclosed reconstruction holes closed</strong> (each fill provenance-tagged INFERRED, free air never touched — free-voxel count unchanged at 4 850), and every matter voxel classified into coarse / medium / fine detail levels, with fine detail concentrating exactly on edges. The viewer gained <strong>Walk mode</strong> (gravity + collision, standing on the reconstructed floor) and renders 16 212 voxels at <strong>63 FPS</strong>.</p>
+        <h3>✅ A surface, not cubes — representation separated from storage</h3>
+        <p>Marching cubes on the authoritative TSDF field yields a <strong>7 809-vertex colored mesh</strong> (92% manifold edges, 12.8 m², <strong>Environment Fidelity Score 0.962</strong>), rendered as the viewer's default with a one-click toggle back to literal voxels — both derived from the same field. Extraction runs only where the field was observed: <strong>no surface over unseen space, zero geometry invented.</strong></p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">0.743</span><span class="label">Environment Identity Score (+47%)</span></div>
-        <div class="stat"><span class="value">427 → 0</span><span class="label">Enclosed holes closed</span></div>
-        <div class="stat"><span class="value">4 850</span><span class="label">Free voxels (untouched)</span></div>
-        <div class="stat"><span class="value">63</span><span class="label">FPS, 16 212 voxels, Walk mode</span></div>
-        <div class="stat"><span class="value">9k/1.9k/402</span><span class="label">Coarse / medium / fine voxels</span></div>
+        <div class="stat"><span class="value">0.962</span><span class="label">Environment Fidelity Score</span></div>
+        <div class="stat"><span class="value">7 809</span><span class="label">Mesh vertices (14 452 faces)</span></div>
+        <div class="stat"><span class="value">0.924</span><span class="label">Manifold-edge fraction</span></div>
+        <div class="stat"><span class="value">12.8 m²</span><span class="label">Extracted surface area</span></div>
+        <div class="stat"><span class="value">0.743</span><span class="label">Environment Identity Score (v4)</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="real_video_v4_compare.png" alt="Side-by-side viewer screenshots of the v3 world with speckled holes and the v4 world with continuous filled surfaces.">
-        <figcaption><strong>v3 (left) vs v4 (right), same view in the VWM Viewer.</strong> 427 enclosed holes closed into continuous surfaces; every fill is provenance-tagged and visible in its own render mode. Free space untouched.</figcaption>
+        <img src="real_video_v5_compare.png" alt="Same authoritative TSDF field rendered as literal voxel cubes on the left and as the smooth extracted surface mesh on the right.">
+        <figcaption><strong>Same authoritative field, two representations.</strong> Literal voxels (left) vs the extracted surface (right) — a pure representation change over the unchanged authoritative world, with observed appearance as vertex colors.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
