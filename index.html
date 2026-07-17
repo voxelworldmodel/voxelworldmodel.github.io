@@ -192,25 +192,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>the official Three.js VWM Viewer</strong> — a browser engineering client over the single authoritative VoxelWorld — plus a QA loop that fixed real import/spawn defects on the v3 hollow world. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>Reality-Capture v4, recognizable adaptive reconstruction</strong> — continuous surfaces and adaptive detail with zero invented geometry, walkable in the upgraded viewer. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ The reconstructed world, live in the browser at 63 FPS</h3>
-        <p>The viewer renders the hollow reconstructed hallway (<strong>15 613 instanced voxels, 63 FPS</strong>) with nine instant-switch modes — real observed colour, FREE/OCCUPIED/UNKNOWN occupancy, hollow, confidence, and more. Click any voxel for its authoritative metadata; edit one and the authoritative world changes with a <strong>local 3×3×3 recompile scope, <code>global_rebuild=false</code></strong>. The client owns no world state: a Python server holds the one authoritative world, and camera movement makes zero server calls.</p>
+        <h3>✅ Environment Identity Score +47%, zero invented geometry</h3>
+        <p>All <strong>427 enclosed reconstruction holes closed</strong> (each fill provenance-tagged INFERRED, free air never touched — free-voxel count unchanged at 4 850), and every matter voxel classified into coarse / medium / fine detail levels, with fine detail concentrating exactly on edges. The viewer gained <strong>Walk mode</strong> (gravity + collision, standing on the reconstructed floor) and renders 16 212 voxels at <strong>63 FPS</strong>.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">63</span><span class="label">FPS, 15 613 instanced voxels</span></div>
-        <div class="stat"><span class="value">13/15</span><span class="label">Viewer acceptance criteria</span></div>
-        <div class="stat"><span class="value">1.0</span><span class="label">Camera-centreline FREE fraction (v3)</span></div>
-        <div class="stat"><span class="value">99.2%</span><span class="label">Free space reached by flood-fill (v3)</span></div>
-        <div class="stat"><span class="value">15 177</span><span class="label">HAV leaves imported live (9.9 s)</span></div>
+        <div class="stat"><span class="value">0.743</span><span class="label">Environment Identity Score (+47%)</span></div>
+        <div class="stat"><span class="value">427 → 0</span><span class="label">Enclosed holes closed</span></div>
+        <div class="stat"><span class="value">4 850</span><span class="label">Free voxels (untouched)</span></div>
+        <div class="stat"><span class="value">63</span><span class="label">FPS, 16 212 voxels, Walk mode</span></div>
+        <div class="stat"><span class="value">9k/1.9k/402</span><span class="label">Coarse / medium / fine voxels</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="vwm_viewer_screenshot.png" alt="The VWM Three.js viewer rendering the reconstructed hallway in real-color mode with mode buttons, voxel inspector, and live stats panel.">
-        <figcaption><strong>The VWM Viewer on the v3 world.</strong> Real observed colour on instanced voxels, nine render modes top right, click-to-inspect authoritative metadata bottom left, live stats (61 FPS, class counts, revision) bottom right.</figcaption>
+        <img src="real_video_v4_compare.png" alt="Side-by-side viewer screenshots of the v3 world with speckled holes and the v4 world with continuous filled surfaces.">
+        <figcaption><strong>v3 (left) vs v4 (right), same view in the VWM Viewer.</strong> 427 enclosed holes closed into continuous surfaces; every fill is provenance-tagged and visible in its own render mode. Free space untouched.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>

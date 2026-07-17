@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#capture-v4">Adaptive v4</a>
         <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
@@ -38,6 +39,89 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── reality-capture v4 (recognizable adaptive) ─────────────── -->
+    <section class="bench-milestone" id="capture-v4">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">No invented geometry</span>
+      </div>
+      <h2>Reality-Capture v4, Recognizable Adaptive Reconstruction</h2>
+      <p>Same authoritative v3 world, made recognizable: conservative hole-filling (every fill provenance-tagged INFERRED, free air never touched) plus adaptive per-voxel detail levels. Viewer upgraded with Walk mode and three new render modes.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">EIS</span><span class="chip-value">0.743</span></div>
+        <div class="bench-chip"><span class="chip-label">vs v3</span><span class="chip-value">+47%</span></div>
+        <div class="bench-chip"><span class="chip-label">Holes</span><span class="chip-value">427 → 0</span></div>
+        <div class="bench-chip"><span class="chip-label">Free voxels</span><span class="chip-value">unchanged</span></div>
+        <div class="bench-chip"><span class="chip-label">FPS</span><span class="chip-value">63</span></div>
+        <div class="bench-chip"><span class="chip-label">Walk mode</span><span class="chip-value">yes</span></div>
+      </div>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">v3 → v4, same authoritative world</div>
+        <table class="bench-table benchmark has-trends">
+          <thead>
+            <tr>
+              <th>Signal</th>
+              <th>v3 hollow</th>
+              <th>v4 adaptive</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric" data-label="Signal">Environment Identity Score</td>
+              <td class="num loser" data-label="v3">0.507</td>
+              <td class="num winner" data-label="v4">0.743 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Enclosed holes</td>
+              <td class="num loser" data-label="v3">427</td>
+              <td class="num winner" data-label="v4">0 <span class="trend trend-good">▼</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Hole-freeness</td>
+              <td class="num loser" data-label="v3">0.21</td>
+              <td class="num winner" data-label="v4">1.0 <span class="trend trend-good">▲</span></td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Matter voxels</td>
+              <td class="num" data-label="v3">10 763</td>
+              <td class="num" data-label="v4">11 362 (+599 INFERRED, +5.6%)</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Free voxels (air)</td>
+              <td class="num" data-label="v3">4 850</td>
+              <td class="num winner" data-label="v4">4 850, unchanged</td>
+            </tr>
+            <tr>
+              <td class="metric" data-label="Signal">Detail levels (coarse / medium / fine)</td>
+              <td class="num na" data-label="v3">—</td>
+              <td class="num winner" data-label="v4">9 067 / 1 893 / 402</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Fill rule: an UNKNOWN voxel enclosed by observed matter on ≥4 of 6 faces is a gap in a real surface, not open space. Free air never qualifies, so doorways and unseen rooms stay open. Filled-voxel appearance is interpolated from neighbouring observed colour.</div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v4_compare.png" alt="Side-by-side viewer screenshots: v3 with speckled reconstruction holes, v4 with continuous filled surfaces.">
+        <figcaption><strong>v3 (left) vs v4 (right), real-color mode.</strong> 427 enclosed holes closed; the shell reads as a continuous surface. Free space untouched.</figcaption>
+      </figure>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="real_video_v4_lod.png" alt="LOD heatmap: blue coarse, green medium, red fine detail on edges and corners.">
+          <figcaption><strong>LOD heatmap.</strong> Fine detail (red) concentrates on edges/corners.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v4_inferred.png" alt="Inferred-fill mode: pink voxels mark every hole-fill addition.">
+          <figcaption><strong>Inferred-fill mode.</strong> Every fill visible in pink — auditable provenance.</figcaption>
+        </figure>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#capture-v4">Read full v4 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── QA loop + Three.js viewer ─────────────── -->
     <section class="bench-milestone" id="viewer">

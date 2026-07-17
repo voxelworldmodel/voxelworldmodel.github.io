@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#viewer">Latest: VWM Viewer</a>
+        <a href="#capture-v4">Latest: Adaptive v4</a>
+        <a href="#viewer">VWM Viewer</a>
         <a href="#capture-v3">Hollow v3</a>
         <a href="#capture-v2">TSDF v2</a>
         <a href="#real-video">Real video reconstruction</a>
@@ -29,6 +30,83 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="capture-v4">
+      <div class="update-meta">
+        <time datetime="2026-07-16">July 16, 2026</time>
+        <span class="badge badge-ok">No invented geometry</span>
+      </div>
+      <h2>Reality-Capture v4, Recognizable Adaptive Reconstruction</h2>
+      <p>Operating on the same authoritative v3 world, v4 makes the reconstruction <strong>recognizable without inventing geometry</strong>: continuous surfaces plus adaptive detail levels. Every added voxel is provenance-tagged INFERRED; free space and open unknown space are untouched.</p>
+
+      <div class="status-banner">
+        <h3>✅ Environment Identity Score 0.507 → 0.743 (+47%)</h3>
+        <p>All 427 enclosed "swiss-cheese" holes closed (hole-freeness 0.21 → <strong>1.0</strong>), surfaces now continuous instead of speckled — while the free-voxel count stays <strong>exactly 4 850</strong>. Doorways, the hallway, and unseen rooms remain open, because free air is never filled and large open UNKNOWN never qualifies for filling.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">0.743</span><span class="label">Environment Identity Score (+47%)</span></div>
+        <div class="stat"><span class="value">427 → 0</span><span class="label">Enclosed holes closed</span></div>
+        <div class="stat"><span class="value">+599</span><span class="label">Voxels added, all tagged INFERRED (+5.6%)</span></div>
+        <div class="stat"><span class="value">4 850</span><span class="label">Free voxels (unchanged)</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">Detail levels: coarse / medium / fine</span></div>
+        <div class="stat"><span class="value">63</span><span class="label">FPS, 16 212 voxels, Walk mode</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="real_video_v4_compare.png" alt="Side-by-side viewer screenshots of the v3 world with speckled holes and the v4 world with continuous filled surfaces, both in real-color mode.">
+        <figcaption><strong>v3 (left) vs v4 (right), same view, real-color mode.</strong> The v3 shell is speckled with 427 enclosed reconstruction holes; v4 closes all of them, so the hallway reads as a continuous surface. Voxel count 15 613 → 16 212; free space untouched.</figcaption>
+      </figure>
+
+      <h3>v3 → v4, Measured</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Signal</th><th>v3</th><th>v4</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Signal">Environment Identity Score</td><td data-label="v3">0.507</td><td data-label="v4" class="ok"><strong>0.743</strong> (+47%)</td></tr>
+          <tr><td data-label="Signal">Enclosed "swiss-cheese" holes</td><td data-label="v3">427</td><td data-label="v4" class="ok"><strong>0</strong></td></tr>
+          <tr><td data-label="Signal">Hole-freeness</td><td data-label="v3">0.21</td><td data-label="v4" class="ok"><strong>1.0</strong></td></tr>
+          <tr><td data-label="Signal">Surface continuity (largest component)</td><td data-label="v3">1.0</td><td data-label="v4">1.0</td></tr>
+          <tr><td data-label="Signal">Matter voxels</td><td data-label="v3">10 763</td><td data-label="v4">11 362 (+599 INFERRED, +5.6%)</td></tr>
+          <tr><td data-label="Signal">Free voxels (air)</td><td data-label="v3">4 850</td><td data-label="v4" class="ok"><strong>4 850, unchanged</strong></td></tr>
+          <tr><td data-label="Signal">Fragments / floaters</td><td data-label="v3">0</td><td data-label="v4">0</td></tr>
+        </tbody>
+      </table>
+
+      <h3>What Changed, Conservatively</h3>
+      <ul>
+        <li><strong>Hole-filling → continuous surfaces.</strong> An UNKNOWN voxel enclosed by observed matter on ≥4 of 6 faces is a reconstruction gap in a real surface, not open space. 427 such holes were closed iteratively, each tagged <code>INFERRED_hole_fill</code>, with appearance interpolated from neighbouring observed colour (blended, not smeared). Free air is never filled.</li>
+        <li><strong>Adaptive detail levels.</strong> Every matter voxel is classified from local surface exposure: coarse (buried flat, 9 067), medium (surfaces, 1 893), fine (edges/corners/trim, 402). The viewer renders coarse voxels larger and fine voxels smaller.</li>
+      </ul>
+
+      <div class="figure-row">
+        <figure class="figure">
+          <img src="real_video_v4_lod.png" alt="Viewer LOD heatmap of the v4 world: blue coarse voxels, green medium surfaces, red fine detail concentrated on edges and corners.">
+          <figcaption><strong>LOD heatmap.</strong> Blue coarse, green medium, red fine — fine detail concentrates exactly on edges and corners. Adaptive resolution, visibly obvious.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="real_video_v4_inferred.png" alt="Viewer inferred-fill mode showing pink voxels marking every hole-fill addition against the observed matter shell.">
+          <figcaption><strong>Inferred-fill mode.</strong> Every filled hole rendered in pink: provenance is visible, auditable, and separable from observed matter at a glance.</figcaption>
+        </figure>
+      </div>
+
+      <h3>Viewer Upgraded</h3>
+      <p>The engineering client gained <strong>Walk mode</strong> — gravity, collision, and player height, standing on the reconstructed floor and walking the hallway with WASD, blocked by matter with no clipping — plus three new modes: Adaptive Resolution, LOD Heatmap, and Inferred Fill. Still <strong>63 FPS at 16 212 instanced voxels</strong>, single draw call, mode switches with no rebuild. It still owns no world state: it loads the authoritative v4 occupancy via the API, and edits POST back with local 3×3×3 recompile.</p>
+
+      <h3>Honest Recognizability Assessment</h3>
+      <p>v4 is materially more recognizable than v3 — the hallway now reads as a continuous hollow corridor with wood/stone colouring and a clear floor/wall/ceiling shell rather than a sparse speckled shell. <strong>But it is not photo-recognizable at fine scale:</strong> the base voxel is 5 cm and the single forward-walk capture never densely observed small features (handles, switches, trim), so those cannot be resolved without either a richer capture or hallucination — <strong>and we do not hallucinate.</strong> The reconstruction is a faithful, continuous, adaptive voxelized version of exactly what the camera saw.</p>
+
+      <h3>Partial / Not Done (Honest)</h3>
+      <ul>
+        <li><strong>True sub-base microvoxels (1 cm / 5 mm) are not implemented.</strong> Genuine door-handle/keyhole resolution needs capture that observed those features densely, plus region-flagged higher-res TSDF re-integration (documented in <code>microvoxel_report.json</code>).</li>
+        <li>Live Luanti re-import walkthrough, appearance-projection-v2 multi-view reweighting, and a progressive-refinement scheduler are next steps.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> Recognizability improved 47% with zero invented geometry — every fill is provenance-tagged and visible in its own render mode. The single biggest remaining lever is unchanged and honest: a richer capture (orbit / look-at-detail / AR poses) — that, not more algorithm, is what would make fine features actually recognizable. All deliverables in <code>checkpoints/vwm_scan/real2/v4/</code> (V4_REPORT.md + 8 JSON reports + comparisons + hallway demo); new module <code>vwm.surface_refine</code>.</p>
+      </div>
+    </article>
 
     <article class="update" id="viewer">
       <div class="update-meta">
