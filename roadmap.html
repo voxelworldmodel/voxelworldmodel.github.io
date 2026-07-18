@@ -89,27 +89,64 @@
         <span class="badge badge-ok">Foundation: V12 Gaussians</span>
       </div>
       <h2>V13 — Production Gaussian Engine</h2>
-      <p>Turn the V12 chunked Gaussian scene into a production visualization and streaming engine: LOD, VRAM-aware budgets, progressive compile, and quality paths that run when a real GPU and checkpoint exist — without inventing fake perception numbers beforehand.</p>
+      <p>Turn the V12/V15/V16 Gaussian path into a production observation pipeline: streaming rasterization plus optional <strong>local</strong> and <strong>global</strong> frame enhancers — without ever letting AI become the world authority.</p>
+
+      <div class="diagram">Adaptive Voxel World
+        │
+        ▼
+══════════════════════════
+     World Compiler
+══════════════════════════
+        │
+        ▼
+ Gaussian Scene Artifact
+        │
+        ▼
+══════════════════════════
+ Gaussian Rasterizer
+══════════════════════════
+        │
+        ▼
+Gaussian Frame + Metadata
+        │
+   ┌────┴────┐
+   ▼         │
+Local AI     │   (materials, textures, fine detail)
+   │         │
+   ▼         │
+Enhanced     │
+   └────┬────┘
+        ▼
+ Final Display Frame
+        │
+        ▼
+Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
+        │
+        ▼
+     Monitor</div>
 
       <h3>Goals</h3>
       <ul>
-        <li><strong>LOD &amp; frustum streaming</strong> — serve only visible / near chunks to the browser; distance and screen-space error drive splat density.</li>
-        <li><strong>VRAM / resource manager</strong> — adaptive budgets for splat counts, atlas sizes, and compile queues (profiles for desktop / laptop / headless).</li>
-        <li><strong>Progressive initial compile</strong> — replace the one-shot full pass (~7.3 s on the hallway) with background progressive chunk build + live partial views.</li>
-        <li><strong>Appearance-aware splat generation</strong> — consume v9 appearance patches and evidence confidence so flat walls stay coarse geometry with rich texture, not splat explosion.</li>
-        <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback (V12).</li>
-        <li><strong>Real LingBot quality lane</strong> — when CUDA + checkpoint are present, measure throughput, trajectory error, and VRAM honestly; keep the synthetic provider as the CI contract.</li>
+        <li><strong>LOD &amp; frustum streaming</strong> — serve only visible / near chunks; screen-space error drives splat density.</li>
+        <li><strong>VRAM / resource manager</strong> — adaptive budgets for splat counts, atlas sizes, and compile queues.</li>
+        <li><strong>Progressive initial compile</strong> — background progressive chunk build + live partial views.</li>
+        <li><strong>Gaussian rasterizer as a V16 renderer</strong> — consumes only <code>gaussian_scene</code> artifacts; produces frame + G-buffers (RGB, depth, normals, motion, semantics, materials).</li>
+        <li><strong>Layer 1 — Local Frame Enhancer</strong> — AI conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence…); improves surface detail, reflections, edges, AA — never invents occupancy.</li>
+        <li><strong>Layer 2 — Global Frame Enhancer</strong> — AI conditioned on scene metadata (weather, fog, sun elevation, exposure, time of day…); HDR, grading, atmosphere, bloom, DOF, temporal, upscaling, stylization.</li>
+        <li><strong>Independent toggles</strong> — <code>local_ai</code> / <code>global_ai</code> on|off: pure Gaussian, photoreal surfaces only, fast cinematic, or maximum realism.</li>
+        <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback.</li>
       </ul>
 
       <h3>Definition of done</h3>
       <ul>
         <li>Viewer streams Gaussians under a declared VRAM budget without dropping the authoritative world.</li>
-        <li>Incremental compile remains one-chunk for local edits; progressive initial compile is measurable.</li>
-        <li>Benchmarks separate synthetic plumbing from real-model perception quality.</li>
+        <li>Local and global enhancers are optional plugins over the same raster output; disabling both yields pure deterministic Gaussian display.</li>
+        <li>Enhancers never write voxels, Components, or evidence — observation only.</li>
+        <li>Benchmarks separate raster cost from local AI cost from global AI cost.</li>
       </ul>
 
       <h3>Depends on</h3>
-      <p>V11 runtime compilers · V12 Gaussian scene &amp; splat renderer · optional: GPU + LingBot checkpoint for the quality lane.</p>
+      <p>V12 Gaussian scene · V15 compiler artifacts · V16 visualization engine · homepage / paper enhancement path. See also <a href="index.html#enhancement">Frame Enhancement</a> on the homepage.</p>
     </article>
 
     <!-- ─────────────── V14 ─────────────── -->
@@ -298,7 +335,7 @@ V15 ✓P1 Compiler kernel (shipped)
 V16 ✓   Visualization engine (shipped · stack complete)
    │
    ▼
-V13     Production Gaussian engine
+V13     Production Gaussian + local/global frame enhancers
 V15 P2  Viewer migration through /api/viz
 V17     Simulation
 V18     Digital twins

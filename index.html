@@ -18,6 +18,7 @@
         <a href="#twins">Digital Twins</a>
         <a href="#semantic">Semantic Worlds</a>
         <a href="#rendering">Neural Rendering</a>
+        <a href="#enhancement">Frame Enhancement</a>
         <a href="#status">Development Status</a>
         <a href="updates.html">Updates</a>
         <a href="benchmarks.html">Benchmarks</a>
@@ -212,6 +213,98 @@ Object:   Oscilloscope</div>
         <span class="pill">Mixed Reality Overlay</span>
         <span class="pill">Custom User Views</span>
       </div>
+
+      <h3>Gaussian Observation Pipeline</h3>
+      <p>When the chosen view is Gaussian, the path is fixed and modular: the world never changes; only observation quality does. Deterministic stages produce a Gaussian frame with metadata; optional AI stages enhance it — first locally (what this surface is), then globally (what this scene is). Each stage can be enabled or disabled independently.</p>
+      <div class="diagram">Adaptive Voxel World
+        │
+        ▼
+══════════════════════════
+     World Compiler
+══════════════════════════
+        │
+        ▼
+ Gaussian Scene Artifact
+        │
+        ▼
+══════════════════════════
+ Gaussian Rasterizer
+══════════════════════════
+        │
+        ▼
+Gaussian Frame + Metadata
+        │
+        ├───────────────┐
+        │               │
+        ▼               │
+Local Frame Enhancer    │
+(Materials, textures,   │
+small detail)           │
+        │               │
+        ▼               │
+Enhanced Gaussian Frame │
+        │               │
+        └───────┬───────┘
+                ▼
+      Final Display Frame
+                │
+                ▼
+Global Frame Enhancer (optional)
+(Cinematic effects, HDR, film grain,
+color grading, atmosphere, bloom,
+DOF, temporal reconstruction)
+                │
+                ▼
+            Monitor</div>
+
+      <h3 id="enhancement">Two Enhancement Layers</h3>
+      <p>Instead of one huge neural renderer solving every problem at once, VWM separates responsibilities the way the rest of the stack does — narrowly defined jobs that can improve independently.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Layer 1 — Local Enhancement</h4>
+          <p>Improves the rendered Gaussian image itself. Consumes RGB, depth, normals, motion vectors, semantic labels, material IDs, and voxel metadata embeddings.</p>
+          <p>Jobs: better brick / grass / bark / glass / reflections, cleaner edges, anti-aliasing, fine geometric detail — making the Gaussian frame look like a high-quality photograph of that surface.</p>
+        </div>
+        <div class="card">
+          <h4>Layer 2 — Global Enhancement</h4>
+          <p>Treats the result as a finished frame. Does not care about individual bricks.</p>
+          <p>Jobs: HDR tone mapping, cinematic color grading, GI enhancement, atmospheric haze, lens effects, bloom, DOF, motion blur, temporal stabilization, noise reduction, upscaling, and stylization (anime, watercolor, thermal, …).</p>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <p><strong>Sunset example.</strong> Layer 1 knows <em>“this voxel is polished brass”</em> and produces realistic brass reflections. Layer 2 knows <em>“the entire scene is golden hour”</em> and warms lighting and atmosphere across the whole frame. Two different problems — complementary stages.</p>
+      </div>
+
+      <h3>Independent Configuration</h3>
+      <div class="diagram">frame_enhancement:
+  local_ai: off    # or on
+  global_ai: off   # or on
+
+# off / off  → pure Gaussian raster
+# on  / off  → photoreal surfaces, no cinematic pass
+# off / on   → fast raster + AI grading / temporal
+# on  / on   → maximum realism</div>
+
+      <h3>Metadata Each Layer Consumes</h3>
+      <div class="figure-row">
+        <div class="diagram" style="margin-right: 0.75rem; flex: 1"># Layer 1 — local / per-object
+object:
+  semantic: oak_tree
+  material: bark
+  moisture: 0.18
+  season: autumn
+  confidence: 0.99</div>
+        <div class="diagram" style="flex: 1"># Layer 2 — global / scene
+world:
+  weather: rain
+  fog_density: 0.12
+  sun_elevation: 18°
+  exposure: EV 11
+  time_of_day: sunset</div>
+      </div>
+      <p>One model understands <strong>what this surface is</strong>; the other understands <strong>what this scene is</strong>. Deterministic world simulation and Gaussian rasterization stay authoritative; local and global AI only observe and enhance. That matches the modular philosophy through V16 and FRAME: each stage has a narrow job, can be toggled off, and can improve without rewriting the rest of the pipeline.</p>
 
       <figure class="figure">
         <img src="voxel_pointcloud.png" alt="VWM point cloud view of a house with semantic overlays identifying vehicle, desk, and door.">

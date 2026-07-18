@@ -444,6 +444,18 @@
 
         <p><code>gaussian_appearance.py</code> fits Gaussians from compiled surface bakes. Gaussians <strong>follow component transforms</strong> without refit. Depth is constrained against authoritative voxel depth to prevent wall leakage.</p>
 
+        <h3>13.1 Planned observation path: raster → local AI → global AI</h3>
+        <p>The intended production Gaussian view (roadmap V13) keeps the world and raster deterministic, then applies optional enhancers:</p>
+        <div class="diagram">Adaptive Voxel World → World Compiler → Gaussian Scene Artifact
+        → Gaussian Rasterizer → Frame + Metadata
+        → [Local Frame Enhancer] → [Global Frame Enhancer] → Monitor</div>
+        <ul>
+          <li><strong>Local enhancement</strong> — conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence). Improves surface detail, materials, edges; never invents occupancy.</li>
+          <li><strong>Global enhancement</strong> — conditioned on scene metadata (weather, fog, sun elevation, exposure, time of day). HDR, grading, atmosphere, bloom, DOF, temporal, stylization.</li>
+          <li><strong>Independent toggles</strong> — either or both enhancers may be off (pure Gaussian) or on; camera motion still never regenerates world authority.</li>
+        </ul>
+        <p>This separation matches VWM’s modular philosophy: narrowly defined stages that can improve independently without rewriting the Adaptive Voxel World. See also the homepage section <a href="index.html#enhancement">Frame Enhancement</a>.</p>
+
         <h3>13.1 VolSplat import path</h3>
         <div class="diagram paper-diagram">recorded frames + poses + depth
   → VolSplat

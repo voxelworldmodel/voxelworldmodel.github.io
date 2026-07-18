@@ -592,8 +592,9 @@ td:first-child {
   margin: 0;
 }
 
-.figure-row .figure {
+.figure-row .diagram {
   margin: 0;
+  width: 100%;
 }
 
 footer {
