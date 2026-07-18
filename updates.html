@@ -14,9 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v14">Latest: V14 registration</a>
+        <a href="#v15">Latest: V15 compiler framework</a>
+        <a href="#v14">V14 registration</a>
         <a href="#v12">V12 streaming + Gaussians</a>
-        <a href="#v11">V11 world runtime</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -40,6 +40,64 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v15">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">105/105 tests · Part 1</span>
+      </div>
+      <h2>V15 Part 1, World Compiler Framework</h2>
+      <p>VWM now has a <strong>single World Compiler Runtime</strong> that owns all compilation of derived artifacts. The Adaptive Voxel World remains the sole source of truth; every derived representation — Gaussian, SVO, mesh, semantic cache, lighting, and any future plugin — is an <strong>Artifact produced by a Compiler</strong>, orchestrated by one runtime. No more standalone compiler subsystems.</p>
+
+      <div class="status-banner">
+        <h3>✅ One runtime · 5 built-in plugins · incremental + transactional — 17 new tests, 105 total</h3>
+        <p>Dirty region → dependency-ordered <code>(compiler, chunk)</code> work → each compile inside a transaction (<code>prepare → compile → validate → publish → commit</code>), invisible until commit, atomic swap, rollback on any failure. Cache hits on re-invalidation of the same chunk/revision. Content-hash determinism. A throwing compiler fails in isolation while others still succeed and the world stays untouched. Extensibility proven: a brand-new compiler plugs in with only <code>implement Compiler + register()</code> — the runtime class is never modified.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">105/105</span><span class="label">Tests (17 V15 + prior suites)</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">Built-in compiler plugins</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Compiler events on V11 bus</span></div>
+        <div class="stat"><span class="value">15</span><span class="label">Modules in vwm/compiler/</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">Runtime owns all compilation</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">World writes by compilers</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v15_compiler.png" alt="VWM viewer with the World Compiler (V15) panel showing 5 compilers, artifact counts, cache stats, and transactions.">
+        <figcaption><strong>World Compiler (V15) panel, live.</strong> Five registered compilers, artifact store, cache hit/miss rate, transactions, and failures — draggable diagnostics. Endpoints: <code>/api/compiler/{stats,diagnostics,artifacts}</code>.</figcaption>
+      </figure>
+
+      <h3>The Kernel (<code>vwm/compiler/</code>)</h3>
+      <p>Every module the spec listed: <code>runtime · compiler · registry · scheduler · dependency · artifact · cache · execution · invalidation · diagnostics · persistence · statistics · transactions · exceptions · utilities</code> (+ <code>plugins</code>). Callable API surface: <code>world.compiler</code>.</p>
+
+      <h3>Five Built-In Plugins + Chained Dependencies</h3>
+      <p>Plugins wrap the real existing logic — <strong>gaussian</strong>, <strong>svo</strong>, <strong>mesh</strong>, <strong>semantic_cache</strong> — plus <strong>lighting</strong>, which consumes <code>gaussian_scene</code>. That dependency proves topological ordering (gaussian runs before lighting) and chained dirty propagation: one dirty region resolves to ordered <code>(compiler, chunk)</code> work; no compiler triggers another.</p>
+
+      <h3>What Was Verified End-to-End</h3>
+      <ul>
+        <li><strong>Incremental</strong> — only intersecting chunks’ artifacts recompile (one-artifact-per-dirty-chunk).</li>
+        <li><strong>Transactional</strong> — prepare → compile → validate → publish → commit; invisible until commit; atomic swap; rollback restores the previous artifact on any failure.</li>
+        <li><strong>Cache</strong> — key is <code>(compiler, chunk, revision, params)</code>; re-invalidating the same key → hits, no recompile.</li>
+        <li><strong>Determinism</strong> — content-hash dedup; identical revision+params → identical checksum.</li>
+        <li><strong>Validation</strong> — invalid output never publishes (gaussian: finite + opacity∈[0,1]; svo: node/leaf integrity; mesh: box indices).</li>
+        <li><strong>Error isolation</strong> — a throwing compiler fails alone; independent compilers still succeed; the world is never modified.</li>
+        <li><strong>Events</strong> — 10 compiler events on the V11 bus (CompilationStarted/Finished/Failed, ArtifactCreated/Updated/Removed, CacheHit/Miss, TransactionCommitted/RolledBack).</li>
+        <li><strong>Extensibility</strong> — <code>test_extensibility_no_runtime_change</code>: implement Compiler + register(); runtime untouched.</li>
+      </ul>
+
+      <h3>Honest Scope Notes (Part 1)</h3>
+      <ul>
+        <li><strong>Migration:</strong> the framework unifies compilation and plugins wrap real logic, but the viewer’s live Gaussian/SVO rendering still reads the V11 <code>runtime.compilers</code> path (kept so V11/V12 tests pass). Fully routing the viewer through <code>world.compiler</code> artifacts is <strong>Part 2</strong>; both paths produce equivalent artifacts.</li>
+        <li><strong>Concurrency:</strong> reference execution is a deterministic single-threaded drain; true parallel multi-worker compilation is a follow-up (the transaction / atomic-swap design already supports it).</li>
+        <li><strong>Persistence</strong> stores artifact metadata + graph + stats; payloads persist via each compiler’s own serializer (e.g. V12 Gaussian chunk <code>.npz</code>), not a single blob.</li>
+        <li><strong>Viewer diagnostics</strong> show stats; full compiler-queue / dependency-graph / timeline panels are follow-ups (endpoints exist).</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> adding Gaussian splats, SVOs, meshes, navmesh, physics, lighting, semantic caches, thermal, robot maps, or neural renderers is now “write a <code>Compiler</code>, register it” — the runtime handles dependency ordering, incremental dirty compilation, transactions, caching, validation, rollback, events, and observability. Existing V9–V14 behavior and tests remain intact (105 pass). Deliverables: <code>vwm/compiler/*</code>, <code>docs/V15_PART1_REPORT.md</code>, server endpoints, the live World Compiler panel, and 17 new tests.</p>
+      </div>
+    </article>
 
     <article class="update" id="v14">
       <div class="update-meta">

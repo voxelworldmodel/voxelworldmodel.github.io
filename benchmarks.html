@@ -14,9 +14,9 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v15">V15 compiler</a>
         <a href="#v14">V14 registration</a>
         <a href="#v12">V12 Gaussians</a>
-        <a href="#v11">V11 world runtime</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
@@ -49,6 +49,51 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V15 compiler framework ─────────────── -->
+    <section class="bench-milestone" id="v15">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">105/105 tests · Part 1</span>
+      </div>
+      <h2>V15 Part 1, World Compiler Framework</h2>
+      <p>One runtime owns all derived-artifact compilation. Five built-in plugins wrap real Gaussian / SVO / mesh / semantic / lighting logic; dependency ordering, transactions, cache, and error isolation are verified.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">105/105</span></div>
+        <div class="bench-chip"><span class="chip-label">Compilers</span><span class="chip-value">5</span></div>
+        <div class="bench-chip"><span class="chip-label">Bus events</span><span class="chip-value">10</span></div>
+        <div class="bench-chip"><span class="chip-label">Kernel modules</span><span class="chip-value">15</span></div>
+        <div class="bench-chip"><span class="chip-label">World writes</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Extensibility</span><span class="chip-value">register()</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v15_compiler.png" alt="World Compiler (V15) panel showing 5 compilers and cache/transaction stats.">
+        <figcaption><strong>World Compiler panel.</strong> Live compiler count, artifacts, transactions, failures, and cache rate.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Kernel guarantees (verified in tests)</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Property</th><th>Verified behavior</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Property">Dependency order</td><td data-label="Behavior">gaussian before lighting; topological <code>(compiler, chunk)</code> work</td></tr>
+            <tr><td data-label="Property">Incremental</td><td data-label="Behavior">only dirty-chunk artifacts recompile</td></tr>
+            <tr><td data-label="Property">Transactional</td><td data-label="Behavior">invisible until commit · atomic swap · rollback on failure</td></tr>
+            <tr><td data-label="Property">Cache</td><td data-label="Behavior">same chunk/revision/params → hit, no recompile</td></tr>
+            <tr><td data-label="Property">Determinism</td><td data-label="Behavior">identical inputs → identical content checksum</td></tr>
+            <tr><td data-label="Property">Isolation</td><td data-label="Behavior">throwing compiler fails alone; world untouched</td></tr>
+            <tr><td data-label="Property">Extensibility</td><td data-label="Behavior"><code>implement Compiler + register()</code>; runtime class unchanged</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Part 1 honest limits: viewer still reads V11 <code>runtime.compilers</code> for live Gaussian/SVO (Part 2 routes through <code>world.compiler</code>); single-threaded drain today; persistence is metadata + per-compiler payloads.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v15">Read full V15 Part 1 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V14 registration ─────────────── -->
     <section class="bench-milestone" id="v14">

@@ -14,9 +14,10 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V14)</a>
+        <a href="#shipped">Shipped (→V15 P1)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
+        <a href="#v15">V15 ✓ P1</a>
         <a href="#v15">V15</a>
         <a href="#v16">V16</a>
         <a href="#v17">V17</a>
@@ -34,7 +35,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>V1–V12 and <a href="updates.html#v14">V14</a> are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 and V15 onward remain the planned production arc (V14 jumped ahead of V13 because the mapping core was ready). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
+      <p>V1–V12, <a href="updates.html#v14">V14</a>, and <a href="updates.html#v15">V15 Part 1</a> are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 and V15 Part 2 / V16 onward remain the planned production arc. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -64,6 +65,11 @@
             <td data-label="Era">Global mapping</td>
             <td data-label="Milestones"><a href="updates.html#v14">V14</a></td>
             <td data-label="Established">SE(3) pose graph + Gauss-Newton; loop closure; landmarks/anchors/uncertainty; multi-capture fusion; incremental corrections via V11 runtime (8.99 m → 0 m loop)</td>
+          </tr>
+          <tr>
+            <td data-label="Era">Compiler kernel</td>
+            <td data-label="Milestones"><a href="updates.html#v15">V15 Part 1</a></td>
+            <td data-label="Established">Single World Compiler Runtime; Artifact + Compiler contract; 5 plugins (gaussian/svo/mesh/semantic/lighting); transactional incremental compile; extensibility via register()</td>
           </tr>
         </tbody>
       </table>
@@ -114,30 +120,12 @@
     <!-- ─────────────── V15 ─────────────── -->
     <article class="update" id="v15">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
-        <span class="badge badge-ok">Foundation: V11 CompiledRepresentation</span>
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Shipped Part 1 — 105/105 tests</span>
       </div>
-      <h2>V15 — World Compiler Framework</h2>
-      <p>Unify every derived representation under one compiler contract: mesh, Gaussians, navmesh, physics hulls, lighting caches, neural appearance packs — each a dirty-chunk consumer of the runtime, none a second world.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Single compiler registry</strong> — declare deps, priority, chunk schema, serialization, and event subscriptions once.</li>
-        <li><strong>Stock compilers</strong> — VoxelMesh &amp; SemanticCache (V11) · GaussianScene (V12/V13) · NavMesh · CollisionHulls · Lighting/Irradiance · optional NeuralAppearance / Style packs.</li>
-        <li><strong>Appearance-patch compiler</strong> — promote v9 atlas patches to a runtime-recompilable representation (marked Partial in V11).</li>
-        <li><strong>Compiler CI</strong> — each compiler has incremental correctness tests (identity/hash of untouched chunks) and a budget profile.</li>
-        <li><strong>Swap without downtime</strong> — compile dirty → atomic swap; viewers never see half-built chunks.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>Adding a new derived view = implementing <code>CompiledRepresentation</code> + tests; no bespoke sync loops.</li>
-        <li><code>docs/INCREMENTAL_MATRIX.md</code> moves Appearance and remaining Global rows toward Incremental with justification.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V11 runtime (dirty, scheduler, depgraph, events) · V12/V13 Gaussian compiler as the reference production consumer.</p>
+      <h2>V15 — World Compiler Framework ✓ Part 1</h2>
+      <p><strong>Part 1 delivered.</strong> Single World Compiler Runtime owns all derived-artifact compilation; five built-in plugins wrap real Gaussian / SVO / mesh / semantic / lighting logic; incremental, transactional, cached, deterministic-where-applicable, and extensible without touching the runtime class. Full report: <a href="updates.html#v15">updates.html#v15</a>.</p>
+      <p><strong>Part 2 remaining:</strong> route the viewer’s live Gaussian/SVO rendering through <code>world.compiler</code> artifacts (today dual-path with V11 <code>runtime.compilers</code>); parallel multi-worker execution; richer queue / dependency-graph / timeline panels; stock compilers for navmesh / physics hulls / neural packs as they land.</p>
     </article>
 
     <!-- ─────────────── V16 ─────────────── -->
@@ -318,10 +306,11 @@
 V10–V11 World OS + runtime + evidence
 V12     Perception providers + Gaussians (scaffolded)
 V14 ✓   Global registration &amp; mapping (shipped)
+V15 ✓P1 Compiler kernel (shipped)
    │
    ▼
 V13     Production Gaussian engine
-V15     Unified world compilers
+V15 P2  Viewer migration + more stock compilers
 V16     Interchangeable visualization
 V17     Simulation
 V18     Digital twins

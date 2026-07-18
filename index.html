@@ -255,25 +255,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V14, Complete Registration &amp; Mapping</strong> — a maintained SE(3) pose graph with loop closure, landmarks, anchors, and incremental world corrections. On top of V12’s streaming + Gaussians. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V15 Part 1, World Compiler Framework</strong> — one runtime owns all derived-artifact compilation; five plugins wrap real Gaussian / SVO / mesh / semantic / lighting logic. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V14: 8.99 m loop drift → 0.0 m in 70 ms — 88/88 tests</h3>
-        <p>Global Gauss-Newton pose-graph optimization is real and measured: a 12-node loop’s drift collapses to zero (chi² 241 → 0) via a single loop-closure edge. Multi-capture fusion, pending alignments (never silent merge), landmarks, anchors, uncertainty, mapping sessions, and map-quality diagnostics all ship. A pose change moves <strong>only that capture’s voxels</strong> through the V11 runtime. The hard ICP cases — scale-from-identity and tiny overlap — are reported as failures/limits, not hidden.</p>
+        <h3>✅ V15 Part 1: unified compiler kernel — 105/105 tests</h3>
+        <p>Every derived representation is now an <strong>Artifact</strong> from a <strong>Compiler</strong>, orchestrated by one runtime: dependency-ordered incremental compile, transactional publish (invisible until commit), content-hash cache, validation that never publishes bad output, and error isolation that never touches the authoritative world. A new representation is <code>implement Compiler + register()</code> — proven by test. Viewer still dual-path reads V11 compilers for live Gaussian/SVO (Part 2 migration); both paths produce equivalent artifacts.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">88/88</span><span class="label">Tests (16 V14 + prior)</span></div>
-        <div class="stat"><span class="value">8.99→0 m</span><span class="label">Loop drift after optimize</span></div>
-        <div class="stat"><span class="value">70 ms</span><span class="label">12-node optimize, 5 iters</span></div>
+        <div class="stat"><span class="value">105/105</span><span class="label">Tests (17 V15 + prior)</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">Built-in compiler plugins</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Compiler events on V11 bus</span></div>
+        <div class="stat"><span class="value">8.99→0 m</span><span class="label">V14 loop drift (prior)</span></div>
         <div class="stat"><span class="value">73 768</span><span class="label">Elliptical splats (V12)</span></div>
-        <div class="stat"><span class="value">0°</span><span class="label">Rot error on 0.4 rad GT</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v14_registration.png" alt="VWM viewer with the Registration / Mapping (V14) diagnostics panel.">
-        <figcaption><strong>Registration / Mapping (V14), live.</strong> Pose-graph stats, quality, drift, sessions, landmarks, and anchors — over the authoritative hallway world.</figcaption>
+        <img src="viewer_v15_compiler.png" alt="VWM viewer with the World Compiler (V15) panel.">
+        <figcaption><strong>World Compiler (V15), live.</strong> Five registered compilers, artifact store, cache, and transaction counters — over the authoritative hallway world.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
@@ -297,7 +297,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V14</strong> (global registration). Next up: <strong>V13</strong> production Gaussians → <strong>V15</strong> unified compilers → <strong>V16</strong> universal visualization → <strong>V17</strong> simulation → <strong>V18</strong> digital twins → <strong>V19</strong> spatial database → <strong>V20</strong> plugin SDK / World OS → <strong>V21+</strong> world intelligence. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V15 Part 1</strong> (compiler kernel) and <strong>V14</strong> (global registration). Next up: <strong>V13</strong> production Gaussians → <strong>V15 Part 2</strong> viewer migration → <strong>V16</strong> universal visualization → <strong>V17</strong> simulation → <strong>V18</strong> digital twins → <strong>V19</strong> spatial database → <strong>V20</strong> plugin SDK / World OS → <strong>V21+</strong> world intelligence. Full definitions of done and dependencies:</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 
