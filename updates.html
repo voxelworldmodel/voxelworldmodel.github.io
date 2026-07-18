@@ -14,9 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v15">Latest: V15 compiler framework</a>
+        <a href="#v16">Latest: V16 visualization</a>
+        <a href="#v15">V15 compiler framework</a>
         <a href="#v14">V14 registration</a>
-        <a href="#v12">V12 streaming + Gaussians</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -40,6 +40,66 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v16">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">118/118 tests · stack complete</span>
+      </div>
+      <h2>V16, Universal Visualization Engine</h2>
+      <p>VWM now has one Visualization Engine that renders the authoritative world in many ways. Every renderer consumes <strong>compiler artifacts</strong> (V15), never the voxel world directly; switching views never recompiles; visualization never modifies the world — it is just another observation. This caps the major subsystem stack: <strong>one Adaptive Voxel World → one World Compiler → one Visualization Engine → viewer</strong>.</p>
+
+      <div class="status-banner">
+        <h3>✅ 17 renderers · artifacts-only · hot-switch never recompiles — 13 new tests, 118 total</h3>
+        <p>A <code>Scene</code> exposes only <code>artifacts(type)</code> — the committed V15 compiler artifacts — so no renderer can read <code>world.coords</code>. Every render description carries <code>source: "compiler_artifacts"</code>, verified live: <code>/api/viz/render?renderer=gaussian</code> → <strong>73 768 splats from artifacts</strong>. Hot switching + re-rendering adds <strong>zero</strong> compilations. Multiple viewports observe the same scene through different renderers with no recompile. Extensibility proven: a new renderer (thermal shown) plugs in with only a class + <code>register()</code> — the engine never changes.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">118/118</span><span class="label">Tests (13 V16 + prior suites)</span></div>
+        <div class="stat"><span class="value">17</span><span class="label">Renderers (10 geometry + 7 debug)</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Gaussian splats via artifacts</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Compilations on hot switch</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">World mutations from render</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">Rendering entry point</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v16_viz.png" alt="VWM viewer with the Visualization Engine (V16) panel listing 17 renderers across geometry and debug categories.">
+        <figcaption><strong>Visualization Engine (V16) panel, live.</strong> “renderers consume compiler artifacts · hot-switch never recompiles” — 17 renderers listed (geometry + debug), active viewport, and recent compiler events. Endpoints: <code>/api/viz/{renderers,render,info,performance}</code>.</figcaption>
+      </figure>
+
+      <h3>The Engine (<code>vwm/visualization/</code>)</h3>
+      <p>Every module the spec listed: <code>engine · renderer · renderers · registry · camera · viewport · overlays · screenshots · recording · settings · diagnostics</code>. Sole entry point: <code>world.visualization</code> / <code>VisualizationEngine.render(...)</code>.</p>
+
+      <h3>17 Renderers, All Consuming Artifacts</h3>
+      <ul>
+        <li><strong>Geometry (10):</strong> voxel · gaussian · mesh · wireframe · normals · semantic · materials · lighting · occupancy · bounding_boxes</li>
+        <li><strong>Debug (7):</strong> chunk_boundaries · dirty_regions · registration_graph · evidence_confidence · compiler_artifacts · component_hierarchy · runtime_events</li>
+      </ul>
+
+      <h3>What Was Verified</h3>
+      <ul>
+        <li><strong>Artifacts-only invariant</strong> — Scene gates access; every description carries <code>source: "compiler_artifacts"</code>.</li>
+        <li><strong>Hot switching</strong> — <code>test_hot_switch_never_recompiles</code>: switch + render adds zero compilations.</li>
+        <li><strong>Multi-viewport</strong> — same scene, different renderers, no recompile.</li>
+        <li><strong>Cameras</strong> — orbit / first_person / fly / top_down / isometric.</li>
+        <li><strong>Selection</strong> — <code>select(point)</code> → voxel → component → artifacts → evidence → revision → bbox.</li>
+        <li><strong>Screenshots / recording / time</strong> — 4K &amp; transparent screenshot descriptions; camera-path / frames / time-lapse; pause / play / step / replay.</li>
+        <li><strong>World untouched</strong> — rendering leaves <code>world.coords</code> unchanged.</li>
+        <li><strong>Extensibility</strong> — <code>test_extensibility_register_only</code>: class + register(); engine unchanged.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Browser migration:</strong> the Python engine produces render descriptions and the endpoints are live, but the interactive Three.js viewer still draws via its own V8–V15 representation code for live modes. Routing the browser’s actual pixel rendering fully through <code>/api/viz/render</code> for every mode is the remaining integration step — descriptions are equivalent and the artifacts-not-voxels invariant already holds engine-side.</li>
+        <li><strong>Stylized renderers</strong> (photorealistic / LEGO / anime / low-poly / thermal / IR) are the extensible target; built-ins cover geometry + semantic + debug. Each stylization is just a new <code>Renderer</code> over the same artifacts.</li>
+        <li><strong>Screenshots / recording</strong> produce descriptions/requests; the browser performs the actual pixel capture.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the “how it’s built” arc is complete and coherent — authoritative world → compiler artifacts → visualization engine → viewer. Subsequent milestones (V17 simulation, V18 twins / robotics, V19 spatial DB, V20 plugin SDK, V21+ intelligence) are about <em>what the world can do</em>, layered on a small, stable core. Deliverables: <code>vwm/visualization/*</code>, <code>docs/V16_REPORT.md</code>, server endpoints, the live Visualization Engine panel, and 13 new tests (118 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v15">
       <div class="update-meta">

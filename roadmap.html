@@ -14,10 +14,11 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V15 P1)</a>
+        <a href="#shipped">Shipped (→V16)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
+        <a href="#v16">V16 ✓</a>
         <a href="#v15">V15</a>
         <a href="#v16">V16</a>
         <a href="#v17">V17</a>
@@ -35,7 +36,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>V1–V12, <a href="updates.html#v14">V14</a>, and <a href="updates.html#v15">V15 Part 1</a> are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 and V15 Part 2 / V16 onward remain the planned production arc. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
+      <p>The major subsystem stack is shipped through <a href="updates.html#v16">V16</a> (world → compiler → visualization). V13 production Gaussians and V15 Part 2 (browser migration) remain open polish on that stack; V17+ are capability layers. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -70,6 +71,11 @@
             <td data-label="Era">Compiler kernel</td>
             <td data-label="Milestones"><a href="updates.html#v15">V15 Part 1</a></td>
             <td data-label="Established">Single World Compiler Runtime; Artifact + Compiler contract; 5 plugins (gaussian/svo/mesh/semantic/lighting); transactional incremental compile; extensibility via register()</td>
+          </tr>
+          <tr>
+            <td data-label="Era">Visualization</td>
+            <td data-label="Milestones"><a href="updates.html#v16">V16</a></td>
+            <td data-label="Established">Universal Visualization Engine; 17 artifact-only renderers; hot-switch never recompiles; multi-viewport; stack complete (world → compiler → viz)</td>
           </tr>
         </tbody>
       </table>
@@ -131,30 +137,12 @@
     <!-- ─────────────── V16 ─────────────── -->
     <article class="update" id="v16">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
-        <span class="badge badge-ok">Foundation: view wall + splat + appearance</span>
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Shipped — 118/118 tests · stack complete</span>
       </div>
-      <h2>V16 — Universal Visualization Engine</h2>
-      <p>Make the homepage “User’s Chosen Reality” wall operational: Raster, Neural, and Analytics pipelines as interchangeable observers of the same world, selectable live without regenerating authority.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Renderer plugin API</strong> — each view mode is a package: inputs (compiled chunks + components + evidence), outputs (framebuffer / overlay), zero world mutation.</li>
-        <li><strong>Three lanes</strong> — Raster (native voxel, wireframe, collision, LOD) · Neural / photoreal / style (appearance packs, optional SD-class enhancers gated by metrics) · Analytics (thermal, semantic, cost, attention, coverage).</li>
-        <li><strong>Camera invariant preserved</strong> — camera motion never triggers neural recompilation; only world edits do (dirty regions).</li>
-        <li><strong>AR / VR / MR adapters</strong> — passthrough overlays and XR cameras as additional observers.</li>
-        <li><strong>Multi-view sync</strong> — same world revision across multiple clients; view choice is local.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>At least one renderer per lane ships with measured frame budgets and a “owns no world state” guarantee.</li>
-        <li>Switching view modes never changes voxel occupancy, components, or evidence.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V15 compilers · V11 zero-regen / dirty invariants · existing Three.js viewer as the engineering client.</p>
+      <h2>V16 — Universal Visualization Engine ✓</h2>
+      <p><strong>Delivered.</strong> One Visualization Engine; 17 renderers consume V15 compiler artifacts only; hot-switch never recompiles; multi-viewport; cameras / layers / selection / screenshots / recording through one API. Caps the major subsystem stack. Full report: <a href="updates.html#v16">updates.html#v16</a>.</p>
+      <p><strong>Remaining polish:</strong> route Three.js live pixel drawing fully through <code>/api/viz/render</code> for every mode; ship stylized renderers (photoreal / LEGO / anime / thermal) as plugins over the same artifacts.</p>
     </article>
 
     <!-- ─────────────── V17 ─────────────── -->
@@ -307,11 +295,11 @@ V10–V11 World OS + runtime + evidence
 V12     Perception providers + Gaussians (scaffolded)
 V14 ✓   Global registration &amp; mapping (shipped)
 V15 ✓P1 Compiler kernel (shipped)
+V16 ✓   Visualization engine (shipped · stack complete)
    │
    ▼
 V13     Production Gaussian engine
-V15 P2  Viewer migration + more stock compilers
-V16     Interchangeable visualization
+V15 P2  Viewer migration through /api/viz
 V17     Simulation
 V18     Digital twins
 V19     Spatial database

@@ -14,9 +14,9 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v16">V16 visualization</a>
         <a href="#v15">V15 compiler</a>
         <a href="#v14">V14 registration</a>
-        <a href="#v12">V12 Gaussians</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam viewer</a>
@@ -49,6 +49,47 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V16 visualization ─────────────── -->
+    <section class="bench-milestone" id="v16">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">118/118 tests · stack complete</span>
+      </div>
+      <h2>V16, Universal Visualization Engine</h2>
+      <p>One rendering entry point. Every renderer consumes V15 compiler artifacts — never voxels. Hot-switch never recompiles. Caps the major subsystem stack.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">118/118</span></div>
+        <div class="bench-chip"><span class="chip-label">Renderers</span><span class="chip-value">17</span></div>
+        <div class="bench-chip"><span class="chip-label">Gaussian via artifacts</span><span class="chip-value">73 768</span></div>
+        <div class="bench-chip"><span class="chip-label">Hot-switch compiles</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">World mutations</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">source=</span><span class="chip-value">compiler_artifacts</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v16_viz.png" alt="Visualization Engine (V16) panel listing 17 geometry and debug renderers.">
+        <figcaption><strong>Visualization Engine panel.</strong> 17 renderers · active voxel · artifacts-only invariant.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Renderer catalog + invariants</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Category</th><th>Renderers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Category">Geometry (10)</td><td data-label="Renderers">voxel · gaussian · mesh · wireframe · normals · semantic · materials · lighting · occupancy · bounding_boxes</td></tr>
+            <tr><td data-label="Category">Debug (7)</td><td data-label="Renderers">chunk_boundaries · dirty_regions · registration_graph · evidence_confidence · compiler_artifacts · component_hierarchy · runtime_events</td></tr>
+            <tr><td data-label="Category">Live verify</td><td data-label="Renderers"><code>/api/viz/render?renderer=gaussian</code> → n=73 768 · <code>source: "compiler_artifacts"</code></td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: Three.js live modes still draw via V8–V15 representation paths (browser migration remaining); stylized renderers are the extensible target; screenshots/recording descriptions are engine-side, pixels captured in-browser.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v16">Read full V16 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V15 compiler framework ─────────────── -->
     <section class="bench-milestone" id="v15">
