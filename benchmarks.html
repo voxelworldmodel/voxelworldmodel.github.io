@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v18">V18 Gaussian enhancement</a>
         <a href="#v17">V17 simulation</a>
         <a href="#v16">V16 visualization</a>
         <a href="#v15">V15 compiler</a>
@@ -51,6 +52,51 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V18 gaussian enhancement ─────────────── -->
+    <section class="bench-milestone" id="v18">
+      <div class="update-meta">
+        <time datetime="2026-07-18">July 18, 2026</time>
+        <span class="badge badge-ok">150/150 tests · packet-only</span>
+      </div>
+      <h2>V18, Gaussian Enhancement Pipeline</h2>
+      <p>Enhances the Gaussian render itself (not the full display frame). Compiler Gaussian artifact → CPU splat rasterizer → GaussianImagePacket → visible-region 32-D embedding → chainable enhancers → enhanced image. Voxel world untouched.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">150/150</span></div>
+        <div class="bench-chip"><span class="chip-label">Enhancers</span><span class="chip-value">10</span></div>
+        <div class="bench-chip"><span class="chip-label">Embedding</span><span class="chip-value">32-D</span></div>
+        <div class="bench-chip"><span class="chip-label">Profiles</span><span class="chip-value">low→cloud</span></div>
+        <div class="bench-chip"><span class="chip-label">World mutations</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Disabled</span><span class="chip-value">passthrough</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v18_genh.png" alt="Gaussian Enhancement (V18) panel with medium profile pipeline stats.">
+        <figcaption><strong>Live panel.</strong> <code>/api/genh/diagnostics</code> — enabled · medium · upscale→detail→material.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Packet contract</td><td data-label="Verified">rgb + depth + normals + motion + semantic + material + object-ids + confidence + metadata</td></tr>
+            <tr><td data-label="Claim">World untouched</td><td data-label="Verified"><code>test_...world_untouched</code> — enhancement is packet-only</td></tr>
+            <tr><td data-label="Claim">Metadata conditioning</td><td data-label="Verified">visible-region → 32-D embedding; never raw voxels / whole world</td></tr>
+            <tr><td data-label="Claim">Passthrough</td><td data-label="Verified">disabled / low profile identical to raw Gaussian render</td></tr>
+            <tr><td data-label="Claim">Live image</td><td data-label="Verified"><code>/api/genh/image?profile=medium</code> → 320×240 enhanced hallway</td></tr>
+            <tr><td data-label="Claim">Extensibility</td><td data-label="Verified">new enhancer (sepia) = class + register; engine unchanged</td></tr>
+            <tr><td data-label="Claim">AI stubs</td><td data-label="Verified">RealESRGAN / photorealistic / reflection report exact blocker; no fabricate</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: classical-CV enhancement is what runs without GPU weights; CPU reference rasterizer ≠ browser WebGL splats; display-mode wiring for the enhanced frame is a follow-up; metadata unprojection is subsampled.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v18">Read full V18 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V17 simulation ─────────────── -->
     <section class="bench-milestone" id="v17">

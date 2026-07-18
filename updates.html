@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v17">Latest: V17 simulation</a>
+        <a href="#v18">Latest: V18 Gaussian enhancement</a>
+        <a href="#v17">V17 simulation</a>
         <a href="#v16">V16 visualization</a>
         <a href="#v15">V15 compiler framework</a>
         <a href="#capture-v9">Error-driven v9</a>
@@ -42,6 +43,79 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v18">
+      <div class="update-meta">
+        <time datetime="2026-07-18">July 18, 2026</time>
+        <span class="badge badge-ok">150/150 tests · packet-only</span>
+      </div>
+      <h2>V18, Gaussian Enhancement Pipeline</h2>
+      <p>Scope correction from “frame enhancement”: V18 makes the <strong>Gaussian render itself</strong> better — enhancement of rendered Gaussian imagery, conditioned on scene metadata — <em>not</em> full-frame / display post-processing. That later whole-frame stage stays an optional visualization capability. The voxel world is never touched.</p>
+
+      <div class="status-banner">
+        <h3>✅ Artifact → CPU splat raster → GaussianImagePacket → 32-D embedding → enhancer chain → enhanced image</h3>
+        <p>Live proof: <code>/api/genh/image?profile=medium</code> returns a real 320×240 enhanced hallway frame (tan floor/walls) after <code>upscale → detail → material</code>. Disabled profile is deterministic passthrough. Enhancers depend only on the packet — renderer-independent. A new enhancer is a class + <code>register()</code>; the engine never changes.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">150/150</span><span class="label">Tests (15 V18 + prior suites)</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Registered enhancers</span></div>
+        <div class="stat"><span class="value">32-D</span><span class="label">Metadata embedding</span></div>
+        <div class="stat"><span class="value">4</span><span class="label">Profiles (low→cloud)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Voxel world mutations</span></div>
+        <div class="stat"><span class="value">✓</span><span class="label">Disabled = passthrough</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v18_genh.png" alt="VWM viewer with the Gaussian Enhancement (V18) panel showing enabled medium profile and pipeline stats.">
+        <figcaption><strong>Gaussian Enhancement (V18) panel, live.</strong> Enabled · profile medium · 10 enhancers · pipeline upscale→detail→material · metadata 256B · embedding dim 32. Endpoints: <code>/api/genh/{diagnostics,enhancers,image}</code>.</figcaption>
+      </figure>
+
+      <div class="gallery-grid" style="margin: 1.25rem 0 1.75rem">
+        <figure class="figure">
+          <img src="genh_v18_passthrough.png" alt="Passthrough Gaussian render of the hallway at 320×240 (profile low).">
+          <figcaption><strong>Passthrough (profile low).</strong> Raw GaussianImagePacket RGB — identical when enhancement is disabled.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="genh_v18_enhanced.png" alt="Enhanced Gaussian hallway image after medium profile upscale, detail, and material stages.">
+          <figcaption><strong>Enhanced (profile medium).</strong> upscale → detail → material on the same packet. Classical-CV path, photorealism-ward.</figcaption>
+        </figure>
+      </div>
+
+      <h3>The Stack (<code>vwm/gaussian_enhancement/</code>)</h3>
+      <p>Every module the spec listed: <code>packet · metadata · embedding · enhancer · registry · engine · settings · diagnostics · api</code>. Entry: <code>world.gaussian_enhancement</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>GaussianImagePacket</strong> — rgb + depth + normals + motion + semantic + material + object-ids + confidence + metadata.</li>
+        <li><strong>Packet-only</strong> — enhancement never mutates the Adaptive Voxel World.</li>
+        <li><strong>Metadata conditioning</strong> — visible-region metadata → compact 32-D model-agnostic embedding (never raw voxels / whole world).</li>
+        <li><strong>Disabled = passthrough</strong> — identical to the raw Gaussian render.</li>
+        <li><strong>Modular chain</strong> — one <code>GaussianEnhancer.enhance(packet)→packet</code>; profiles scale low → medium → high → cloud.</li>
+        <li><strong>Renderer-independent</strong> — a packet built from scratch enhances fine.</li>
+        <li><strong>Extensible</strong> — sepia shown as class + register only.</li>
+        <li><strong>Browser-transparent</strong> — requests Gaussian renders; receives an enhanced image via the Visualization Engine path.</li>
+      </ul>
+
+      <h3>Profiles</h3>
+      <ul>
+        <li><strong>low</strong> — empty pipeline (passthrough)</li>
+        <li><strong>medium</strong> — upscale → detail → material</li>
+        <li><strong>high</strong> — + edge_aa → temporal</li>
+        <li><strong>cloud</strong> — AI stages (guarded / skipped without weights)</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>AI photorealism / super-resolution need GPU weights not present here.</strong> The tested path is classical-CV (upscale / detail / material-conditioned / edge-AA / temporal / stylize). AI enhancers (RealESRGAN, photorealistic, reflection) are guarded stubs that report the exact blocker and raise rather than fabricate — plugging a real model in is implement <code>enhance</code> + register, no engine change.</li>
+        <li><strong>CPU splat rasterizer is a reference rasterizer</strong>, not the browser WebGL splat renderer. It makes the packet + pipeline real and testable without a GPU. Wiring the browser to <em>display</em> the enhanced image (vs live WebGL splats) is a small display-mode follow-up; <code>/api/genh/image</code> already returns the enhanced frame.</li>
+        <li><strong>Metadata unprojection is subsampled</strong> for speed; denser / GPU pass is future work.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the Gaussian render is now a first-class, metadata-rich, enhanceable artifact. Voxel world stays authoritative; compiler produces artifacts; rasterizer renders deterministically; enhancement is an interchangeable capability — not a fundamental engine requirement. Whole-frame / display post-processing remains the clean optional later stage. Deliverables: <code>vwm/gaussian_enhancement/*</code>, <code>docs/V18_REPORT.md</code>, <code>/api/genh/*</code>, the live panel, and 15 new tests (150 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v17">
       <div class="update-meta">
@@ -95,7 +169,7 @@
       </ul>
 
       <div class="highlight">
-        <p><strong>Bottom line:</strong> the capability arc for “how it’s built” is now complete — observations → registration → evidence → Adaptive Voxel World → compiler artifacts → visualization, with <strong>simulation driving change over time</strong> — all through one Runtime, voxel world as sole source of truth. Next milestones (robotics / AI agents, plugin SDK / FRAME) layer capabilities on this kernel rather than growing the core. Deliverables: <code>vwm/simulation/*</code>, <code>docs/V17_REPORT.md</code>, <code>/api/sim/diagnostics</code>, the live Simulation panel, and 17 new tests (135 total).</p>
+        <p><strong>Bottom line:</strong> the capability arc for “how it’s built” is now complete — observations → registration → evidence → Adaptive Voxel World → compiler artifacts → visualization, with <strong>simulation driving change over time</strong> — all through one Runtime, voxel world as sole source of truth. V18 then layered Gaussian enhancement on the visualization path; later milestones (twins / agents, plugin SDK / FRAME) continue as capability layers on this kernel. Deliverables: <code>vwm/simulation/*</code>, <code>docs/V17_REPORT.md</code>, <code>/api/sim/diagnostics</code>, the live Simulation panel, and 17 new tests (135 total).</p>
       </div>
     </article>
 

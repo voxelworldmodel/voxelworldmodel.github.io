@@ -14,16 +14,13 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V17)</a>
+        <a href="#shipped">Shipped (→V18)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
         <a href="#v16">V16 ✓</a>
         <a href="#v17">V17 ✓</a>
-        <a href="#v15">V15</a>
-        <a href="#v16">V16</a>
-        <a href="#v17">V17</a>
-        <a href="#v18">V18</a>
+        <a href="#v18">V18 ✓</a>
         <a href="#v19">V19</a>
         <a href="#v20">V20</a>
         <a href="#v21">V21+</a>
@@ -39,7 +36,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>The major subsystem stack is shipped through <a href="updates.html#v16">V16</a>, and <a href="updates.html#v17">V17</a> makes the world alive over time — still no new foundation. V13 production Gaussians / frame enhancers and V15 Part 2 (browser migration) remain open polish; V18+ are capability layers (twins, spatial DB, plugins, intelligence). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding.</p>
+      <p>The major subsystem stack is shipped through <a href="updates.html#v17">V17</a>, and <a href="updates.html#v18">V18</a> adds packet-only Gaussian enhancement (classical-CV live; AI stubs guarded). V13 production Gaussians / background opt and V15 Part 2 (browser migration) remain open polish; V19+ are capability layers (twins, spatial DB, plugins, intelligence). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding.</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -139,7 +136,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
         <li><strong>VRAM / resource manager</strong> — adaptive budgets for splat counts, atlas sizes, and compile queues.</li>
         <li><strong>Progressive initial compile</strong> — background progressive chunk build + live partial views.</li>
         <li><strong>Gaussian rasterizer as a V16 renderer</strong> — consumes only <code>gaussian_scene</code> artifacts; produces frame + G-buffers (RGB, depth, normals, motion, semantics, materials).</li>
-        <li><strong>Layer 1 — Local Frame Enhancer</strong> — AI conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence…); improves surface detail, reflections, edges, AA — never invents occupancy.</li>
+        <li><strong>Layer 1 — Local Frame Enhancer</strong> — AI conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence…); improves surface detail, reflections, edges, AA — never invents occupancy. <span class="badge badge-ok">V18: pipeline + classical-CV shipped; AI weights pending</span></li>
         <li><strong>Layer 2 — Global Frame Enhancer</strong> — AI conditioned on scene metadata (weather, fog, sun elevation, exposure, time of day…); HDR, grading, atmosphere, bloom, DOF, temporal, upscaling, stylization.</li>
         <li><strong>Independent toggles</strong> — <code>local_ai</code> / <code>global_ai</code> on|off: pure Gaussian, photoreal surfaces only, fast cinematic, or maximum realism.</li>
         <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback.</li>
@@ -204,29 +201,13 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
     <!-- ─────────────── V18 ─────────────── -->
     <article class="update" id="v18">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
+        <time datetime="2026-07-18">July 18, 2026</time>
+        <span class="badge badge-ok">Shipped · 150/150 tests</span>
       </div>
-      <h2>V18 — Digital Twin Platform</h2>
-      <p>Keep real devices and spaces continuously synchronized into the same world: sensors propose observations, the twin stays editable and queryable, and actuation goes back out through explicit channels.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Live sensor adapters</strong> — RGB-D, LiDAR, IMU, IoT, industrial buses → Captures / observations with provenance.</li>
-        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded state changes emit actuation events (never silent).</li>
-        <li><strong>Multi-site federation</strong> — regions / buildings as hierarchical Components with sync policies.</li>
-        <li><strong>SLA &amp; health</strong> — sensor coverage, staleness, confidence decay (Evidence Engine aging) as first-class twin health metrics.</li>
-        <li><strong>Security &amp; tenancy</strong> — who may observe, edit, or actuate which Components.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>A live device stream updates evidence and Components without stopping the viewer or sim.</li>
-        <li><code>trace(point)</code> still reaches the originating Capture / device message.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V10 upload / Captures · V11 evidence aging · V14 registration for relocating sensors · V17 for actuated sim feedback.</p>
+      <h2>V18 — Gaussian Enhancement Pipeline</h2>
+      <p><strong>Delivered.</strong> Enhances the Gaussian render itself (not full-frame display post). Flow: compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers → enhanced image. Voxel world untouched; disabled = deterministic passthrough. Full report: <a href="updates.html#v18">updates.html#v18</a>.</p>
+      <p><strong>Honest limits:</strong> classical-CV path is what runs without GPU weights; AI enhancers are guarded stubs; CPU reference rasterizer ≠ browser WebGL; display-mode wiring for the enhanced frame is a follow-up.</p>
+      <p><strong>Note:</strong> Digital Twin Platform (previously listed here) moves to the next capability arc under V19+ planning below.</p>
     </article>
 
     <!-- ─────────────── V19 ─────────────── -->
@@ -236,26 +217,27 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
         <span class="badge">Planned</span>
         <span class="badge badge-ok">Foundation: V10 query + V11 evidence</span>
       </div>
-      <h2>V19 — Spatial Database &amp; Query Engine</h2>
-      <p>Scale the world into a persistent spatial database: disk-backed evidence and revisions, indexed queries, and analytics that stay honest at city / campus scale.</p>
+      <h2>V19 — Digital Twin Platform &amp; Spatial Database</h2>
+      <p>Keep real devices and spaces continuously synchronized into the same world, and scale that world into a persistent spatial database: disk-backed evidence and revisions, indexed queries, and analytics that stay honest at campus scale.</p>
 
       <h3>Goals</h3>
       <ul>
+        <li><strong>Live sensor adapters</strong> — RGB-D, LiDAR, IMU, IoT, industrial buses → Captures / observations with provenance.</li>
+        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded state changes emit actuation events (never silent).</li>
         <li><strong>Disk persistence</strong> — evidence, revisions, Captures, Components, compiler artifacts survive restart (closes V11 in-memory limit).</li>
         <li><strong>Spatial &amp; semantic indexes</strong> — SVO + secondary indexes for materials, types, confidence, time, provider, capture.</li>
-        <li><strong>Query language v2</strong> — joins across Components / Captures / evidence / trajectories; streaming query results.</li>
-        <li><strong>Vectorized evidence</strong> — replace per-voxel Python dict hot paths for large worlds (V11 honest note).</li>
-        <li><strong>Analytics views</strong> — coverage, uncertainty maps, change detection between revisions as compiled analytics.</li>
+        <li><strong>SLA &amp; health</strong> — sensor coverage, staleness, confidence decay as first-class twin health metrics.</li>
       </ul>
 
       <h3>Definition of done</h3>
       <ul>
+        <li>A live device stream updates evidence and Components without stopping the viewer or sim.</li>
         <li>Cold start restores an identical revision with checksummed artifacts.</li>
-        <li>Declared query SLAs on hallway-scale and a larger synthetic campus fixture.</li>
+        <li><code>trace(point)</code> still reaches the originating Capture / device message.</li>
       </ul>
 
       <h3>Depends on</h3>
-      <p>V10 query API · V11 evidence / revisions · V15 artifact store · SVO as spatial accelerator.</p>
+      <p>V10 upload / Captures · V11 evidence aging · V14 registration · V17 for actuated sim feedback · V15 artifact store.</p>
     </article>
 
     <!-- ─────────────── V20 ─────────────── -->
@@ -313,7 +295,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       </ul>
 
       <h3>Depends on</h3>
-      <p>V16–V20 as the operable platform · V11 evidence · V17 sim · V18 twins · V19 query scale.</p>
+      <p>V16–V20 as the operable platform · V11 evidence · V17 sim · V18 Gaussian enhancement · V19 twins / spatial DB.</p>
     </article>
 
     <section>

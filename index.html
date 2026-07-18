@@ -264,9 +264,9 @@ DOF, temporal reconstruction)
 
       <div class="card-grid">
         <div class="card">
-          <h4>Layer 1 — Local Enhancement</h4>
+          <h4>Layer 1 — Local Enhancement <span class="badge badge-ok">V18 shipped</span></h4>
           <p>Improves the rendered Gaussian image itself. Consumes RGB, depth, normals, motion vectors, semantic labels, material IDs, and voxel metadata embeddings.</p>
-          <p>Jobs: better brick / grass / bark / glass / reflections, cleaner edges, anti-aliasing, fine geometric detail — making the Gaussian frame look like a high-quality photograph of that surface.</p>
+          <p>Jobs: better brick / grass / bark / glass / reflections, cleaner edges, anti-aliasing, fine geometric detail — making the Gaussian frame look like a high-quality photograph of that surface. Live classical-CV chain; AI models plug in when weights are available.</p>
         </div>
         <div class="card">
           <h4>Layer 2 — Global Enhancement</h4>
@@ -350,25 +350,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V17, World Simulation</strong> — the world is alive over time; simulation drives change through the existing Runtime with zero special compiler/viz integration. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V18, Gaussian Enhancement Pipeline</strong> — enhances the Gaussian render itself (packet-only, world untouched); classical-CV chain live, AI enhancers guarded until weights land. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V17: tick → world → auto-recompile — 135/135 tests · no new foundation</h3>
-        <p>Simulation answers <em>“what is the world doing?”</em> without adding a layer. Behaviors and triggers mutate voxels via <code>ctx.change_voxels</code>; Runtime events update Evidence; the V15 compiler’s <code>auto_wire()</code> to <code>ChunkInvalidated</code> recompiles only affected artifacts — proven when a door opens and gaussian splats drop <strong>768→764</strong> with a new checksum. Deterministic replay, nine built-in behaviors, and extensibility via attach-only Behavior classes. Next: robotics / agents, plugin SDK, FRAME — capabilities on this kernel.</p>
+        <h3>✅ V18: packet → 32-D embedding → enhancer chain — 150/150 tests · world untouched</h3>
+        <p>Compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers. Live: <code>/api/genh/image?profile=medium</code> returns a real enhanced hallway frame. Disabled = deterministic passthrough. Full-frame / display post stays optional and separate. Prior: V17 sim (door → auto gaussian 768→764), V16 viz (17 renderers), V15 compiler.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">135/135</span><span class="label">Tests (17 V17 + prior)</span></div>
-        <div class="stat"><span class="value">768→764</span><span class="label">Auto gaussian recompile</span></div>
-        <div class="stat"><span class="value">17</span><span class="label">Viz renderers (V16)</span></div>
-        <div class="stat"><span class="value">9</span><span class="label">Built-in behaviors</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">Sim writes to artifacts</span></div>
+        <div class="stat"><span class="value">150/150</span><span class="label">Tests (15 V18 + prior)</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Enhancers registered</span></div>
+        <div class="stat"><span class="value">32-D</span><span class="label">Metadata embedding</span></div>
+        <div class="stat"><span class="value">320×240</span><span class="label">Live enhanced frame</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">World mutations from enhance</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v17_sim.png" alt="VWM viewer with the Simulation (V17) panel.">
-        <figcaption><strong>Simulation (V17), live.</strong> Tick / time / speed / objects / behaviors — over the authoritative hallway world.</figcaption>
+        <img src="viewer_v18_genh.png" alt="VWM viewer with the Gaussian Enhancement (V18) panel.">
+        <figcaption><strong>Gaussian Enhancement (V18), live.</strong> Medium profile · upscale→detail→material · packet-only over the authoritative hallway world.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
@@ -394,7 +394,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V17</strong> (world alive over time). Capability layers next: <strong>V18</strong> digital twins → <strong>V19</strong> spatial database → <strong>V20</strong> plugin SDK / World OS → <strong>V21+</strong> world intelligence — plus polish <strong>V13</strong> production Gaussians / frame enhancers and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V18</strong> (Gaussian enhancement pipeline). Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> production Gaussians / background Gaussian opt and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 

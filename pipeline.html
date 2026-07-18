@@ -267,10 +267,10 @@ Images               Video Streams              Live Sensors
 
     <section id="enhance" class="pipeline-stage">
       <div class="update-meta">
-        <span class="badge">Goal: V13 enhancers</span>
+        <span class="badge badge-ok">Shipped: V18 classical-CV · AI stubs guarded</span>
       </div>
       <h2>Real-Time Local Gaussian Enhancement</h2>
-      <p>Runs every frame (when enabled). Lightweight local models (small CNN / tiny transformer / TensorRT / ONNX / optional distilled FLUX-class model). Consumes the full GaussianImagePacket.</p>
+      <p>Runs when enabled. Packet-only — never touches the voxel world. Profiles scale low (passthrough) → medium → high → cloud. Live classical-CV enhancers; AI stages (RealESRGAN / photorealistic / reflection) are registered but guarded until GPU weights exist.</p>
       <div class="pill-grid">
         <span class="pill">Sharpen Details</span>
         <span class="pill">Better Glass</span>
@@ -283,10 +283,10 @@ Images               Video Streams              Live Sensors
         <span class="pill">Surface Detail</span>
         <span class="pill">Temporal Stability</span>
       </div>
-      <p>→ <strong>Enhanced Frame</strong> — a photorealistic Gaussian image, still an observation.</p>
+      <p>→ <strong>Enhanced Frame</strong> — a photorealism-ward Gaussian image, still an observation. See <a href="updates.html#v18">V18 report</a> and <a href="status.html#local-ai">architecture status</a>.</p>
 
       <h3>Optional Full-Frame AI Post Process</h3>
-      <p>Operates on the final image only — entirely optional:</p>
+      <p>Operates on the final image only — entirely optional (still goal):</p>
       <div class="pill-grid">
         <span class="pill">HDR</span>
         <span class="pill">Tone Mapping</span>
@@ -358,7 +358,8 @@ WITHOUT
           <tr><td data-label="Stage">World Compiler</td><td data-label="Status" class="ok">Shipped (Part 1)</td><td data-label="M">V15</td></tr>
           <tr><td data-label="Stage">Gaussian artifact + raster</td><td data-label="Status" class="ok">Foundation</td><td data-label="M">V12 · V16</td></tr>
           <tr><td data-label="Stage">Background Gaussian opt + cache</td><td data-label="Status">Goal</td><td data-label="M">V13 production path</td></tr>
-          <tr><td data-label="Stage">Local / global frame enhancers</td><td data-label="Status">Goal</td><td data-label="M">V13 · <a href="index.html#enhancement">enhancement</a></td></tr>
+          <tr><td data-label="Stage">Local Gaussian enhancers</td><td data-label="Status" class="ok">Shipped (classical-CV)</td><td data-label="M">V18 · <a href="updates.html#v18">report</a></td></tr>
+          <tr><td data-label="Stage">Optional full-frame / display AI</td><td data-label="Status">Goal</td><td data-label="M">Later · <a href="index.html#enhancement">enhancement layers</a></td></tr>
         </tbody>
       </table>
       <p>
