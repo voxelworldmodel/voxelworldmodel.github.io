@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>End-to-End Pipeline, Voxel World Model</title>
+  <meta name="description" content="The complete VWM end-to-end pipeline: reality → registration → Adaptive Voxel World → simulation → compiler → Gaussian cache → raster → local/global enhancement → display.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <h1>End-to-End Pipeline</h1>
+      <p class="lead">The complete intended path from real-world input to display — with the Adaptive Voxel World as the single source of truth, and AI only improving observations and caches.</p>
+      <nav>
+        <a href="#flow">Authoritative flow</a>
+        <a href="#ingest">Ingest</a>
+        <a href="#world">Voxel world</a>
+        <a href="#sim">Simulation</a>
+        <a href="#compile">Compiler</a>
+        <a href="#gaussian">Gaussians</a>
+        <a href="#enhance">Enhancement</a>
+        <a href="#display">Display</a>
+        <a href="#background">Background</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="updates.html">Updates</a>
+      </nav>
+    </header>
+
+    <section>
+      <div class="status-banner">
+        <h3>Goal: one coherent pipeline, not a pile of tools</h3>
+        <p>Reality becomes evidence in an Adaptive Voxel World. Simulation changes that world. The World Compiler emits derived artifacts (including Gaussians). Heavy AI may improve the Gaussian cache when compute is free. A rasterizer produces a frame packet every frame. Light local AI and optional full-frame AI enhance the image. Display never owns authority.</p>
+      </div>
+    </section>
+
+    <!-- ─────────────── compact authoritative flow ─────────────── -->
+    <section id="flow">
+      <h2>Authoritative Data Flow</h2>
+      <div class="diagram">Reality
+    ↓
+Ingestion &amp; Normalization
+    ↓
+Registration / Evidence
+    ↓
+Adaptive Voxel World  ←── SINGLE SOURCE OF TRUTH
+    ↓
+Simulation
+    ↓
+World Compiler
+    ↓
+Gaussian Representation
+    ↓
+Background Gaussian Optimization  (heavy AI, cached, not every frame)
+    ↓
+Enhanced Gaussian Cache
+    ↓
+Gaussian Rasterizer  →  GaussianImagePacket
+    ↓
+Real-Time Local Enhancement  (light AI, every frame, optional)
+    ↓
+Optional Full-Frame Post Process
+    ↓
+Display  (Desktop · Browser · VR · AR · Mobile · Cloud)</div>
+      <p>Background improvement can update the Gaussian cache without rebuilding the voxel world, re-running simulation, re-importing data, or interrupting rendering.</p>
+    </section>
+
+    <!-- ─────────────── inputs ─────────────── -->
+    <section id="inputs">
+      <h2>Real World Input</h2>
+      <div class="diagram">                 ┌──────────────────────┐
+                 │   REAL WORLD INPUT   │
+                 └──────────────────────┘
+                            │
+    ┌───────────────────────┼────────────────────────┐
+    │                       │                        │
+Images               Video Streams              Live Sensors
+    │                  RGB + IMU + GPS           LiDAR / Radar
+    └──────────┬────────────┴──────────┬─────────────┘
+               │                       │
+        3D Scans / Point Clouds   Existing Assets
+        (LiDAR, Meshes, CAD…)     (glTF, FBX, USD…)
+               │                       │
+               └───────────┬───────────┘
+                           ▼
+              Ingestion &amp; Normalization</div>
+    </section>
+
+    <!-- ─────────────── stages ─────────────── -->
+    <section id="ingest" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Foundation: V10–V14</span>
+      </div>
+      <h2>Ingestion &amp; Normalization</h2>
+      <div class="pill-grid">
+        <span class="pill">Decode</span>
+        <span class="pill">Frame Extraction</span>
+        <span class="pill">Camera Calibration</span>
+        <span class="pill">Pose Estimation</span>
+        <span class="pill">SLAM / SfM</span>
+        <span class="pill">Depth Estimation</span>
+        <span class="pill">Sensor Fusion</span>
+        <span class="pill">Coordinate Normalization</span>
+        <span class="pill">Timestamp Alignment</span>
+        <span class="pill">Quality Validation</span>
+      </div>
+      <p>Raw captures become time-aligned, calibrated observations ready for registration — never silent merges of incompatible frames.</p>
+    </section>
+
+    <section id="registration" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Shipped: V11 evidence · V14 pose graph</span>
+      </div>
+      <h2>Registration / Evidence</h2>
+      <div class="pill-grid">
+        <span class="pill">Device Registration</span>
+        <span class="pill">Observation Registration</span>
+        <span class="pill">Evidence Graph</span>
+        <span class="pill">Confidence Tracking</span>
+        <span class="pill">Source Attribution</span>
+        <span class="pill">Temporal History</span>
+        <span class="pill">Conflict Resolution</span>
+      </div>
+      <p>Observations accumulate into evidence. Agreement raises confidence; contradiction lowers it without overwriting history. Pose graphs align multi-capture sessions into one world frame.</p>
+    </section>
+
+    <section id="world" class="pipeline-stage pipeline-stage-accent">
+      <div class="update-meta">
+        <span class="badge badge-ok">Authority</span>
+      </div>
+      <h2>Adaptive Voxel World</h2>
+      <div class="highlight">
+        <p><strong>Authoritative world state — the single source of truth.</strong></p>
+      </div>
+      <div class="pill-grid">
+        <span class="pill">Spatial Hierarchy</span>
+        <span class="pill">Adaptive Voxels</span>
+        <span class="pill">Semantic Labels</span>
+        <span class="pill">Materials</span>
+        <span class="pill">Physics</span>
+        <span class="pill">Object Identity</span>
+        <span class="pill">Evidence</span>
+        <span class="pill">Confidence</span>
+        <span class="pill">Relationships</span>
+        <span class="pill">Behavior Attachments</span>
+        <span class="pill">Simulation State</span>
+      </div>
+      <p>Everything below this line is derived or observational. Gaussians, meshes, neural frames, and stylizations never replace this layer.</p>
+    </section>
+
+    <section id="sim" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Shipped: V17</span>
+      </div>
+      <h2>World Simulation</h2>
+      <div class="pill-grid">
+        <span class="pill">Behaviors</span>
+        <span class="pill">Triggers</span>
+        <span class="pill">Scheduler</span>
+        <span class="pill">Timeline</span>
+        <span class="pill">Runtime</span>
+        <span class="pill">Interactions</span>
+        <span class="pill">Weather</span>
+        <span class="pill">Robots</span>
+        <span class="pill">Vehicles</span>
+        <span class="pill">Doors</span>
+        <span class="pill">Lights</span>
+        <span class="pill">Trees</span>
+        <span class="pill">Water</span>
+        <span class="pill">Physics</span>
+        <span class="pill">Time</span>
+      </div>
+      <p>Simulation advances world state over time through the Runtime. Compiler and visualization respond automatically (e.g. door open → dirty chunk → gaussian recompile) with no special orchestration in the sim engine.</p>
+    </section>
+
+    <section id="compile" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Shipped: V15 Part 1</span>
+      </div>
+      <h2>World Compiler</h2>
+      <div class="pill-grid">
+        <span class="pill">Visible Region Selection</span>
+        <span class="pill">LOD Selection</span>
+        <span class="pill">Chunk Compilation</span>
+        <span class="pill">Visibility</span>
+        <span class="pill">Materials</span>
+        <span class="pill">Lighting</span>
+        <span class="pill">Metadata Generation</span>
+      </div>
+      <p><strong>Outputs (artifacts):</strong> Gaussian Scene · Mesh Scene · Voxel Scene · Point Cloud · future render formats. Compilers never write the authoritative world — they publish committed artifacts only.</p>
+    </section>
+
+    <section id="gaussian" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Foundation: V12 · V16</span>
+        <span class="badge">Goal: V13</span>
+      </div>
+      <h2>Gaussian Representation</h2>
+      <div class="pill-grid">
+        <span class="pill">Positions</span>
+        <span class="pill">Covariance</span>
+        <span class="pill">Rotation</span>
+        <span class="pill">Opacity</span>
+        <span class="pill">Color</span>
+        <span class="pill">SH Coefficients</span>
+        <span class="pill">Material Features</span>
+        <span class="pill">Object IDs</span>
+        <span class="pill">Semantic IDs</span>
+      </div>
+      <p>A derived, chunked representation of the world for real-time observation — not authority.</p>
+    </section>
+
+    <section id="bg-opt" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge">Goal path</span>
+      </div>
+      <h2>Background Gaussian Optimization</h2>
+      <p>Runs whenever compute is available — <strong>not every frame</strong>. Improves the Gaussian representation itself; results are cached.</p>
+      <div class="pill-grid">
+        <span class="pill">Dynamic Splat Stitching</span>
+        <span class="pill">Overlap Repair</span>
+        <span class="pill">Coverage Completion</span>
+        <span class="pill">Opacity Optimization</span>
+        <span class="pill">Covariance Refinement</span>
+        <span class="pill">Material Refinement</span>
+        <span class="pill">Color Consistency</span>
+        <span class="pill">Radiance Optimization</span>
+        <span class="pill">Temporal Fusion</span>
+        <span class="pill">Surface Reconstruction</span>
+        <span class="pill">Hole Filling</span>
+      </div>
+      <h3>Optional Heavy AI</h3>
+      <p>FLUX · HiDream · future foundation models — improve the Gaussian representation offline or on spare capacity. They do <strong>not</strong> run in the real-time display path.</p>
+      <div class="highlight">
+        <p><strong>Enhanced Gaussian Cache</strong> — optimized splats, materials, radiance, and features. Persistent. Only recompute when necessary.</p>
+      </div>
+    </section>
+
+    <section id="raster" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge badge-ok">Foundation: V12 splat · V16 viz</span>
+      </div>
+      <h2>Gaussian Rasterizer</h2>
+      <div class="pill-grid">
+        <span class="pill">Visible Splats</span>
+        <span class="pill">Rasterization</span>
+        <span class="pill">Visibility</span>
+        <span class="pill">Depth</span>
+        <span class="pill">Transparency</span>
+        <span class="pill">Lighting</span>
+      </div>
+      <h3>Produces: GaussianImagePacket</h3>
+      <div class="pill-grid">
+        <span class="pill">RGB</span>
+        <span class="pill">Depth</span>
+        <span class="pill">Normals</span>
+        <span class="pill">Motion Vectors</span>
+        <span class="pill">Material Map</span>
+        <span class="pill">Semantic Map</span>
+        <span class="pill">Object IDs</span>
+        <span class="pill">Confidence</span>
+        <span class="pill">Metadata Embeddings</span>
+      </div>
+    </section>
+
+    <section id="enhance" class="pipeline-stage">
+      <div class="update-meta">
+        <span class="badge">Goal: V13 enhancers</span>
+      </div>
+      <h2>Real-Time Local Gaussian Enhancement</h2>
+      <p>Runs every frame (when enabled). Lightweight local models (small CNN / tiny transformer / TensorRT / ONNX / optional distilled FLUX-class model). Consumes the full GaussianImagePacket.</p>
+      <div class="pill-grid">
+        <span class="pill">Sharpen Details</span>
+        <span class="pill">Better Glass</span>
+        <span class="pill">Cleaner Edges</span>
+        <span class="pill">Improve Reflections</span>
+        <span class="pill">Reduce Splat Artifacts</span>
+        <span class="pill">Better Blending</span>
+        <span class="pill">Anti-Aliasing</span>
+        <span class="pill">Texture Recovery</span>
+        <span class="pill">Surface Detail</span>
+        <span class="pill">Temporal Stability</span>
+      </div>
+      <p>→ <strong>Enhanced Frame</strong> — a photorealistic Gaussian image, still an observation.</p>
+
+      <h3>Optional Full-Frame AI Post Process</h3>
+      <p>Operates on the final image only — entirely optional:</p>
+      <div class="pill-grid">
+        <span class="pill">HDR</span>
+        <span class="pill">Tone Mapping</span>
+        <span class="pill">Atmospheric Effects</span>
+        <span class="pill">Bloom</span>
+        <span class="pill">Lens Effects</span>
+        <span class="pill">Depth of Field</span>
+        <span class="pill">Film Grain</span>
+        <span class="pill">Stylization</span>
+        <span class="pill">Anime</span>
+        <span class="pill">Watercolor</span>
+        <span class="pill">Night Vision</span>
+        <span class="pill">Thermal</span>
+        <span class="pill">Accessibility Filters</span>
+        <span class="pill">Upscaling</span>
+        <span class="pill">DLSS/FSR-style Reconstruction</span>
+      </div>
+      <p>See also <a href="index.html#enhancement">Frame Enhancement</a> for the local vs global separation and independent <code>local_ai</code> / <code>global_ai</code> toggles.</p>
+    </section>
+
+    <section id="display" class="pipeline-stage">
+      <h2>Display</h2>
+      <div class="pill-grid">
+        <span class="pill">Desktop</span>
+        <span class="pill">Browser</span>
+        <span class="pill">VR</span>
+        <span class="pill">AR</span>
+        <span class="pill">Mobile</span>
+        <span class="pill">Cloud Streaming</span>
+      </div>
+    </section>
+
+    <section id="background">
+      <h2>Continuous Background Improvement</h2>
+      <div class="diagram">As more compute becomes available…
+  Camera / view prediction · Idle GPU · Cloud workers · Second GPU · Nightly jobs
+        │
+        ▼
+Background Gaussian Optimization
+        │
+        ▼
+Improves Splats → Updates Enhanced Gaussian Cache
+        │
+        ▼
+Future frames become better
+
+WITHOUT
+  • Rebuilding the Voxel World
+  • Re-running Simulation
+  • Re-importing Data
+  • Interrupting Rendering</div>
+      <div class="highlight">
+        <p><strong>Invariant:</strong> heavier models improve the cached Gaussian representation. They never become the simulator, never invent occupancy into authority, and never block the real-time path.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>How this maps to shipped milestones</h2>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Pipeline stage</th><th>Status</th><th>Milestone</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Stage">Ingest / upload / Captures</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V10 World Engine</td></tr>
+          <tr><td data-label="Stage">Evidence / confidence</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V11 Runtime</td></tr>
+          <tr><td data-label="Stage">Registration / pose graph</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V14 Mapping</td></tr>
+          <tr><td data-label="Stage">Adaptive Voxel World</td><td data-label="Status" class="ok">Authority</td><td data-label="M">Core (capture era → present)</td></tr>
+          <tr><td data-label="Stage">Simulation</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V17</td></tr>
+          <tr><td data-label="Stage">World Compiler</td><td data-label="Status" class="ok">Shipped (Part 1)</td><td data-label="M">V15</td></tr>
+          <tr><td data-label="Stage">Gaussian artifact + raster</td><td data-label="Status" class="ok">Foundation</td><td data-label="M">V12 · V16</td></tr>
+          <tr><td data-label="Stage">Background Gaussian opt + cache</td><td data-label="Status">Goal</td><td data-label="M">V13 production path</td></tr>
+          <tr><td data-label="Stage">Local / global frame enhancers</td><td data-label="Status">Goal</td><td data-label="M">V13 · <a href="index.html#enhancement">enhancement</a></td></tr>
+        </tbody>
+      </table>
+      <p>
+        <a class="cta-link" href="roadmap.html">Roadmap →</a>
+        <a class="cta-link" href="updates.html" style="margin-left: 0.5rem">Updates →</a>
+        <a class="cta-link" href="index.html#enhancement" style="margin-left: 0.5rem">Frame enhancement →</a>
+        <a class="cta-link" href="paper.html" style="margin-left: 0.5rem">Paper →</a>
+      </p>
+    </section>
+
+    <footer>
+      <p><a href="index.html">Home</a> · <a href="updates.html">Updates</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="gallery.html">Gallery</a> · <a href="pipeline.html">Pipeline</a> · <a href="roadmap.html">Roadmap</a> · <a href="paper.html">Paper</a> · <a href="https://github.com/voxelworldmodel">GitHub</a></p>
+    </footer>
+  </div>
+<script defer src="site.js"></script>
+</body>
+</html>
