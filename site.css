@@ -608,6 +608,106 @@ td:first-child {
   border-bottom: 2px solid var(--accent);
 }
 
+/* Architecture status page */
+.status-section {
+  margin-bottom: 2.75rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.status-section-gap {
+  border-left: 3px solid var(--warn);
+  padding-left: 1.25rem;
+}
+
+.status-section-lead,
+.status-note {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+.status-summary,
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.status-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.status-row-hero .status-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.status-row-hero .status-track {
+  height: 14px;
+}
+
+.status-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.status-name {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.status-pct {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.status-pct.done {
+  color: var(--accent);
+}
+
+.status-pct.mid {
+  color: var(--warn);
+}
+
+.status-pct.low,
+.status-pct.zero {
+  color: var(--text-muted);
+}
+
+.status-track {
+  height: 10px;
+  background: #1a1a1a;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.status-fill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  transition: width 0.4s ease;
+}
+
+.status-fill.done {
+  background: var(--accent);
+}
+
+.status-fill.mid {
+  background: linear-gradient(90deg, #92400e, var(--warn));
+}
+
+.status-fill.low {
+  background: linear-gradient(90deg, #3f3f46, #71717a);
+}
+
 footer {
   border-top: 1px solid var(--border);
   padding-top: 2rem;
