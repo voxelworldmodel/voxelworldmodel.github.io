@@ -14,9 +14,9 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V12)</a>
+        <a href="#shipped">Shipped (→V14)</a>
         <a href="#v13">V13</a>
-        <a href="#v14">V14</a>
+        <a href="#v14">V14 ✓</a>
         <a href="#v15">V15</a>
         <a href="#v16">V16</a>
         <a href="#v17">V17</a>
@@ -34,7 +34,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>V1–V12 are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 onward is the planned production arc. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding in V10–V12 (interfaces, docs, or partial implementations) and become first-class products in the listed milestone.</p>
+      <p>V1–V12 and <a href="updates.html#v14">V14</a> are delivered with measured reports on the <a href="updates.html">updates</a> and <a href="benchmarks.html">benchmarks</a> pages. V13 and V15 onward remain the planned production arc (V14 jumped ahead of V13 because the mapping core was ready). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -58,7 +58,12 @@
           <tr>
             <td data-label="Era">Perception → Gaussians</td>
             <td data-label="Milestones"><a href="updates.html#v12">V12</a></td>
-            <td data-label="Established">ReconstructionProvider stack; LingBot audited; ICP registration; chunked Gaussian scene + elliptical splat renderer (73k splats live)</td>
+            <td data-label="Established">ReconstructionProvider stack; LingBot audited; pairwise ICP; chunked Gaussian scene + elliptical splat renderer (73k splats live)</td>
+          </tr>
+          <tr>
+            <td data-label="Era">Global mapping</td>
+            <td data-label="Milestones"><a href="updates.html#v14">V14</a></td>
+            <td data-label="Established">SE(3) pose graph + Gauss-Newton; loop closure; landmarks/anchors/uncertainty; multi-capture fusion; incremental corrections via V11 runtime (8.99 m → 0 m loop)</td>
           </tr>
         </tbody>
       </table>
@@ -98,32 +103,12 @@
     <!-- ─────────────── V14 ─────────────── -->
     <article class="update" id="v14">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
-        <span class="badge badge-ok">Foundation: V10/V12 registration</span>
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Shipped — 88/88 tests</span>
       </div>
-      <h2>V14 — Complete Registration &amp; Mapping</h2>
-      <p>Close multi-capture mapping for real: global consistency, loop closure, and windowed streaming alignment — so successive uploads and live streams land in one coherent world without silent overlaps.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Global pose graph</strong> — pairwise ICP (V12) becomes edges in a graph; optimize poses under measurement covariances.</li>
-        <li><strong>Loop closure</strong> — detect revisit constraints; reject false loops with geometric + appearance checks.</li>
-        <li><strong>Cross-capture registration as default</strong> — new uploads propose an alignment preview (accept / reject / manual), then merge observations into evidence rather than binning blindly in world frame (the V10 honest gap).</li>
-        <li><strong>Windowed streaming alignment</strong> — cross-window registration for long sequences; pending-alignment UX for ambiguous overlaps.</li>
-        <li><strong>Metric anchors as first-class</strong> — door widths, AR poses, known markers resolve absolute scale into the same graph.</li>
-        <li><strong>Map quality reports</strong> — drift, residual histograms, rejected edges — never a silent “success.”</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>Two non-overlapping scans of the same space merge only after accepted registration; conflicts update evidence, not overwrite.</li>
-        <li>Loop closure demonstrated on a multi-lap synthetic or real trajectory with measured residual reduction.</li>
-        <li>Drift over long sequences is reported when a real model path is available; synthetic GT remains the CI floor.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V12 ICP / Umeyama / pending alignment · V11 evidence (no-overwrite contradiction) · V10 Captures &amp; revisions.</p>
+      <h2>V14 — Complete Registration &amp; Mapping ✓</h2>
+      <p><strong>Delivered.</strong> Maintained SE(3) pose graph with Gauss-Newton optimization, loop closure, landmarks, anchors, uncertainty, multi-capture fusion, and incremental voxel corrections through the V11 runtime. Measured: 12-node loop drift <strong>8.99 m → 0.0 m</strong> in 70 ms. Full report: <a href="updates.html#v14">updates.html#v14</a>.</p>
+      <p>Remaining follow-ups (honest): analytic Jacobians + sparse Cholesky for large graphs; higher confidence gate for tiny-overlap ICP; in-viewport 3D pose-graph / covariance modes and interactive constraint editor; live GPS/IMU/ROS/LiDAR adapters when hardware is present.</p>
     </article>
 
     <!-- ─────────────── V15 ─────────────── -->
@@ -332,10 +317,10 @@
       <div class="diagram">V1–V9   Capture &amp; adaptive voxels (measured)
 V10–V11 World OS + runtime + evidence
 V12     Perception providers + Gaussians (scaffolded)
+V14 ✓   Global registration &amp; mapping (shipped)
    │
    ▼
 V13     Production Gaussian engine
-V14     Global registration &amp; mapping
 V15     Unified world compilers
 V16     Interchangeable visualization
 V17     Simulation

@@ -14,9 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v12">Latest: V12 streaming + Gaussians</a>
+        <a href="#v14">Latest: V14 registration</a>
+        <a href="#v12">V12 streaming + Gaussians</a>
         <a href="#v11">V11 world runtime</a>
-        <a href="#v10">V10 world engine</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -40,6 +40,77 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v14">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">88/88 tests pass</span>
+      </div>
+      <h2>V14, Complete Registration, Mapping &amp; Global World Alignment</h2>
+      <p>VWM now aligns any number of captures, sensors, and sessions into one continuously-improving world through a <strong>maintained pose graph</strong> — with global SE(3) optimization, loop closure, landmarks, anchors, uncertainty, and <strong>incremental</strong> corrections via the V11 World Runtime. Registration only improves the alignment of the evidence feeding the Adaptive Voxel World; the voxel world remains the sole source of geometric truth.</p>
+
+      <div class="status-banner">
+        <h3>✅ 8.99 m loop drift → 0.0 m in 5 iterations / 70 ms — 16 new tests, 88 total</h3>
+        <p>The mathematical core is real: information-weighted Gauss-Newton on SE(3), gauge-anchored and interruptible, with global / local / partial scopes. A 12-node loop’s <strong>8.99 m drift collapses to 0.0 m</strong> (chi² 241 → 0) via a single loop-closure constraint. Multi-capture fusion routes many captures through one graph into one world; low-confidence alignments stay pending — never a silent merge. A pose change moves <strong>only that capture’s voxels</strong> and marks dirty regions through the runtime (proven: one capture corrected, the other untouched).</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">88/88</span><span class="label">Tests (16 V14 + prior suites)</span></div>
+        <div class="stat"><span class="value">8.99→0 m</span><span class="label">Loop drift after optimize</span></div>
+        <div class="stat"><span class="value">70 ms</span><span class="label">12-node loop, 5 iterations</span></div>
+        <div class="stat"><span class="value">241→0</span><span class="label">Chi² before → after</span></div>
+        <div class="stat"><span class="value">15</span><span class="label">Modules in vwm/registration/</span></div>
+        <div class="stat"><span class="value">0°</span><span class="label">Rot error on 0.4 rad GT</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v14_registration.png" alt="VWM viewer with the Registration / Mapping (V14) diagnostics panel showing pose-graph stats, quality, drift, sessions, landmarks, and anchors.">
+        <figcaption><strong>Registration / Mapping (V14) panel, live.</strong> Pose graph (nodes · edges · loops · chi²), registration health, scale consistency, drift, sessions, landmarks, anchors, and optimization count — draggable diagnostics over the authoritative world. Backend APIs for graph / loops / stats are live; in-viewport 3D pose-graph and constraint-editor modes are follow-ups.</figcaption>
+      </figure>
+
+      <h3>The Registration Subsystem (<code>vwm/registration/</code>)</h3>
+      <p>Fifteen modules as specified: <code>transform · uncertainty · graph · optimization · icp · loop_closure · landmarks · anchors · constraints · session · diagnostics · persistence · manager</code> (plus supporting packages). SE(3) exp/log/inverse verified round-trip. The full API sits on <code>world.registration</code> (<code>optimize / loop_closures / constraints / sessions / landmarks / anchors / statistics / rollback / preview / accept / reject / register_capture / add_loop_closure / …</code>). V12’s callable <code>world.registration()</code> still works — the manager is callable.</p>
+
+      <h3>First-Class Concepts</h3>
+      <ul>
+        <li><strong>Pose graph</strong> — nodes (capture / window / keyframe / landmark / anchor / sensor); edges with transform + 6×6 information + fitness / rmse / confidence / method / revision / provider / supporting observations.</li>
+        <li><strong>Loop closure</strong> — detect → verify → add edge → optimize → correct; drift removed by the added constraint.</li>
+        <li><strong>Landmarks</strong> — persistent, cross-capture association (not tied to one capture).</li>
+        <li><strong>Anchors</strong> — local / global / manual / survey / gps / robot / building; fix or prior a node.</li>
+        <li><strong>Uncertainty</strong> — covariance ellipsoids; information from fitness / rmse.</li>
+        <li><strong>Sessions</strong> — first-class, queryable mapping sessions.</li>
+        <li><strong>Map quality</strong> — coverage / density / registration-health / loop-health / scale-consistency / chi².</li>
+        <li><strong>Multi-capture fusion</strong> — many captures → one graph → one world; pending alignment for low confidence.</li>
+      </ul>
+
+      <h3>Benchmark (synthetic GT — <code>artifacts/registration/benchmark.json</code>)</h3>
+      <table class="benchmark">
+        <thead>
+          <tr><th>Scene</th><th>Result</th><th>Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="Scene">Loop optimization (12 nodes)</td><td data-label="Result">drift 8.99 m → 0.0 m · chi² 241 → 0 · 5 iters · 70 ms</td><td data-label="Verdict" class="ok">Passes</td></tr>
+          <tr><td data-label="Scene">Rotated (0.4 rad)</td><td data-label="Result">fitness 1.0 · rot err 0.0° · accepted</td><td data-label="Verdict" class="ok">Passes</td></tr>
+          <tr><td data-label="Scene">Large overlap (90%)</td><td data-label="Result">fitness 0.90 · rot err 1.4° · accepted</td><td data-label="Verdict" class="ok">Passes</td></tr>
+          <tr><td data-label="Scene">Scale mismatch (1.8×) from identity</td><td data-label="Result">ICP fitness 0.03 · rejected (Umeyama-with-correspondences exact)</td><td data-label="Verdict" class="bad">Honest limit: ICP needs scale-aware init</td></tr>
+          <tr><td data-label="Scene">Tiny overlap (16%)</td><td data-label="Result">fitness 0.38 · accepted but 151° wrong</td><td data-label="Verdict" class="bad">Honest limit: raise confidence gate</td></tr>
+          <tr><td data-label="Scene">No overlap</td><td data-label="Result">fitness 0.02 · correctly rejected</td><td data-label="Verdict" class="ok">Passes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Synthetic GT only</strong> — no real sensors/model here; GPS / IMU / wheel-odometry / ROS / LiDAR live adapters are interface-only.</li>
+        <li><strong>ICP scale-from-identity</strong> and <strong>tiny-overlap</strong> are unreliable (benchmark shows it) — documented, not hidden; acceptance gate should be raised for low-overlap regimes.</li>
+        <li><strong>Numerical Jacobians</strong> — correct for small/medium graphs; analytic Jacobians + sparse Cholesky are the scale-up path. Full bundle adjustment over landmark observations is an interface, not a solver, in this milestone.</li>
+        <li><strong>Viewer follow-ups</strong> — diagnostics panel + graph/loop endpoints are delivered; in-viewport 3D pose-graph / trajectory / covariance-ellipsoid modes and the interactive constraint editor are next (all backend APIs exist and are tested).</li>
+        <li><strong>Incremental voxel correction</strong> requires per-capture voxel provenance via <code>register_capture(..., voxels=…)</code>; older captures without that tracking correct at the pose-graph level but move no voxels.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> multiple captures merge into one persistent world through a maintained pose graph; loop closures, landmarks, anchors, and uncertainty are first-class; optimization corrects only affected regions through the runtime; quality is measured and the hard cases are reported honestly; V9–V12 stay intact. Deliverables: <code>vwm/registration/*</code>, pose-graph / loop / landmarks / anchors docs, <code>artifacts/registration/benchmark.json</code>, server endpoints <code>/api/registration/{stats,graph,loops}</code>, the live Registration / Mapping panel, and 16 new tests (88 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v12">
       <div class="update-meta">
