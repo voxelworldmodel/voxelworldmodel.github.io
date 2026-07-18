@@ -14,9 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v16">Latest: V16 visualization</a>
+        <a href="#v17">Latest: V17 simulation</a>
+        <a href="#v16">V16 visualization</a>
         <a href="#v15">V15 compiler framework</a>
-        <a href="#v14">V14 registration</a>
         <a href="#capture-v9">Error-driven v9</a>
         <a href="#capture-v8">Feature voxels v8</a>
         <a href="#polycam-viewer">Polycam in the viewer</a>
@@ -40,6 +40,62 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v17">
+      <div class="update-meta">
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">135/135 tests · world alive</span>
+      </div>
+      <h2>V17, World Simulation</h2>
+      <p>VWM is now alive: simulation evolves the authoritative Adaptive Voxel World through time. Up to V16 the system answered <em>“what is the world?”</em>; V17 answers <em>“what is the world doing?”</em> — and it adds <strong>no new foundational layer</strong>. It uses the Runtime (V11), Evidence Engine, Voxel World, Compiler (V15), and Visualization (V16) already built.</p>
+
+      <div class="status-banner">
+        <h3>✅ Door opens → voxels change → gaussian auto-recompiles 768→764 — zero special integration</h3>
+        <p>The headline success criterion holds: the compiler and visualization respond automatically to simulation changes with <strong>no orchestration in the simulation engine</strong>. A one-time <code>auto_wire()</code> on the V15 compiler subscribes to <code>ChunkInvalidated</code>; pressing a button to open a door removes 4 voxels and that chunk’s gaussian artifact recompiles (768→764 splats, changed checksum). Pipeline: <code>tick → behaviors + triggers → ctx.change_voxels → Runtime events → Evidence → Voxel World → Compiler (auto) → Visualization</code>.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">135/135</span><span class="label">Tests (17 V17 + prior suites)</span></div>
+        <div class="stat"><span class="value">768→764</span><span class="label">Splats after door opens (auto)</span></div>
+        <div class="stat"><span class="value">9</span><span class="label">Built-in behavior types</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Artifact writes by sim engine</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">auto_wire() for compiler</span></div>
+        <div class="stat"><span class="value">✓</span><span class="label">Deterministic replay</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v17_sim.png" alt="VWM viewer with the Simulation (V17) panel showing running state, tick, objects, behaviors, and triggers.">
+        <figcaption><strong>Simulation (V17) panel, live.</strong> Running / paused · tick · sim time · speed · objects · behaviors · triggers · scheduled tasks. Endpoint: <code>/api/sim/diagnostics</code>. Play/pause/step browser controls are a small follow-up — the API already exists.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/simulation/</code>)</h3>
+      <p>Every module the spec listed: <code>engine · systems/behaviors · scheduler · timeline · events · triggers · state · diagnostics · api</code>, plus <code>continuous</code> (the preserved pre-V17 WorldClock / EventScheduler API). Entry points: <code>world.simulation</code> and <code>world.tick / pause / resume / step / play</code>.</p>
+
+      <h3>Behaviors, Triggers, Time</h3>
+      <ul>
+        <li><strong>Behaviors as data</strong> — <code>Behavior.update(obj, ctx, dt)</code> attached to objects. Built-ins: door · battery · light · traffic_light · vehicle · robot · tree · river · weather.</li>
+        <li><strong>Interactions proven</strong> — button→door, battery→light (drains to 0), traffic-light green/yellow/red cycle, proximity→open.</li>
+        <li><strong>Triggers</strong> — manual / button / time / schedule / distance / region / sensor / signal / collision.</li>
+        <li><strong>Time control</strong> — pause / resume / replay / fast-forward / slow-motion / single-step via the Runtime clock.</li>
+        <li><strong>Events on the V11 bus</strong> — DoorOpened / DoorClosed / BatteryEmpty / LightChanged / VehicleMoved / RobotArrived / WeatherStarted-Stopped + SimTick / TriggerFired; DoorOpened and VoxelChanged both fire on a door open.</li>
+        <li><strong>Determinism</strong> — same world + events + seed → identical timeline (tested).</li>
+        <li><strong>Extensibility</strong> — a new behavior (sprinkler shown) is just a class attached to an object; the engine never changes.</li>
+      </ul>
+
+      <h3>Migration Handled Honestly</h3>
+      <p>A pre-existing <code>vwm/simulation.py</code> (WorldClock / EventScheduler / CONTINUOUS_TYPES, imported by <code>vwm.components</code>, <code>vwm.voxel_world</code>, <code>vwm.persistence</code>) was shadowed by the new package. It moved to <code>vwm/simulation/continuous.py</code> with re-exports from the package <code>__init__</code> — every legacy import still works, and all prior tests pass. Documented in <code>docs/V17_REPORT.md</code>.</p>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Behavior realism is illustrative</strong> — the milestone prioritizes architecture over realism; rich physics / animation is future work on the same <code>Behavior</code> interface.</li>
+        <li><strong>Browser play/pause/step strip</strong> is a small follow-up (API + endpoints exist).</li>
+        <li><strong>Revision on change</strong> — simulation bumps the runtime revision per world-changing action so the compiler cache invalidates correctly; world edits should do the same (general improvement surfaced here).</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the capability arc for “how it’s built” is now complete — observations → registration → evidence → Adaptive Voxel World → compiler artifacts → visualization, with <strong>simulation driving change over time</strong> — all through one Runtime, voxel world as sole source of truth. Next milestones (robotics / AI agents, plugin SDK / FRAME) layer capabilities on this kernel rather than growing the core. Deliverables: <code>vwm/simulation/*</code>, <code>docs/V17_REPORT.md</code>, <code>/api/sim/diagnostics</code>, the live Simulation panel, and 17 new tests (135 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v16">
       <div class="update-meta">

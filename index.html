@@ -348,25 +348,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V16, Universal Visualization Engine</strong> — one rendering entry point; 17 renderers consume compiler artifacts only; hot-switch never recompiles. The major subsystem stack is complete. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V17, World Simulation</strong> — the world is alive over time; simulation drives change through the existing Runtime with zero special compiler/viz integration. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V16: world → compiler → visualization — 118/118 tests · stack complete</h3>
-        <p>Architecture is now coherent end-to-end: <strong>one Adaptive Voxel World → one World Compiler (artifacts) → one Visualization Engine (renderers) → viewer</strong>. A <code>Scene</code> exposes only artifacts, so no renderer can read voxels. Verified live: gaussian render returns <strong>73 768 splats</strong> with <code>source: "compiler_artifacts"</code>. Hot switching adds zero compilations; rendering never mutates the world. Next milestones are capabilities (simulation, twins, plugins, intelligence) — not core rewrites.</p>
+        <h3>✅ V17: tick → world → auto-recompile — 135/135 tests · no new foundation</h3>
+        <p>Simulation answers <em>“what is the world doing?”</em> without adding a layer. Behaviors and triggers mutate voxels via <code>ctx.change_voxels</code>; Runtime events update Evidence; the V15 compiler’s <code>auto_wire()</code> to <code>ChunkInvalidated</code> recompiles only affected artifacts — proven when a door opens and gaussian splats drop <strong>768→764</strong> with a new checksum. Deterministic replay, nine built-in behaviors, and extensibility via attach-only Behavior classes. Next: robotics / agents, plugin SDK, FRAME — capabilities on this kernel.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">118/118</span><span class="label">Tests (13 V16 + prior)</span></div>
-        <div class="stat"><span class="value">17</span><span class="label">Renderers (geometry + debug)</span></div>
-        <div class="stat"><span class="value">73 768</span><span class="label">Splats via artifacts</span></div>
-        <div class="stat"><span class="value">5</span><span class="label">Compiler plugins (V15)</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">Compiles on hot switch</span></div>
+        <div class="stat"><span class="value">135/135</span><span class="label">Tests (17 V17 + prior)</span></div>
+        <div class="stat"><span class="value">768→764</span><span class="label">Auto gaussian recompile</span></div>
+        <div class="stat"><span class="value">17</span><span class="label">Viz renderers (V16)</span></div>
+        <div class="stat"><span class="value">9</span><span class="label">Built-in behaviors</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Sim writes to artifacts</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v16_viz.png" alt="VWM viewer with the Visualization Engine (V16) panel.">
-        <figcaption><strong>Visualization Engine (V16), live.</strong> 17 artifact-consuming renderers, hot-switch never recompiles — over the authoritative hallway world.</figcaption>
+        <img src="viewer_v17_sim.png" alt="VWM viewer with the Simulation (V17) panel.">
+        <figcaption><strong>Simulation (V17), live.</strong> Tick / time / speed / objects / behaviors — over the authoritative hallway world.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
@@ -390,7 +390,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Major subsystem stack shipped through <strong>V16</strong> (world → compiler → visualization). Next capability layers: <strong>V17</strong> simulation → <strong>V18</strong> digital twins → <strong>V19</strong> spatial database → <strong>V20</strong> plugin SDK / World OS → <strong>V21+</strong> world intelligence — plus polish items <strong>V13</strong> production Gaussians and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V17</strong> (world alive over time). Capability layers next: <strong>V18</strong> digital twins → <strong>V19</strong> spatial database → <strong>V20</strong> plugin SDK / World OS → <strong>V21+</strong> world intelligence — plus polish <strong>V13</strong> production Gaussians / frame enhancers and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 

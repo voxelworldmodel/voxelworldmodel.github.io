@@ -14,11 +14,12 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V16)</a>
+        <a href="#shipped">Shipped (→V17)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
         <a href="#v16">V16 ✓</a>
+        <a href="#v17">V17 ✓</a>
         <a href="#v15">V15</a>
         <a href="#v16">V16</a>
         <a href="#v17">V17</a>
@@ -36,7 +37,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>The major subsystem stack is shipped through <a href="updates.html#v16">V16</a> (world → compiler → visualization). V13 production Gaussians and V15 Part 2 (browser migration) remain open polish on that stack; V17+ are capability layers. Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding and become first-class products in the listed milestone.</p>
+      <p>The major subsystem stack is shipped through <a href="updates.html#v16">V16</a>, and <a href="updates.html#v17">V17</a> makes the world alive over time — still no new foundation. V13 production Gaussians / frame enhancers and V15 Part 2 (browser migration) remain open polish; V18+ are capability layers (twins, spatial DB, plugins, intelligence). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding.</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -76,6 +77,11 @@
             <td data-label="Era">Visualization</td>
             <td data-label="Milestones"><a href="updates.html#v16">V16</a></td>
             <td data-label="Established">Universal Visualization Engine; 17 artifact-only renderers; hot-switch never recompiles; multi-viewport; stack complete (world → compiler → viz)</td>
+          </tr>
+          <tr>
+            <td data-label="Era">Simulation</td>
+            <td data-label="Milestones"><a href="updates.html#v17">V17</a></td>
+            <td data-label="Established">World alive over time; behaviors/triggers; tick pipeline through Runtime; compiler auto_wire to ChunkInvalidated (door → 768→764 splats); deterministic replay</td>
           </tr>
         </tbody>
       </table>
@@ -185,29 +191,12 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
     <!-- ─────────────── V17 ─────────────── -->
     <article class="update" id="v17">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
+        <time datetime="2026-07-17">July 17, 2026</time>
+        <span class="badge badge-ok">Shipped — 135/135 tests · world alive</span>
       </div>
-      <h2>V17 — World Simulation</h2>
-      <p>Run deterministic physics, agents, and processes on the authoritative voxel world and its Components — simulation as a first-class citizen, not a side demo.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>WorldClock + EventScheduler</strong> — discrete, reproducible ticks; recorded timelines for replay.</li>
-        <li><strong>Physics on voxels &amp; Components</strong> — collision from SVO / hull compilers; gravity, constraints, simple fluids/airflow as optional solvers.</li>
-        <li><strong>Agent &amp; automation runtime</strong> — scripted and AI agents act through the same APIs as robots and players.</li>
-        <li><strong>Dirty-aware sim</strong> — world edits invalidate only affected sim islands; no full-world reset.</li>
-        <li><strong>Replay &amp; what-if branches</strong> — fork a revision, simulate, compare, optionally commit.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>Same initial revision + same inputs → identical sim trajectories (determinism test).</li>
-        <li>Walk / Fly collision in the viewer can optionally consume the production physics hull compiler.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V15 collision / navmesh compilers · V10 Components · V11 events &amp; revisions · SVO collision suite.</p>
+      <h2>V17 — World Simulation ✓</h2>
+      <p><strong>Delivered.</strong> Simulation evolves the authoritative world through time with no new foundational layer. Behaviors / triggers / tick / time control; changes flow Runtime → Evidence → World → Compiler (auto) → Visualization. Proven: door open auto-recompiles gaussian 768→764. Full report: <a href="updates.html#v17">updates.html#v17</a>.</p>
+      <p><strong>Follow-ups:</strong> richer physics on the same Behavior interface; browser play/pause/step strip; bump runtime revision on all world edits (same as sim).</p>
     </article>
 
     <!-- ─────────────── V18 ─────────────── -->
@@ -333,11 +322,11 @@ V12     Perception providers + Gaussians (scaffolded)
 V14 ✓   Global registration &amp; mapping (shipped)
 V15 ✓P1 Compiler kernel (shipped)
 V16 ✓   Visualization engine (shipped · stack complete)
+V17 ✓   World simulation (shipped · world alive)
    │
    ▼
 V13     Production Gaussian + local/global frame enhancers
 V15 P2  Viewer migration through /api/viz
-V17     Simulation
 V18     Digital twins
 V19     Spatial database
 V20     Plugin SDK / World OS product
