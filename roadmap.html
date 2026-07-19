@@ -14,7 +14,7 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V19)</a>
+        <a href="#shipped">Shipped (→V21)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
@@ -22,9 +22,10 @@
         <a href="#v17">V17 ✓</a>
         <a href="#v18">V18 ✓</a>
         <a href="#v19">V19 ✓</a>
-        <a href="#v20">V20</a>
-        <a href="#v21">V21</a>
-        <a href="#v22">V22+</a>
+        <a href="#v20">V20 ✓</a>
+        <a href="#v21">V21 ✓</a>
+        <a href="#v22">V22</a>
+        <a href="#v23">V23+</a>
         <a href="updates.html">Updates</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="status.html">Status</a>
@@ -37,7 +38,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>The major subsystem stack is shipped through <a href="updates.html#v17">V17</a>; <a href="updates.html#v18">V18</a> adds packet-only Gaussian enhancement; <a href="updates.html#v19">V19</a> adds async Gaussian scene evolution / cache. V13 streaming / AI weights / global frame post and V15 Part 2 remain open polish; V20+ are capability layers (twins, spatial DB, plugins, intelligence).</p>
+      <p>Shipped through <a href="updates.html#v21">V21</a> (reactive runtime) and <a href="updates.html#v20">V20</a> (reality capture), closing the E2E loop with reactions instead of call chains. V13 streaming / AI weights / global frame post and V15 Part 2 remain open polish; V22+ are capability layers (twins, spatial DB, plugins, intelligence).</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -209,7 +210,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       <h2>V18 — Gaussian Enhancement Pipeline</h2>
       <p><strong>Delivered.</strong> Enhances the Gaussian render itself (not full-frame display post). Flow: compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers → enhanced image. Voxel world untouched; disabled = deterministic passthrough. Full report: <a href="updates.html#v18">updates.html#v18</a>.</p>
       <p><strong>Honest limits:</strong> classical-CV path is what runs without GPU weights; AI enhancers are guarded stubs; CPU reference rasterizer ≠ browser WebGL; display-mode wiring for the enhanced frame is a follow-up.</p>
-      <p><strong>Note:</strong> Digital Twin / Spatial Database remains planned under V20 below.</p>
+      <p><strong>Note:</strong> Digital Twin / Spatial Database remains planned under V22 below.</p>
     </article>
 
     <!-- ─────────────── V19 ─────────────── -->
@@ -226,89 +227,71 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
     <!-- ─────────────── V20 ─────────────── -->
     <article class="update" id="v20">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
-        <span class="badge badge-ok">Foundation: V10 query + V11 evidence</span>
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">Shipped · 216/216 tests</span>
       </div>
-      <h2>V20 — Digital Twin Platform &amp; Spatial Database</h2>
-      <p>Keep real devices and spaces continuously synchronized into the same world, and scale that world into a persistent spatial database: disk-backed evidence and revisions, indexed queries, and analytics that stay honest at campus scale.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Live sensor adapters</strong> — RGB-D, LiDAR, IMU, IoT, industrial buses → Captures / observations with provenance.</li>
-        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded state changes emit actuation events (never silent).</li>
-        <li><strong>Disk persistence</strong> — evidence, revisions, Captures, Components, compiler artifacts survive restart (closes V11 in-memory limit).</li>
-        <li><strong>Spatial &amp; semantic indexes</strong> — SVO + secondary indexes for materials, types, confidence, time, provider, capture.</li>
-        <li><strong>SLA &amp; health</strong> — sensor coverage, staleness, confidence decay as first-class twin health metrics.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>A live device stream updates evidence and Components without stopping the viewer or sim.</li>
-        <li>Cold start restores an identical revision with checksummed artifacts.</li>
-        <li><code>trace(point)</code> still reaches the originating Capture / device message.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V10 upload / Captures · V11 evidence aging · V14 registration · V17 for actuated sim feedback · V15 artifact store.</p>
+      <h2>V20 — Reality Capture Pipeline</h2>
+      <p><strong>Delivered.</strong> Unified doorway for all reality intake: sources emit <code>ObservationPacket</code> → Registration + Evidence → voxels. Never writes voxels directly. Synthetic live run; record→identical-replay; guarded hardware stubs. Full report: <a href="updates.html#v20">updates.html#v20</a>.</p>
     </article>
 
     <!-- ─────────────── V21 ─────────────── -->
     <article class="update" id="v21">
       <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">Shipped · 231/231 tests</span>
+      </div>
+      <h2>V21 — Reactive World Pipeline</h2>
+      <p><strong>Delivered.</strong> Runtime event bus + reactors: one world edit cascades VoxelModified → … → GaussianFrameEnhanced with zero orchestration code. Deterministic record/replay; backpressure 0. Full report: <a href="updates.html#v21">updates.html#v21</a>.</p>
+      <p><strong>Honest limits:</strong> V11 <code>mark_dirty</code> still schedules compile internally; reactors stay lightweight; LoopbackChannel is in-process.</p>
+    </article>
+
+    <!-- ─────────────── V22 ─────────────── -->
+    <article class="update" id="v22">
+      <div class="update-meta">
         <time>Next</time>
         <span class="badge">Planned</span>
+        <span class="badge badge-ok">Foundation: V10–V21 kernel</span>
       </div>
-      <h2>V21 — Plugin SDK &amp; World Operating System</h2>
-      <p>Productize the World OS: a stable SDK so third parties ship providers, compilers, renderers, sensors, and tools without forking the core — the operating system for spatial worlds.</p>
+      <h2>V22 — Digital Twin Platform &amp; Spatial Database</h2>
+      <p>Keep real devices and spaces continuously synchronized into the same world, and scale that world into a persistent spatial database.</p>
 
       <h3>Goals</h3>
       <ul>
-        <li><strong>Public SDK</strong> — typed APIs for providers, compilers, renderers, query extensions, and actuation; versioned compatibility.</li>
-        <li><strong>Plugin lifecycle</strong> — install, sandbox permissions, resource budgets, hot-reload where safe.</li>
-        <li><strong>World OS shell</strong> — graduate the viewer panels (upload, search, runtime, reconstruction) into a coherent operator UI with history / revision browsers.</li>
-        <li><strong>Packaging &amp; distribution</strong> — worlds as portable bundles (voxels + evidence + components + selected compiled views).</li>
-        <li><strong>Compliance hooks</strong> — audit logs for edits, uploads, and actuations.</li>
-      </ul>
-
-      <h3>Definition of done</h3>
-      <ul>
-        <li>An external sample plugin (provider or renderer) builds against the SDK and passes CI without core patches.</li>
-        <li>World bundle export / import round-trips with provenance intact.</li>
+        <li><strong>Live sensor adapters</strong> on the V20 CaptureDevice interface (real drivers, not stubs).</li>
+        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded changes emit actuations.</li>
+        <li><strong>Disk persistence</strong> — evidence, revisions, Captures, Components, compiler artifacts survive restart.</li>
+        <li><strong>Spatial &amp; semantic indexes</strong> — SVO + secondary indexes for materials, types, confidence, time.</li>
       </ul>
 
       <h3>Depends on</h3>
-      <p>V15–V16 plugin surfaces · V10–V12 server APIs · V20 persistence for durable worlds.</p>
+      <p>V20 capture · V14 registration · V11 evidence · V21 events · V17 sim feedback.</p>
     </article>
 
-    <!-- ─────────────── V22+ ─────────────── -->
-    <article class="update" id="v22">
+    <!-- ─────────────── V23+ ─────────────── -->
+    <article class="update" id="v23">
       <div class="update-meta">
         <time>Horizon</time>
         <span class="badge">Horizon</span>
       </div>
-      <h2>V22+ — World Intelligence &amp; Autonomous Planning</h2>
-      <p>Agents that understand, plan, and act inside the same authoritative world — using evidence, semantics, and simulation — without treating a neural render as reality.</p>
+      <h2>V23+ — Plugin SDK, World OS &amp; World Intelligence</h2>
+      <p>Productize the World OS SDK and agents that understand, plan, and act inside the same authoritative world — without treating a neural render as reality.</p>
 
-      <h3>Themes (multi-milestone)</h3>
+      <h3>Themes</h3>
       <ul>
-        <li><strong>World understanding</strong> — long-horizon semantic graphs, affordances, and task-relevant abstractions over Components.</li>
-        <li><strong>Autonomous planning</strong> — planners that query the spatial DB, simulate branches (V17), and propose edits or actuations with human-visible justification.</li>
-        <li><strong>Attention &amp; uncertainty-driven sensing</strong> — next-best-view / next-best-sensor policies that maximize evidence gain (ties to Evidence Engine confidence).</li>
-        <li><strong>Multi-agent coordination</strong> — robots, AIs, and humans sharing one revision timeline with conflict policies.</li>
-        <li><strong>Prediction layers</strong> — forecast views (occupancy, traffic, energy) as compiled analytics — always labeled predicted, never smuggled into authority.</li>
-        <li><strong>Continuous learning loops</strong> — experience from twins and sims feeds appearance / perception training under frozen metrics (same honesty rules as appearance v2.x).</li>
+        <li><strong>Public SDK / plugins</strong> — providers, compilers, renderers, sensors; versioned compatibility.</li>
+        <li><strong>World understanding &amp; planning</strong> — semantic graphs, next-best-view, multi-agent coordination.</li>
+        <li><strong>Prediction layers</strong> — always labeled predicted, never smuggled into authority.</li>
       </ul>
 
       <h3>Non-goals (still)</h3>
       <ul>
         <li>The renderer never becomes the simulator.</li>
         <li>Generated imagery never silently becomes occupancy or Components.</li>
-        <li>Autonomy never skips provenance — every act traces to world state and policy.</li>
+        <li>Autonomy never skips provenance.</li>
       </ul>
 
       <h3>Depends on</h3>
-      <p>V16–V21 as the operable platform · V11 evidence · V17 sim · V18–V19 Gaussian path · V20 twins / spatial DB.</p>
+      <p>V16–V22 as the operable platform · V21 reactive events · V20 capture · V11 evidence · V17 sim.</p>
     </article>
 
     <section>
@@ -322,15 +305,14 @@ V16 ✓   Visualization engine (shipped · stack complete)
 V17 ✓   World simulation (shipped · world alive)
 V18 ✓   Gaussian enhancement pipeline (classical-CV live)
 V19 ✓   Gaussian evolution engine (async splat cache)
+V20 ✓   Reality capture pipeline (unified ObservationPacket)
+V21 ✓   Reactive world pipeline (event bus + reactors)
    │
    ▼
 V13     Production Gaussian streaming + AI weights + global frame post
 V15 P2  Viewer migration through /api/viz
-V20     Digital twins + spatial database
-V21     Plugin SDK / World OS product
-   │
-   ▼
-V22+    World intelligence &amp; planning</div>
+V22     Digital twins + spatial database
+V23+    Plugin SDK / World OS / world intelligence</div>
       <div class="highlight">
         <p><strong>Shipped milestones earn their place with tests and numbers.</strong> Planned milestones above are the intended product arc; dates are intentionally omitted until a milestone opens with a definition-of-done and an honest environment report — the same standard used for V8–V12.</p>
       </div>

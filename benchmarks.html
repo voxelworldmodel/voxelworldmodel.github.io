@@ -14,6 +14,8 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v21">V21 Reactive runtime</a>
+        <a href="#v20">V20 Reality capture</a>
         <a href="#v19">V19 Gaussian evolution</a>
         <a href="#v18">V18 Gaussian enhancement</a>
         <a href="#v17">V17 simulation</a>
@@ -53,6 +55,92 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V21 reactive ─────────────── -->
+    <section class="bench-milestone" id="v21">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">231/231 tests · reactive</span>
+      </div>
+      <h2>V21, Reactive World Pipeline</h2>
+      <p>Runtime becomes the backbone: immutable RuntimeEvents, bus + reactors, deterministic record/replay. One world edit cascades VoxelModified → … → GaussianFrameEnhanced with zero orchestration code.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">231/231</span></div>
+        <div class="bench-chip"><span class="chip-label">Canonical types</span><span class="chip-value">22</span></div>
+        <div class="bench-chip"><span class="chip-label">Reactors</span><span class="chip-value">4</span></div>
+        <div class="bench-chip"><span class="chip-label">Backpressure</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Orchestration in chain</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Replay</span><span class="chip-value">deterministic</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v21_reactive.png" alt="Reactive Runtime (V21) panel with event stream.">
+        <figcaption><strong>Live panel.</strong> Colour-coded stream · named subscribers · cascade demo.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Cascade</td><td data-label="Verified"><code>demo_edit</code> → VoxelModified → ChunkInvalidated → ChunkCompiled → GaussianSceneCreated → SceneUpdated → GaussianFrameRendered → GaussianFrameEnhanced</td></tr>
+            <tr><td data-label="Claim">Genuine events</td><td data-label="Verified">LegacyBridge republishes real V11 engine events</td></tr>
+            <tr><td data-label="Claim">Independence</td><td data-label="Verified">reactors independently removable</td></tr>
+            <tr><td data-label="Claim">Replay</td><td data-label="Verified">record → identical (seq, type) sequence</td></tr>
+            <tr><td data-label="Claim">World authority</td><td data-label="Verified"><code>test_world_untouched_by_reactive_layer</code></td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: V11 mark_dirty still schedules compile internally; reactors stay lightweight; LoopbackChannel is in-process; SimulationTick/Playback* vocabulary not yet emitted from those sources.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v21">Read full V21 narrative →</a></p>
+    </section>
+
+    <!-- ─────────────── V20 capture ─────────────── -->
+    <section class="bench-milestone" id="v20">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">216/216 tests · unified intake</span>
+      </div>
+      <h2>V20, Reality Capture Pipeline</h2>
+      <p>Any source → ObservationPacket → Registration + Evidence → voxels. Never writes voxels directly. Closes the capture end of the E2E loop.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">216/216</span></div>
+        <div class="bench-chip"><span class="chip-label">Live voxels (via Evidence)</span><span class="chip-value">1994</span></div>
+        <div class="bench-chip"><span class="chip-label">Live frames</span><span class="chip-value">12</span></div>
+        <div class="bench-chip"><span class="chip-label">Direct voxel writes</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Record→replay</span><span class="chip-value">identical</span></div>
+        <div class="bench-chip"><span class="chip-label">Hardware stubs</span><span class="chip-value">guarded</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v20_capture.png" alt="Reality Capture (V20) panel with synthetic capture stats.">
+        <figcaption><strong>Live panel.</strong> Synthetic capture routed through Evidence.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Routing invariant</td><td data-label="Verified"><code>voxels_added == world coords</code> from capture path</td></tr>
+            <tr><td data-label="Claim">Multi-device sync</td><td data-label="Verified">timestamp bundles within tolerance</td></tr>
+            <tr><td data-label="Claim">Replay</td><td data-label="Verified">identical packet sequence + seek/step/speed</td></tr>
+            <tr><td data-label="Claim">Extensibility</td><td data-label="Verified">new device = CaptureDevice + register</td></tr>
+            <tr><td data-label="Claim">No invented depth</td><td data-label="Verified">rgb-only → <code>needs_reconstruction</code></td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: hardware drivers are guarded stubs; distortion/extrinsic application in fusion is stored but not fully applied yet.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v20">Read full V20 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V19 gaussian evolution ─────────────── -->
     <section class="bench-milestone" id="v19">

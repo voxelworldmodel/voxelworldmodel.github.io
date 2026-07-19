@@ -14,7 +14,9 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v19">Latest: V19 Gaussian evolution</a>
+        <a href="#v21">Latest: V21 reactive runtime</a>
+        <a href="#v20">V20 reality capture</a>
+        <a href="#v19">V19 Gaussian evolution</a>
         <a href="#v18">V18 Gaussian enhancement</a>
         <a href="#v17">V17 simulation</a>
         <a href="#v16">V16 visualization</a>
@@ -44,6 +46,113 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v21">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">231/231 tests · reactive</span>
+      </div>
+      <h2>V21, Reactive World Pipeline</h2>
+      <p>Execution model shifts from orchestration (A calls B calls C) to reaction: subsystems publish immutable <code>RuntimeEvent</code>s and any interested peer reacts independently. The Runtime is the backbone; the Adaptive Voxel World stays the single source of truth.</p>
+
+      <div class="status-banner">
+        <h3>✅ One edit → VoxelModified → … → GaussianFrameEnhanced — zero orchestration code</h3>
+        <p>Live on the hallway: <code>demo_edit</code> cascades the full chain via genuine V11 engine events (bridged) plus reactors for Evolution → Visualization → Enhancement. Record→replay is deterministic; backpressure 0; 4 named subscribers (<code>scene_creation · evolution · visualization · enhancement</code>).</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">231/231</span><span class="label">Tests (15 V21 + prior)</span></div>
+        <div class="stat"><span class="value">22</span><span class="label">Canonical event types</span></div>
+        <div class="stat"><span class="value">4</span><span class="label">Named reactors</span></div>
+        <div class="stat"><span class="value">7-stage</span><span class="label">Cascade from one edit</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Backpressure (sync bus)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Orchestration code in chain</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v21_reactive.png" alt="VWM viewer with the Reactive Runtime (V21) panel showing event stream and reactor stats.">
+        <figcaption><strong>Reactive Runtime (V21) panel, live.</strong> Colour-coded event stream · subscribers · backpressure · reactor counts. Endpoints: <code>/api/events/{diagnostics,recent,subscribers,replay}</code> + POST <code>/api/events/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/runtime/</code>)</h3>
+      <p>Package modules: <code>event · bus · dispatcher · subscriptions · filters · recorder · replay · bridge · reactors · network · diagnostics · api</code>. Entry: <code>world.events</code> → <code>ReactiveRuntime</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Immutable, serializable events</strong> — frozen <code>RuntimeEvent</code> + 22 canonical types; seq-stamped for replay.</li>
+        <li><strong>Event bus</strong> — publish/subscribe/unsubscribe, monotonic ordering, subscriber error-isolation, re-entrancy-safe drain, filters.</li>
+        <li><strong>Genuine reactivity</strong> — <code>LegacyBridge</code> republishes real V11 engine events; V15 <code>auto_wire</code> is the seed; reactors extend Evolution → Viz → Enhancement.</li>
+        <li><strong>Independent reactor removal</strong> — each reactor is a pure subscriber.</li>
+        <li><strong>Record → deterministic replay</strong> — <code>.timeline</code> save/load + play/pause/seek/step/windows.</li>
+        <li><strong>Networking model</strong> — serializer + loopback channel (in-process reference transport).</li>
+        <li><strong>World untouched</strong> by the reactive layer itself.</li>
+      </ul>
+
+      <h3>Migration Handled Honestly</h3>
+      <p>Pre-V8 <code>runtime.py</code> (imported by many modules) would have been shadowed by the new <code>runtime/</code> package. It moved to <code>runtime/_legacy.py</code> with re-exports — legacy tests still pass. Documented in <code>docs/V21_REPORT.md</code>.</p>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>V11 <code>mark_dirty</code> still schedules the compiler directly</strong> inside V11. V21 makes cross-subsystem orchestration event-driven and bridges real engine events; it does not rewrite V11’s internal scheduler.</li>
+        <li><strong>Reactors do lightweight coordination</strong> — heavy work stays in V15/V19/V16/V18, off the synchronous event thread.</li>
+        <li><strong>LoopbackChannel is in-process</strong> (no socket). Production transport / auth / conflict resolution are follow-ups.</li>
+        <li><strong><code>SimulationTick</code> / <code>Playback*</code></strong> are in the canonical vocabulary but not yet emitted from those sources — incremental migration.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> VWM is a reactive platform. One world change flows through the derived-artifact pipeline with zero orchestration code; the run is immutable, filterable, serializable, and replayable. Deliverables: <code>vwm/runtime/*</code>, <code>docs/V21_REPORT.md</code>, <code>/api/events/*</code>, the live panel, and 15 new tests (231 total).</p>
+      </div>
+    </article>
+
+    <article class="update" id="v20">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">216/216 tests · unify intake</span>
+      </div>
+      <h2>V20, Reality Capture Pipeline</h2>
+      <p>One unified doorway for all reality intake. Any source — phone, drone, robot, LiDAR, webcam, video, image folder, synthetic renderer, or recorded replay — emits a standardized <code>ObservationPacket</code>. The pipeline routes each packet through <strong>Registration + Evidence</strong> into the voxel world. It observes reality and <strong>never writes voxels directly</strong>.</p>
+
+      <div class="status-banner">
+        <h3>✅ Synthetic × 12 frames → 1994 voxels via Evidence · revision bumped · 0 invented depth</h3>
+        <p>Live on the hallway (this publish session): synthetic device run through <code>/api/capture/control</code>. Report also verifies record→identical-replay, playback seek, and guarded LiDAR reporting <code>no LiDAR driver/hardware detected</code>. Closes the E2E loop: capture → registration → evidence → adaptive voxels → compiler → viz → V18 enhance → V19 evolve.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">216/216</span><span class="label">Tests (12 V20 + prior)</span></div>
+        <div class="stat"><span class="value">1994</span><span class="label">Voxels via capture route (live)</span></div>
+        <div class="stat"><span class="value">12</span><span class="label">Synthetic frames (live run)</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">ObservationPacket type</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Direct voxel writes</span></div>
+        <div class="stat"><span class="value">✓</span><span class="label">Record → identical replay</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v20_capture.png" alt="VWM viewer with the Reality Capture (V20) panel showing devices and voxels from capture.">
+        <figcaption><strong>Reality Capture (V20) panel, live.</strong> Devices · frames · voxels from capture. Endpoints: <code>/api/capture/{devices,diagnostics,recordings,playback,calibration}</code> + POST <code>/api/capture/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/capture/</code>)</h3>
+      <p>Modules: <code>observation · device · registry · calibration · synchronization · recorder · playback · stream · formats · pipeline · diagnostics · settings · api</code>. Entry: <code>world.capture</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>One ObservationPacket</strong> for every source (rgb/depth/pose/intrinsics/imu/gps/confidence/timestamp/metadata).</li>
+        <li><strong>Routing invariant</strong> — <code>voxels_added == len(world.coords)</code> from capture path; all via Registration + Evidence.</li>
+        <li><strong>Multi-device timestamp sync</strong> · recording + identical replay · playback controls · independent calibration · registry extensibility.</li>
+        <li><strong>Guarded hardware</strong> — webcam/rtsp/lidar/depth_camera/drone report exact blockers; never fake frames.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Real hardware drivers are guarded stubs</strong> until wired; adding one is subclass <code>CaptureDevice</code> + register.</li>
+        <li><strong>RGB-only sources</strong> return <code>needs_reconstruction</code> — the pipeline never invents depth.</li>
+        <li><strong>Distortion undistortion / extrinsic rig solving</strong> are stored but not yet applied in fusion math.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> reality enters through one door. Whatever the source, it emits the same packet, registers, and fuses through Evidence into the authoritative voxel world. Deliverables: <code>vwm/capture/*</code>, <code>docs/V20_REPORT.md</code>, <code>/api/capture/*</code>, the live panel, and 12 new tests (216 total at V20; 231 after V21).</p>
+      </div>
+    </article>
 
     <article class="update" id="v19">
       <div class="update-meta">

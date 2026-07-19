@@ -91,7 +91,7 @@ Images               Video Streams              Live Sensors
     <!-- ─────────────── stages ─────────────── -->
     <section id="ingest" class="pipeline-stage">
       <div class="update-meta">
-        <span class="badge badge-ok">Foundation: V10–V14</span>
+        <span class="badge badge-ok">Shipped: V20 Reality Capture · V10–V14 foundation</span>
       </div>
       <h2>Ingestion &amp; Normalization</h2>
       <div class="pill-grid">
@@ -106,7 +106,7 @@ Images               Video Streams              Live Sensors
         <span class="pill">Timestamp Alignment</span>
         <span class="pill">Quality Validation</span>
       </div>
-      <p>Raw captures become time-aligned, calibrated observations ready for registration — never silent merges of incompatible frames.</p>
+      <p>Raw captures become time-aligned, calibrated <code>ObservationPacket</code>s ready for registration — never silent merges of incompatible frames. See <a href="updates.html#v20">V20</a>.</p>
     </section>
 
     <section id="registration" class="pipeline-stage">
@@ -350,10 +350,11 @@ WITHOUT
           <tr><th>Pipeline stage</th><th>Status</th><th>Milestone</th></tr>
         </thead>
         <tbody>
-          <tr><td data-label="Stage">Ingest / upload / Captures</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V10 World Engine</td></tr>
+          <tr><td data-label="Stage">Ingest / reality capture</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V20 · <a href="updates.html#v20">report</a></td></tr>
           <tr><td data-label="Stage">Evidence / confidence</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V11 Runtime</td></tr>
           <tr><td data-label="Stage">Registration / pose graph</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V14 Mapping</td></tr>
           <tr><td data-label="Stage">Adaptive Voxel World</td><td data-label="Status" class="ok">Authority</td><td data-label="M">Core (capture era → present)</td></tr>
+          <tr><td data-label="Stage">Reactive Runtime (event bus)</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V21 · <a href="updates.html#v21">report</a></td></tr>
           <tr><td data-label="Stage">Simulation</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V17</td></tr>
           <tr><td data-label="Stage">World Compiler</td><td data-label="Status" class="ok">Shipped (Part 1)</td><td data-label="M">V15</td></tr>
           <tr><td data-label="Stage">Gaussian artifact + raster</td><td data-label="Status" class="ok">Foundation</td><td data-label="M">V12 · V16</td></tr>
