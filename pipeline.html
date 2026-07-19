@@ -214,10 +214,10 @@ Images               Video Streams              Live Sensors
 
     <section id="bg-opt" class="pipeline-stage">
       <div class="update-meta">
-        <span class="badge">Goal path</span>
+        <span class="badge badge-ok">Shipped: V19 classical splat opt · AI stubs guarded</span>
       </div>
       <h2>Background Gaussian Optimization</h2>
-      <p>Runs whenever compute is available — <strong>not every frame</strong>. Improves the Gaussian representation itself; results are cached.</p>
+      <p>Runs whenever compute is available — <strong>not every frame</strong>. Improves the Gaussian representation itself; results are cached as versioned revisions. See <a href="updates.html#v19">V19</a>.</p>
       <div class="pill-grid">
         <span class="pill">Dynamic Splat Stitching</span>
         <span class="pill">Overlap Repair</span>
@@ -232,9 +232,9 @@ Images               Video Streams              Live Sensors
         <span class="pill">Hole Filling</span>
       </div>
       <h3>Optional Heavy AI</h3>
-      <p>FLUX · HiDream · future foundation models — improve the Gaussian representation offline or on spare capacity. They do <strong>not</strong> run in the real-time display path.</p>
+      <p>FLUX · HiDream · future foundation models — improve the Gaussian representation offline or on spare capacity. They do <strong>not</strong> run in the real-time display path. Registered as guarded plugins until GPU weights exist.</p>
       <div class="highlight">
-        <p><strong>Enhanced Gaussian Cache</strong> — optimized splats, materials, radiance, and features. Persistent. Only recompute when necessary.</p>
+        <p><strong>Enhanced Gaussian Cache (V19)</strong> — optimized splat revisions, nothing overwritten, history preserved. Browser / V18 path transparently prefer <code>best_arrays()</code>. Only recompute when necessary.</p>
       </div>
     </section>
 
@@ -357,7 +357,7 @@ WITHOUT
           <tr><td data-label="Stage">Simulation</td><td data-label="Status" class="ok">Shipped</td><td data-label="M">V17</td></tr>
           <tr><td data-label="Stage">World Compiler</td><td data-label="Status" class="ok">Shipped (Part 1)</td><td data-label="M">V15</td></tr>
           <tr><td data-label="Stage">Gaussian artifact + raster</td><td data-label="Status" class="ok">Foundation</td><td data-label="M">V12 · V16</td></tr>
-          <tr><td data-label="Stage">Background Gaussian opt + cache</td><td data-label="Status">Goal</td><td data-label="M">V13 production path</td></tr>
+          <tr><td data-label="Stage">Background Gaussian opt + cache</td><td data-label="Status" class="ok">Shipped (classical)</td><td data-label="M">V19 · <a href="updates.html#v19">report</a></td></tr>
           <tr><td data-label="Stage">Local Gaussian enhancers</td><td data-label="Status" class="ok">Shipped (classical-CV)</td><td data-label="M">V18 · <a href="updates.html#v18">report</a></td></tr>
           <tr><td data-label="Stage">Optional full-frame / display AI</td><td data-label="Status">Goal</td><td data-label="M">Later · <a href="index.html#enhancement">enhancement layers</a></td></tr>
         </tbody>

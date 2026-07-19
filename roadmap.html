@@ -14,16 +14,17 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V18)</a>
+        <a href="#shipped">Shipped (→V19)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
         <a href="#v16">V16 ✓</a>
         <a href="#v17">V17 ✓</a>
         <a href="#v18">V18 ✓</a>
-        <a href="#v19">V19</a>
+        <a href="#v19">V19 ✓</a>
         <a href="#v20">V20</a>
-        <a href="#v21">V21+</a>
+        <a href="#v21">V21</a>
+        <a href="#v22">V22+</a>
         <a href="updates.html">Updates</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="status.html">Status</a>
@@ -36,7 +37,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>The major subsystem stack is shipped through <a href="updates.html#v17">V17</a>, and <a href="updates.html#v18">V18</a> adds packet-only Gaussian enhancement (classical-CV live; AI stubs guarded). V13 production Gaussians / background opt and V15 Part 2 (browser migration) remain open polish; V19+ are capability layers (twins, spatial DB, plugins, intelligence). Items marked <span class="badge badge-ok">Foundation laid</span> already have scaffolding.</p>
+      <p>The major subsystem stack is shipped through <a href="updates.html#v17">V17</a>; <a href="updates.html#v18">V18</a> adds packet-only Gaussian enhancement; <a href="updates.html#v19">V19</a> adds async Gaussian scene evolution / cache. V13 streaming / AI weights / global frame post and V15 Part 2 remain open polish; V20+ are capability layers (twins, spatial DB, plugins, intelligence).</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -137,6 +138,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
         <li><strong>Progressive initial compile</strong> — background progressive chunk build + live partial views.</li>
         <li><strong>Gaussian rasterizer as a V16 renderer</strong> — consumes only <code>gaussian_scene</code> artifacts; produces frame + G-buffers (RGB, depth, normals, motion, semantics, materials).</li>
         <li><strong>Layer 1 — Local Frame Enhancer</strong> — AI conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence…); improves surface detail, reflections, edges, AA — never invents occupancy. <span class="badge badge-ok">V18: pipeline + classical-CV shipped; AI weights pending</span></li>
+        <li><strong>Background Gaussian evolution / cache</strong> — async splat-data optimization with versioned cache. <span class="badge badge-ok">V19: classical optimizers + cache shipped; FLUX/HiDream pending</span></li>
         <li><strong>Layer 2 — Global Frame Enhancer</strong> — AI conditioned on scene metadata (weather, fog, sun elevation, exposure, time of day…); HDR, grading, atmosphere, bloom, DOF, temporal, upscaling, stylization.</li>
         <li><strong>Independent toggles</strong> — <code>local_ai</code> / <code>global_ai</code> on|off: pure Gaussian, photoreal surfaces only, fast cinematic, or maximum realism.</li>
         <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback.</li>
@@ -207,17 +209,28 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       <h2>V18 — Gaussian Enhancement Pipeline</h2>
       <p><strong>Delivered.</strong> Enhances the Gaussian render itself (not full-frame display post). Flow: compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers → enhanced image. Voxel world untouched; disabled = deterministic passthrough. Full report: <a href="updates.html#v18">updates.html#v18</a>.</p>
       <p><strong>Honest limits:</strong> classical-CV path is what runs without GPU weights; AI enhancers are guarded stubs; CPU reference rasterizer ≠ browser WebGL; display-mode wiring for the enhanced frame is a follow-up.</p>
-      <p><strong>Note:</strong> Digital Twin Platform (previously listed here) moves to the next capability arc under V19+ planning below.</p>
+      <p><strong>Note:</strong> Digital Twin / Spatial Database remains planned under V20 below.</p>
     </article>
 
     <!-- ─────────────── V19 ─────────────── -->
     <article class="update" id="v19">
       <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">Shipped · 164/164 tests</span>
+      </div>
+      <h2>V19 — Gaussian Evolution Engine</h2>
+      <p><strong>Delivered.</strong> Continuously improves Gaussian <em>scene data</em> (not pixels) asynchronously: compiler scene → optimizer passes → cached revisions → best version served transparently via <code>best_arrays()</code>. Complements V18. Hallway quality 0.65→1.0. Voxel world untouched; render never blocked. Full report: <a href="updates.html#v19">updates.html#v19</a>.</p>
+      <p><strong>Honest limits:</strong> classical splat processing is what runs without GPU weights; quality is a splat-data heuristic; predictive camera-motion prefetch is scaffolded only.</p>
+    </article>
+
+    <!-- ─────────────── V20 ─────────────── -->
+    <article class="update" id="v20">
+      <div class="update-meta">
         <time>Next</time>
         <span class="badge">Planned</span>
         <span class="badge badge-ok">Foundation: V10 query + V11 evidence</span>
       </div>
-      <h2>V19 — Digital Twin Platform &amp; Spatial Database</h2>
+      <h2>V20 — Digital Twin Platform &amp; Spatial Database</h2>
       <p>Keep real devices and spaces continuously synchronized into the same world, and scale that world into a persistent spatial database: disk-backed evidence and revisions, indexed queries, and analytics that stay honest at campus scale.</p>
 
       <h3>Goals</h3>
@@ -240,13 +253,13 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       <p>V10 upload / Captures · V11 evidence aging · V14 registration · V17 for actuated sim feedback · V15 artifact store.</p>
     </article>
 
-    <!-- ─────────────── V20 ─────────────── -->
-    <article class="update" id="v20">
+    <!-- ─────────────── V21 ─────────────── -->
+    <article class="update" id="v21">
       <div class="update-meta">
         <time>Next</time>
         <span class="badge">Planned</span>
       </div>
-      <h2>V20 — Plugin SDK &amp; World Operating System</h2>
+      <h2>V21 — Plugin SDK &amp; World Operating System</h2>
       <p>Productize the World OS: a stable SDK so third parties ship providers, compilers, renderers, sensors, and tools without forking the core — the operating system for spatial worlds.</p>
 
       <h3>Goals</h3>
@@ -265,16 +278,16 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       </ul>
 
       <h3>Depends on</h3>
-      <p>V15–V16 plugin surfaces · V10–V12 server APIs · V19 persistence for durable worlds.</p>
+      <p>V15–V16 plugin surfaces · V10–V12 server APIs · V20 persistence for durable worlds.</p>
     </article>
 
-    <!-- ─────────────── V21+ ─────────────── -->
-    <article class="update" id="v21">
+    <!-- ─────────────── V22+ ─────────────── -->
+    <article class="update" id="v22">
       <div class="update-meta">
         <time>Horizon</time>
         <span class="badge">Horizon</span>
       </div>
-      <h2>V21+ — World Intelligence &amp; Autonomous Planning</h2>
+      <h2>V22+ — World Intelligence &amp; Autonomous Planning</h2>
       <p>Agents that understand, plan, and act inside the same authoritative world — using evidence, semantics, and simulation — without treating a neural render as reality.</p>
 
       <h3>Themes (multi-milestone)</h3>
@@ -295,7 +308,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       </ul>
 
       <h3>Depends on</h3>
-      <p>V16–V20 as the operable platform · V11 evidence · V17 sim · V18 Gaussian enhancement · V19 twins / spatial DB.</p>
+      <p>V16–V21 as the operable platform · V11 evidence · V17 sim · V18–V19 Gaussian path · V20 twins / spatial DB.</p>
     </article>
 
     <section>
@@ -308,15 +321,16 @@ V15 ✓P1 Compiler kernel (shipped)
 V16 ✓   Visualization engine (shipped · stack complete)
 V17 ✓   World simulation (shipped · world alive)
 V18 ✓   Gaussian enhancement pipeline (classical-CV live)
+V19 ✓   Gaussian evolution engine (async splat cache)
    │
    ▼
 V13     Production Gaussian streaming + AI weights + global frame post
 V15 P2  Viewer migration through /api/viz
-V19     Digital twins + spatial database
-V20     Plugin SDK / World OS product
+V20     Digital twins + spatial database
+V21     Plugin SDK / World OS product
    │
    ▼
-V21+    World intelligence &amp; planning</div>
+V22+    World intelligence &amp; planning</div>
       <div class="highlight">
         <p><strong>Shipped milestones earn their place with tests and numbers.</strong> Planned milestones above are the intended product arc; dates are intentionally omitted until a milestone opens with a definition-of-done and an honest environment report — the same standard used for V8–V12.</p>
       </div>

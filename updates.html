@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v18">Latest: V18 Gaussian enhancement</a>
+        <a href="#v19">Latest: V19 Gaussian evolution</a>
+        <a href="#v18">V18 Gaussian enhancement</a>
         <a href="#v17">V17 simulation</a>
         <a href="#v16">V16 visualization</a>
         <a href="#v15">V15 compiler framework</a>
@@ -43,6 +44,60 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v19">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">164/164 tests · async · cached</span>
+      </div>
+      <h2>V19, Gaussian Evolution Engine</h2>
+      <p>Clean complement to V18: <strong>V18 enhances rendered pixels</strong> (the Gaussian image); <strong>V19 continuously improves the Gaussian scene data itself</strong> — merge / split / opacity / covariance / … — asynchronously, producing new cached scene revisions. The Adaptive Voxel World is untouched throughout.</p>
+
+      <div class="status-banner">
+        <h3>✅ Compiler scene → async optimizer passes → cached revisions → best version served transparently</h3>
+        <p>Live proof on the hallway: <code>/api/gevolution/optimize?profile=balanced</code> raised heuristic quality <strong>0.65 → 1.0</strong> (cached; history preserved). The V18 rasterizer prefers <code>world.gaussian_evolution.best_arrays()</code>, so the browser requests Gaussian scenes and gets the best evolved version without knowing evolution ran. Rendering and simulation never wait.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">164/164</span><span class="label">Tests (14 V19 + prior suites)</span></div>
+        <div class="stat"><span class="value">0.65→1.0</span><span class="label">Hallway quality (balanced)</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Registered optimizers</span></div>
+        <div class="stat"><span class="value">8</span><span class="label">Classical splat optimizers</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Splats in cached revision</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Voxel world mutations</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v19_gevo.png" alt="VWM viewer with the Gaussian Evolution (V19) panel showing 10 optimizers, 1 cached version, best quality 1.0.">
+        <figcaption><strong>Gaussian Evolution (V19) panel, live.</strong> 10 optimizers · jobs done · cache versions / splat count · best quality 1.0. Endpoints: <code>/api/gevolution/{jobs,cache,history,diagnostics,quality,optimize}</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/gaussian_evolution/</code>)</h3>
+      <p>Every module the spec listed: <code>engine · optimizer · scheduler · jobs · queue · cache · metrics · registry · diagnostics · api · settings</code>. Entry: <code>world.gaussian_evolution</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Optimizers on Gaussian data, not pixels</strong> — 8 classical optimizers (noise removal, merge, split, opacity, covariance, colour, overlap-repair, compression) through one <code>GaussianOptimizer.optimize(scene)→scene</code> interface.</li>
+        <li><strong>Async, non-blocking</strong> — persistent job queue + background worker thread; rendering / simulation never wait.</li>
+        <li><strong>Progressive quality → new cached revision per pass</strong> — nothing overwritten; history preserved (hallway 0.65 → 1.0).</li>
+        <li><strong>Voxel world unchanged</strong> throughout (<code>test_world_unchanged_by_evolution</code>).</li>
+        <li><strong>Modular / registerable</strong> — a new optimizer (brighten) is class + register; engine never changes.</li>
+        <li><strong>Scheduler</strong> — priorities, cancel, pause, resume; persistence survives restart (cache + queue).</li>
+        <li><strong>Browser transparency</strong> — V18 path pulls <code>best_arrays()</code> when a better cache exists.</li>
+        <li><strong>Heavy AI as optional guarded plugins</strong> — FLUX / HiDream registered, report exact blocker, raise rather than fabricate, skipped (recorded) when unavailable.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Heavy AI (FLUX / HiDream) needs GPU weights not present here.</strong> The tested path is classical splat processing — measurable quality gains, not foundation-model refinement. Plugging a real model in is implement <code>GaussianOptimizer</code> + register.</li>
+        <li><strong>Quality metric is a heuristic</strong> over splat data (opacity health / overlap / coverage / confidence). A perceptual (rendered) metric — reusable with the V18 rasterizer — is a natural refinement.</li>
+        <li><strong>Predictive optimization</strong> (camera-motion prefetch) is scaffolded via the scheduler’s trigger / priority model; the motion predictor itself is a documented follow-up.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the Gaussian scene is now a continuously-improving, versioned, cached asset — compiler scene → async optimizer passes → cached revisions → best version served transparently — sitting cleanly beside V18’s pixel enhancement, with the Adaptive Voxel World as sole source of truth and rendering never blocked by optimization. Deliverables: <code>vwm/gaussian_evolution/*</code>, <code>docs/V19_REPORT.md</code>, <code>/api/gevolution/*</code>, the live panel, and 14 new tests (164 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v18">
       <div class="update-meta">

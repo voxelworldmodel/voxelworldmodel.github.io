@@ -350,25 +350,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V18, Gaussian Enhancement Pipeline</strong> — enhances the Gaussian render itself (packet-only, world untouched); classical-CV chain live, AI enhancers guarded until weights land. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V19, Gaussian Evolution Engine</strong> — continuously improves Gaussian <em>scene data</em> (async, cached revisions); complements V18 pixel enhancement. Voxel world untouched. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V18: packet → 32-D embedding → enhancer chain — 150/150 tests · world untouched</h3>
-        <p>Compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers. Live: <code>/api/genh/image?profile=medium</code> returns a real enhanced hallway frame. Disabled = deterministic passthrough. Full-frame / display post stays optional and separate. Prior: V17 sim (door → auto gaussian 768→764), V16 viz (17 renderers), V15 compiler.</p>
+        <h3>✅ V19: async splat opt → cached revisions → best served transparently — 164/164 tests</h3>
+        <p>Hallway quality <strong>0.65 → 1.0</strong> after a balanced pass. V18 raster prefers <code>best_arrays()</code>. Classical splat optimizers live; FLUX / HiDream guarded. Prior: V18 packet enhancement, V17 sim, V16 viz, V15 compiler.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">150/150</span><span class="label">Tests (15 V18 + prior)</span></div>
-        <div class="stat"><span class="value">10</span><span class="label">Enhancers registered</span></div>
-        <div class="stat"><span class="value">32-D</span><span class="label">Metadata embedding</span></div>
-        <div class="stat"><span class="value">320×240</span><span class="label">Live enhanced frame</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">World mutations from enhance</span></div>
+        <div class="stat"><span class="value">164/164</span><span class="label">Tests (14 V19 + prior)</span></div>
+        <div class="stat"><span class="value">0.65→1.0</span><span class="label">Hallway quality (balanced)</span></div>
+        <div class="stat"><span class="value">10</span><span class="label">Optimizers registered</span></div>
+        <div class="stat"><span class="value">73 768</span><span class="label">Splats in cache</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">World mutations from evo</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v18_genh.png" alt="VWM viewer with the Gaussian Enhancement (V18) panel.">
-        <figcaption><strong>Gaussian Enhancement (V18), live.</strong> Medium profile · upscale→detail→material · packet-only over the authoritative hallway world.</figcaption>
+        <img src="viewer_v19_gevo.png" alt="VWM viewer with the Gaussian Evolution (V19) panel.">
+        <figcaption><strong>Gaussian Evolution (V19), live.</strong> Async splat optimization · cached revisions · best quality 1.0 — beside V18 pixel enhancement.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
@@ -394,7 +394,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V18</strong> (Gaussian enhancement pipeline). Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> production Gaussians / background Gaussian opt and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V19</strong> (Gaussian evolution + V18 enhancement). Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> streaming / AI weights / global frame post and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 

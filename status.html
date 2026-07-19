@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Status — Voxel World Model</title>
-  <meta name="description" content="Current VWM architecture completion: core engine through V18, Gaussian enhancement shipped, neural rendering vision in progress.">
+  <meta name="description" content="Current VWM architecture completion: core engine through V19, Gaussian enhancement and evolution shipped, neural AI weights still open.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <header>
       <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
       <h1>Architecture Status</h1>
-      <p class="lead">Completion against the end-to-end pipeline after V18. Core engine is done; Gaussian enhancement is in; background learning and full neural vision remain open.</p>
+      <p class="lead">Completion against the end-to-end pipeline after V19. Core engine is done; Gaussian enhancement (V18) and evolution (V19) are in; foundation-model weights and full-frame AI remain open.</p>
       <nav>
         <a href="#overall">Overall</a>
         <a href="#core">Core</a>
@@ -21,13 +21,13 @@
         <a href="#platform">Platform</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="roadmap.html">Roadmap</a>
-        <a href="updates.html#v18">V18</a>
+        <a href="updates.html#v19">V19</a>
       </nav>
     </header>
 
     <section id="overall">
       <div class="status-banner">
-        <h3>Snapshot — July 2026 (post-V18)</h3>
+        <h3>Snapshot — July 2026 (post-V19)</h3>
         <p>Percentages are engineering judgment of shipped capability vs. the intended production path — not marketing scores. Mapped to the <a href="pipeline.html">end-to-end pipeline</a>.</p>
       </div>
 
@@ -35,7 +35,7 @@
       <div class="status-summary">
         <div class="status-row">
           <div class="status-label">
-            <span class="status-name">Core Engine (V1–V18)</span>
+            <span class="status-name">Core Engine (V1–V19)</span>
             <span class="status-pct done">100%</span>
           </div>
           <div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div>
@@ -43,30 +43,30 @@
         <div class="status-row">
           <div class="status-label">
             <span class="status-name">Rendering Stack</span>
-            <span class="status-pct">84%</span>
+            <span class="status-pct">92%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:84%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:92%"></div></div>
         </div>
         <div class="status-row">
           <div class="status-label">
             <span class="status-name">Neural Rendering Vision</span>
-            <span class="status-pct mid">40%</span>
+            <span class="status-pct mid">55%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:40%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:55%"></div></div>
         </div>
         <div class="status-row status-row-hero">
           <div class="status-label">
             <span class="status-name">Overall VWM Vision</span>
-            <span class="status-pct">86%</span>
+            <span class="status-pct">89%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:86%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:89%"></div></div>
         </div>
       </div>
     </section>
 
     <section id="core" class="status-section">
       <h2>Core (complete)</h2>
-      <p class="status-section-lead">Authoritative world through visualization — the operable kernel through V18.</p>
+      <p class="status-section-lead">Authoritative world through visualization — the operable kernel through V19.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Core Runtime</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Adaptive Voxel World</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
@@ -79,23 +79,23 @@
 
     <section id="gaussian" class="status-section">
       <h2>Gaussian path</h2>
-      <p class="status-section-lead">Representation nearly complete; <a href="updates.html#v18">V18</a> shipped packet-only Gaussian enhancement (classical-CV live, AI stubs guarded).</p>
+      <p class="status-section-lead"><a href="updates.html#v18">V18</a> enhances pixels; <a href="updates.html#v19">V19</a> evolves splat data asynchronously into a versioned cache.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Gaussian Representation</span><span class="status-pct">95%</span></div><div class="status-track" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:95%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Gaussian Enhancement</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Background Gaussian Learning</span><span class="status-pct">88%</span></div><div class="status-track" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:88%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Dynamic Splat Optimization</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
       </div>
     </section>
 
     <section id="neural" class="status-section status-section-gap">
       <h2>Neural gap</h2>
-      <p class="status-section-lead">The open arc: background learning, splat optimization, weight-backed local AI, and optional full-frame post.</p>
+      <p class="status-section-lead">Classical paths for enhancement and evolution are shipped. Weight-backed models and optional full-frame AI remain open.</p>
       <div class="status-list">
-        <div class="status-row"><div class="status-label"><span class="status-name">Background Gaussian Learning</span><span class="status-pct low">10%</span></div><div class="status-track" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:10%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Dynamic Splat Optimization</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Local AI Refinement</span><span class="status-pct low">8%</span></div><div class="status-track" role="progressbar" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:8%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Optional Full-Frame AI</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
-      <p class="status-note">Local AI refinement stays low because V18’s classical-CV chain is complete, but weight-backed photorealism / RealESRGAN-class models are still stubs. Background Gaussian Learning reflects scaffolding only.</p>
+      <p class="status-note">Background learning / splat optimization scores above count the V19 classical engine as delivered; FLUX / HiDream (and V18 RealESRGAN-class) stay guarded stubs until GPU weights exist — that is what keeps Local AI Refinement low.</p>
     </section>
 
     <section id="platform" class="status-section">
@@ -111,9 +111,9 @@
       <h2>Read next</h2>
       <p>
         <a class="cta-link" href="pipeline.html">End-to-end pipeline →</a>
+        <a class="cta-link" href="updates.html#v19" style="margin-left: 0.5rem">V19 report →</a>
         <a class="cta-link" href="updates.html#v18" style="margin-left: 0.5rem">V18 report →</a>
         <a class="cta-link" href="roadmap.html" style="margin-left: 0.5rem">Roadmap →</a>
-        <a class="cta-link" href="updates.html" style="margin-left: 0.5rem">Updates →</a>
       </p>
     </section>
 

@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v19">V19 Gaussian evolution</a>
         <a href="#v18">V18 Gaussian enhancement</a>
         <a href="#v17">V17 simulation</a>
         <a href="#v16">V16 visualization</a>
@@ -52,6 +53,51 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V19 gaussian evolution ─────────────── -->
+    <section class="bench-milestone" id="v19">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">164/164 tests · async cache</span>
+      </div>
+      <h2>V19, Gaussian Evolution Engine</h2>
+      <p>Improves Gaussian <em>scene data</em> (not pixels) asynchronously: compiler scene → optimizer passes → cached revisions → best version served transparently. Complements V18. Voxel world untouched; rendering never blocks.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">164/164</span></div>
+        <div class="bench-chip"><span class="chip-label">Quality</span><span class="chip-value">0.65→1.0</span></div>
+        <div class="bench-chip"><span class="chip-label">Optimizers</span><span class="chip-value">10</span></div>
+        <div class="bench-chip"><span class="chip-label">Splats cached</span><span class="chip-value">73 768</span></div>
+        <div class="bench-chip"><span class="chip-label">World mutations</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Blocking render</span><span class="chip-value">never</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v19_gevo.png" alt="Gaussian Evolution (V19) panel with best quality 1.0 and cache stats.">
+        <figcaption><strong>Live panel.</strong> <code>/api/gevolution/diagnostics</code> — balanced pass cached; quality 1.0.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Data, not pixels</td><td data-label="Verified">8 classical optimizers transform splat arrays via <code>GaussianOptimizer.optimize(scene)</code></td></tr>
+            <tr><td data-label="Claim">Async</td><td data-label="Verified">persistent queue + worker thread; render/sim never wait</td></tr>
+            <tr><td data-label="Claim">Progressive cache</td><td data-label="Verified">new revision per pass; hallway 0.65→1.0; history preserved</td></tr>
+            <tr><td data-label="Claim">World untouched</td><td data-label="Verified"><code>test_world_unchanged_by_evolution</code></td></tr>
+            <tr><td data-label="Claim">Browser transparency</td><td data-label="Verified">V18 path uses <code>best_arrays()</code> when cache is better</td></tr>
+            <tr><td data-label="Claim">Extensibility</td><td data-label="Verified">brighten = class + register; engine unchanged</td></tr>
+            <tr><td data-label="Claim">AI stubs</td><td data-label="Verified">FLUX / HiDream report blocker; skipped, not fatal</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: classical splat processing is what runs without GPU weights; quality score is a splat-data heuristic (not perceptual); camera-motion predictive prefetch is scaffolded, predictor TBD.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v19">Read full V19 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V18 gaussian enhancement ─────────────── -->
     <section class="bench-milestone" id="v18">
