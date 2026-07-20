@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal World I/O, Voxel World Model</title>
+  <meta name="description" content="The intended multimodal I/O surface for VWM — almost anything that can be measured or actuated as an input or output of the authoritative voxel world.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
+      <h1>Multimodal World I/O</h1>
+      <p class="lead">If VWM is the authoritative model of reality, then almost anything that can be measured or actuated can eventually become an input or output — multimodal world I/O around one voxel kernel.</p>
+      <nav>
+        <a href="#inputs">Inputs</a>
+        <a href="#internal">Internal</a>
+        <a href="#outputs">Outputs</a>
+        <a href="#bidirectional">Bidirectional</a>
+        <a href="pipeline.html">Pipeline</a>
+        <a href="status.html">Status</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="paper.html">Paper</a>
+      </nav>
+    </header>
+
+    <section>
+      <div class="status-banner">
+        <h3>Vision catalog, not a shipped-driver checklist</h3>
+        <p>This page lists the <strong>intended I/O surface</strong> for an authoritative world model. Many modalities already plug into capture / query / sync / trust; others are horizon adapters on the same contracts. Reality becomes evidence; actuation becomes validated operations — never a second source of truth.</p>
+      </div>
+      <div class="diagram">Reality (sensors · humans · machines · archives)
+    │
+    ▼
+ Observation / Event intake  →  Authoritative Voxel World
+    │
+    ├── world.query  (read)
+    ├── world.sync   (replicate)
+    ├── world.trust  (authorize ops)
+    └── actuation / views / APIs  →  Reality</div>
+    </section>
+
+    <!-- ─────────────── Inputs ─────────────── -->
+    <section id="inputs">
+      <h2>Inputs — Reality → VWM</h2>
+      <p>Everything that can observe the world can feed timestamped observations into the Adaptive Voxel World.</p>
+
+      <h3>Visual</h3>
+      <div class="pill-grid">
+        <span class="pill">RGB cameras</span>
+        <span class="pill">Stereo cameras</span>
+        <span class="pill">360° cameras</span>
+        <span class="pill">Fisheye cameras</span>
+        <span class="pill">Event cameras</span>
+        <span class="pill">Infrared cameras</span>
+        <span class="pill">Thermal cameras</span>
+        <span class="pill">UV cameras</span>
+        <span class="pill">Hyperspectral cameras</span>
+        <span class="pill">Multispectral cameras</span>
+        <span class="pill">Polarization cameras</span>
+        <span class="pill">Microscopes</span>
+        <span class="pill">Telescopes</span>
+        <span class="pill">Satellite imagery</span>
+        <span class="pill">Drone imagery</span>
+        <span class="pill">Security cameras</span>
+      </div>
+
+      <h3>Depth &amp; Geometry</h3>
+      <div class="pill-grid">
+        <span class="pill">LiDAR</span>
+        <span class="pill">Solid-state LiDAR</span>
+        <span class="pill">Time-of-Flight (ToF)</span>
+        <span class="pill">Structured light</span>
+        <span class="pill">Depth cameras</span>
+        <span class="pill">Photogrammetry</span>
+        <span class="pill">Gaussian Splat captures</span>
+        <span class="pill">NeRF captures</span>
+        <span class="pill">Mesh scans</span>
+        <span class="pill">Point clouds</span>
+        <span class="pill">Radar point clouds</span>
+      </div>
+
+      <h3>Audio</h3>
+      <div class="pill-grid">
+        <span class="pill">Microphones</span>
+        <span class="pill">Microphone arrays</span>
+        <span class="pill">Spatial audio</span>
+        <span class="pill">Ultrasonic microphones</span>
+        <span class="pill">Underwater hydrophones</span>
+        <span class="pill">Vibration microphones</span>
+        <span class="pill">Beamforming arrays</span>
+      </div>
+
+      <h3>RF &amp; Wireless</h3>
+      <div class="pill-grid">
+        <span class="pill">Wi-Fi CSI</span>
+        <span class="pill">Bluetooth</span>
+        <span class="pill">UWB</span>
+        <span class="pill">RFID</span>
+        <span class="pill">NFC</span>
+        <span class="pill">LoRa</span>
+        <span class="pill">Zigbee</span>
+        <span class="pill">Cellular measurements</span>
+        <span class="pill">GPS / GNSS</span>
+        <span class="pill">SDR</span>
+      </div>
+
+      <h3>Motion</h3>
+      <div class="pill-grid">
+        <span class="pill">IMU</span>
+        <span class="pill">Accelerometer</span>
+        <span class="pill">Gyroscope</span>
+        <span class="pill">Magnetometer</span>
+        <span class="pill">Compass</span>
+        <span class="pill">Wheel encoders</span>
+        <span class="pill">Odometry</span>
+        <span class="pill">Optical flow</span>
+      </div>
+
+      <h3>Robotics</h3>
+      <div class="pill-grid">
+        <span class="pill">Joint encoders</span>
+        <span class="pill">Force sensors</span>
+        <span class="pill">Torque sensors</span>
+        <span class="pill">Grippers</span>
+        <span class="pill">Robot state</span>
+        <span class="pill">Tool position</span>
+        <span class="pill">Robot diagnostics</span>
+      </div>
+
+      <h3>Environmental</h3>
+      <div class="pill-grid">
+        <span class="pill">Temperature</span>
+        <span class="pill">Humidity</span>
+        <span class="pill">Pressure</span>
+        <span class="pill">Air quality</span>
+        <span class="pill">CO₂</span>
+        <span class="pill">VOCs</span>
+        <span class="pill">Wind</span>
+        <span class="pill">Rain</span>
+        <span class="pill">Light level</span>
+        <span class="pill">Radiation</span>
+        <span class="pill">Soil moisture</span>
+      </div>
+
+      <h3>Industrial</h3>
+      <div class="pill-grid">
+        <span class="pill">PLCs</span>
+        <span class="pill">SCADA</span>
+        <span class="pill">CAN bus</span>
+        <span class="pill">OBD-II</span>
+        <span class="pill">Modbus</span>
+        <span class="pill">BACnet</span>
+        <span class="pill">OPC UA</span>
+        <span class="pill">MQTT</span>
+      </div>
+
+      <h3>Smart Buildings</h3>
+      <div class="pill-grid">
+        <span class="pill">Thermostats</span>
+        <span class="pill">Smart lights</span>
+        <span class="pill">Door sensors</span>
+        <span class="pill">Occupancy sensors</span>
+        <span class="pill">Security systems</span>
+        <span class="pill">Cameras</span>
+        <span class="pill">HVAC</span>
+        <span class="pill">Elevators</span>
+      </div>
+
+      <h3>Vehicles</h3>
+      <div class="pill-grid">
+        <span class="pill">Engine telemetry</span>
+        <span class="pill">Battery state</span>
+        <span class="pill">Tire pressure</span>
+        <span class="pill">Suspension</span>
+        <span class="pill">Steering</span>
+        <span class="pill">GPS</span>
+        <span class="pill">Cameras</span>
+        <span class="pill">Radar</span>
+        <span class="pill">LiDAR</span>
+        <span class="pill">Ultrasonics</span>
+      </div>
+
+      <h3>Human Input</h3>
+      <div class="pill-grid">
+        <span class="pill">Keyboard</span>
+        <span class="pill">Mouse</span>
+        <span class="pill">Touch</span>
+        <span class="pill">Stylus</span>
+        <span class="pill">Voice</span>
+        <span class="pill">Gestures</span>
+        <span class="pill">Eye tracking</span>
+        <span class="pill">Facial expressions</span>
+        <span class="pill">Body pose</span>
+        <span class="pill">Motion capture</span>
+        <span class="pill">VR controllers</span>
+        <span class="pill">Brain-computer interfaces</span>
+      </div>
+
+      <h3>Scientific</h3>
+      <div class="pill-grid">
+        <span class="pill">DNA sequencing</span>
+        <span class="pill">Mass spectrometry</span>
+        <span class="pill">Electron microscopes</span>
+        <span class="pill">X-ray</span>
+        <span class="pill">MRI</span>
+        <span class="pill">CT</span>
+        <span class="pill">Ultrasound</span>
+        <span class="pill">Particle detectors</span>
+      </div>
+
+      <h3>Digital Inputs</h3>
+      <div class="pill-grid">
+        <span class="pill">CAD</span>
+        <span class="pill">BIM</span>
+        <span class="pill">GIS</span>
+        <span class="pill">Maps</span>
+        <span class="pill">IFC</span>
+        <span class="pill">USD</span>
+        <span class="pill">glTF</span>
+        <span class="pill">FBX</span>
+        <span class="pill">OBJ</span>
+        <span class="pill">USDZ</span>
+        <span class="pill">PDFs</span>
+        <span class="pill">Images</span>
+        <span class="pill">Video</span>
+        <span class="pill">Existing digital twins</span>
+        <span class="pill">Simulation outputs</span>
+      </div>
+    </section>
+
+    <!-- ─────────────── Internal ─────────────── -->
+    <section id="internal">
+      <h2>Internal Inputs</h2>
+      <p>These are not sensors — they become observations <em>inside</em> VWM, still under provenance and confidence rules.</p>
+      <div class="pill-grid">
+        <span class="pill">AI object detections</span>
+        <span class="pill">Semantic segmentation</span>
+        <span class="pill">SLAM poses</span>
+        <span class="pill">Human annotations</span>
+        <span class="pill">Robot observations</span>
+        <span class="pill">Simulation predictions</span>
+        <span class="pill">Planning results</span>
+        <span class="pill">External APIs</span>
+        <span class="pill">Historical archives</span>
+        <span class="pill">Knowledge graph imports</span>
+      </div>
+      <div class="highlight">
+        <p>Predictions stay labeled as predictions. Annotations and detections carry evidence — they never silently become geometry authority.</p>
+      </div>
+    </section>
+
+    <!-- ─────────────── Outputs ─────────────── -->
+    <section id="outputs">
+      <h2>Outputs — VWM → Reality</h2>
+      <p>Views, commands, and interfaces leave the world without becoming a second simulator.</p>
+
+      <h3>Visual</h3>
+      <div class="pill-grid">
+        <span class="pill">Raster rendering</span>
+        <span class="pill">Voxel rendering</span>
+        <span class="pill">Gaussian Splats</span>
+        <span class="pill">NeRF</span>
+        <span class="pill">Path tracing</span>
+        <span class="pill">Ray tracing</span>
+        <span class="pill">Point clouds</span>
+        <span class="pill">Wireframes</span>
+        <span class="pill">Heatmaps</span>
+        <span class="pill">Semantic overlays</span>
+        <span class="pill">AR</span>
+        <span class="pill">VR</span>
+        <span class="pill">MR</span>
+        <span class="pill">Holographic displays</span>
+        <span class="pill">HUDs</span>
+        <span class="pill">Digital signage</span>
+      </div>
+
+      <h3>Audio</h3>
+      <div class="pill-grid">
+        <span class="pill">Speakers</span>
+        <span class="pill">Spatial audio</span>
+        <span class="pill">Voice assistants</span>
+        <span class="pill">Sonification</span>
+        <span class="pill">Alerts</span>
+        <span class="pill">Navigation cues</span>
+      </div>
+
+      <h3>Robotics</h3>
+      <div class="pill-grid">
+        <span class="pill">Motion commands</span>
+        <span class="pill">Manipulator control</span>
+        <span class="pill">Navigation goals</span>
+        <span class="pill">Task execution</span>
+        <span class="pill">Fleet coordination</span>
+        <span class="pill">Path planning</span>
+      </div>
+
+      <h3>Vehicles</h3>
+      <div class="pill-grid">
+        <span class="pill">Autonomous driving commands</span>
+        <span class="pill">Driver assistance</span>
+        <span class="pill">Navigation</span>
+        <span class="pill">HUD overlays</span>
+        <span class="pill">Diagnostic reports</span>
+      </div>
+
+      <h3>Buildings</h3>
+      <div class="pill-grid">
+        <span class="pill">HVAC control</span>
+        <span class="pill">Lighting control</span>
+        <span class="pill">Security automation</span>
+        <span class="pill">Access control</span>
+        <span class="pill">Fire systems</span>
+        <span class="pill">Power management</span>
+      </div>
+
+      <h3>Industrial</h3>
+      <div class="pill-grid">
+        <span class="pill">PLC outputs</span>
+        <span class="pill">Factory automation</span>
+        <span class="pill">Robot cells</span>
+        <span class="pill">CNC</span>
+        <span class="pill">Conveyor systems</span>
+      </div>
+
+      <h3>Simulation</h3>
+      <div class="pill-grid">
+        <span class="pill">Physics engines</span>
+        <span class="pill">Traffic simulators</span>
+        <span class="pill">Weather simulators</span>
+        <span class="pill">Energy simulators</span>
+        <span class="pill">Digital twins</span>
+      </div>
+
+      <h3>AI</h3>
+      <div class="pill-grid">
+        <span class="pill">LLM context</span>
+        <span class="pill">Agent memory</span>
+        <span class="pill">Planning</span>
+        <span class="pill">Tool execution</span>
+        <span class="pill">Knowledge retrieval</span>
+      </div>
+
+      <h3>Human Interfaces</h3>
+      <div class="pill-grid">
+        <span class="pill">Browser</span>
+        <span class="pill">Desktop app</span>
+        <span class="pill">Mobile app</span>
+        <span class="pill">Command line</span>
+        <span class="pill">API</span>
+        <span class="pill">SDK</span>
+        <span class="pill">Dashboards</span>
+      </div>
+    </section>
+
+    <!-- ─────────────── Bidirectional ─────────────── -->
+    <section id="bidirectional">
+      <h2>Bidirectional Systems</h2>
+      <p>Some systems are naturally both inputs and outputs. They observe, receive commands, act, and produce new observations — a continuous feedback loop through the same authoritative world.</p>
+      <div class="pill-grid">
+        <span class="pill">Robots</span>
+        <span class="pill">Vehicles</span>
+        <span class="pill">Drones</span>
+        <span class="pill">Smart homes</span>
+        <span class="pill">Industrial controllers</span>
+        <span class="pill">VR headsets</span>
+        <span class="pill">Smartphones</span>
+        <span class="pill">Wearables</span>
+        <span class="pill">IoT devices</span>
+        <span class="pill">Digital twins</span>
+        <span class="pill">Simulations</span>
+      </div>
+      <div class="diagram">Observe → Evidence → World → Decision / View → Actuate
+        ↑_______________________________________________↓
+              continuous feedback · one authority</div>
+      <p>
+        <a class="cta-link" href="pipeline.html">End-to-end pipeline →</a>
+        <a class="cta-link" href="index.html#twins" style="margin-left: 0.5rem">Digital twins →</a>
+        <a class="cta-link" href="roadmap.html#v30" style="margin-left: 0.5rem">V30+ horizon →</a>
+      </p>
+    </section>
+
+    <footer>
+      <p><a href="index.html">Home</a> · <a href="updates.html">Updates</a> · <a href="benchmarks.html">Benchmarks</a> · <a href="gallery.html">Gallery</a> · <a href="pipeline.html">Pipeline</a> · <a href="io.html">World I/O</a> · <a href="status.html">Status</a> · <a href="roadmap.html">Roadmap</a> · <a href="paper.html">Paper</a> · <a href="https://github.com/voxelworldmodel">GitHub</a></p>
+    </footer>
+  </div>
+<script defer src="site.js"></script>
+</body>
+</html>
