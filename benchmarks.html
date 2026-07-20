@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v30">V30 Kernel v1.0</a>
         <a href="#v29">V29 Distributed trust</a>
         <a href="#v28">V28 Distributed world</a>
         <a href="#v27">V27 World query</a>
@@ -63,6 +64,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V30 kernel v1.0 ─────────────── -->
+    <section class="bench-milestone" id="v30">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">366/366 tests · kernel v1.0</span>
+      </div>
+      <h2>V30, Kernel Finalization &amp; Long-Term Stability</h2>
+      <p>Final kernel milestone. Canonical worlds proven stable across replay, snapshot/restore, and replication — identical authoritative checksums.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">366/366</span></div>
+        <div class="bench-chip"><span class="chip-label">Kernel</span><span class="chip-value">v1.0</span></div>
+        <div class="bench-chip"><span class="chip-label">Canonical worlds</span><span class="chip-value">5/5 ALL OK</span></div>
+        <div class="bench-chip"><span class="chip-label">Replication health</span><span class="chip-value">1.0</span></div>
+        <div class="bench-chip"><span class="chip-label">Invariants</span><span class="chip-value">PASS</span></div>
+        <div class="bench-chip"><span class="chip-label">Sig default</span><span class="chip-value">HMAC</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v30_kernel.png" alt="Kernel v1.0 panel with canonical regression ALL OK.">
+        <figcaption><strong>Live panel.</strong> TinyRoom · Hallway · Apartment · Office · Campus — replay ✓ snapshot ✓ replication ✓.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Kernel v1.0 declared</td><td data-label="Verified"><code>kernel_version: 1.0</code> on <code>/api/kernel/health</code></td></tr>
+            <tr><td data-label="Claim">Observation-driven identity</td><td data-label="Verified">raw observations only; confidence recomputed; no object state on wire</td></tr>
+            <tr><td data-label="Claim">Ed25519 public-key</td><td data-label="Verified">sign/verify; tampered/wrong-key rejected; HMAC remains fast default</td></tr>
+            <tr><td data-label="Claim">Canonical regression</td><td data-label="Verified">5 worlds · replay + snapshot + replication checksum-identical</td></tr>
+            <tr><td data-label="Claim">Governance / API contract</td><td data-label="Verified">GOVERNANCE.md · ADR-0001…0005 · KERNEL_API.md · KERNEL_V1.0.md</td></tr>
+            <tr><td data-label="Claim">Last kernel milestone</td><td data-label="Verified">post-v1.0 tracks version independently (no V31/V32)</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: pure-Python Ed25519 is slow (HMAC default); anti-entropy is throttled tick; policy migrations registered by apps; regression golden masters are geometry-authoritative.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v30">Read full V30 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V29 trust ─────────────── -->
     <section class="bench-milestone" id="v29">

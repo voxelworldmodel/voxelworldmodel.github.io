@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v29">Latest: V29 trust &amp; ops</a>
+        <a href="#v30">Latest: V30 kernel v1.0</a>
+        <a href="#v29">V29 trust &amp; ops</a>
         <a href="#v28">V28 distributed world</a>
         <a href="#v27">V27 world query</a>
         <a href="#v26">V26 world kernel</a>
@@ -54,6 +55,69 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v30">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">366/366 tests · Kernel v1.0 declared</span>
+      </div>
+      <h2>V30, Kernel Finalization &amp; Long-Term Stability</h2>
+      <p>V30 is the <strong>final planned kernel milestone</strong>. It eliminates the last architectural shortcuts and declares <strong>Kernel v1.0</strong> — a deterministic, transactional, evidence-driven, distributed spatial world kernel that stays stable while perception, simulation, rendering, robotics, and applications evolve independently above it.</p>
+
+      <div class="status-banner">
+        <h3>✅ Kernel v1.0 — health reports <code>kernel_version: 1.0</code>; canonical regression ALL OK</h3>
+        <p>Live on this publish: <code>GET /api/kernel/health</code> → version 1.0, invariants PASS, replication health 1.0, signature backend hmac. <code>GET /api/kernel/regression</code> → TinyRoom · Hallway · Apartment · Office · Campus all <code>all_ok: true</code> (replay + snapshot + replication checksums identical).</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">366/366</span><span class="label">Tests (11 V30 + prior)</span></div>
+        <div class="stat"><span class="value">v1.0</span><span class="label">Kernel version</span></div>
+        <div class="stat"><span class="value">5/5</span><span class="label">Canonical worlds</span></div>
+        <div class="stat"><span class="value">1.0</span><span class="label">Replication health</span></div>
+        <div class="stat"><span class="value">Ed25519</span><span class="label">Public-key backend</span></div>
+        <div class="stat"><span class="value">final</span><span class="label">Kernel milestone</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v30_kernel.png" alt="VWM viewer with the Kernel v1.0 (V30) panel showing health, invariants PASS, and canonical regression ALL OK for five worlds.">
+        <figcaption><strong>Kernel v1.0 — V30 panel, live.</strong> Version 1.0 · invariants PASS · replication health 1.0 · five canonical worlds ALL OK (replay · snapshot · replication). Endpoints: <code>/api/kernel/health</code>, <code>/api/kernel/regression</code>.</figcaption>
+      </figure>
+
+      <h3>What shipped (all 10 parts)</h3>
+      <ul>
+        <li><strong>Part 1 — Observation-driven identity</strong> — replication exchanges only raw, content-addressed observations; each replica independently recomputes matches/confidence/lifecycle. No object state crosses the wire; old object-state copy path removed.</li>
+        <li><strong>Part 2 — Real public-key trust</strong> — pure-Python Ed25519 (RFC 8032): sign with private, verify with public; tampered/wrong-key rejected. Pluggable; HMAC remains the fast default for the high-frequency sync path.</li>
+        <li><strong>Part 3 — Trust federation</strong> — owner/organization/public-key/trust-chain metadata; kernel validates chain terminates at a trusted authority.</li>
+        <li><strong>Part 4 — Policy evolution</strong> — <code>PolicyRegistry</code> with pluggable migrations + evolution report (compatible / migratable / incompatible).</li>
+        <li><strong>Parts 5–6</strong> — scheduled anti-entropy + replication health score (0..1).</li>
+        <li><strong>Part 7 (headline)</strong> — deterministic regression harness: TinyRoom / Hallway / Apartment / Office / Campus, each proven stable across replay + snapshot/restore + replication.</li>
+        <li><strong>Parts 8–10</strong> — <code>docs/GOVERNANCE.md</code>, <code>docs/adr/</code> (ADR-0001…0005), <code>docs/KERNEL_API.md</code> (Stable / Experimental / Internal / Deprecated), <code>docs/KERNEL_V1.0.md</code>.</li>
+      </ul>
+
+      <h3>After v1.0 — no more V31/V32 kernel milestones</h3>
+      <p>Platform tracks version independently above the stable substrate:</p>
+      <div class="diagram">Kernel v1.0   (stable substrate)
+Perception    0.x   — real sensing → authoritative observations
+Simulation    0.x   — living world (physics / lighting / HVAC / …)
+Neural World  0.x   — Gaussian / radiance / appearance learning
+Developer     0.x   — SDKs · REST/gRPC · plugins
+Robotics      0.x   — localization / navigation / fleet sync
+FRAME         0.x   — spatial OS (apps / permissions / workspaces)
+Visualization 0.x   — editor / timeline / replay / inspectors</div>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Ed25519 is a pure-Python reference</strong> (~1 s/op) — genuinely public-key and tested, but slow; HMAC remains the fast default; a native ed25519 backend is the eventual default (Experimental in KERNEL_API.md).</li>
+        <li><strong>Regression harness</strong> — <code>build()</code> activates sync first so the commit→log hook is installed; snapshots are not in the replication log (documented).</li>
+        <li><strong>Content-addressed identity</strong> converges replicas; wiring the live identity reactor to content-address end-to-end is a documented adoption step via <code>observe(deterministic_id=…)</code>.</li>
+        <li><strong>Scheduled anti-entropy</strong> is a throttled tick (deterministic + testable); background OS thread + Merkle-range reconciliation are follow-ups.</li>
+        <li><strong>Policy migration</strong> provides the interface + detection; concrete cross-version migrations are registered by applications.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> the kernel is now, deliberately, boring — deterministic, evidence-driven, distributed, trustworthy, and dependable enough for years of platform work above it. Deliverables: observation-driven identity, Ed25519 + federation, policy evolution, regression harness, governance docs, Kernel v1.0 declaration, 11 new tests (366 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v29">
       <div class="update-meta">

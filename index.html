@@ -63,8 +63,10 @@ world.query — one service interface (V27)
 world.sync — distributed replicas (V28)
         ↓
 world.trust — operations · signatures · policy (V29)
+        ↓
+Kernel v1.0 — final · stable · boring (V30)
 
-Stack: reality → meaning → continuity → inference · wired as one kernel · exposed as a service · replicated · trusted</div>
+Stack: reality → meaning → continuity → inference · wired as one kernel · exposed as a service · replicated · trusted · v1.0</div>
     </section>
 
     <section id="philosophy">
@@ -105,7 +107,7 @@ Identities · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
 
     <section id="twins">
       <h2>Digital Twins</h2>
-      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v30">V30+</a> horizon. Apps already talk to the world through <a href="updates.html#v27"><code>world.query</code></a>; replicas converge through <a href="updates.html#v28"><code>world.sync</code></a> and <a href="updates.html#v29"><code>world.trust</code></a>. The intended multimodal surface — cameras, LiDAR, robotics, buildings, vehicles, scientific instruments, and more — is catalogued on <a href="io.html">Multimodal World I/O</a>.</p>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. With <a href="updates.html#v30">Kernel v1.0</a> declared, that work proceeds in independently versioned platform tracks (Perception, Simulation, Robotics, FRAME, …) — not further kernel milestones. Apps already talk to the world through <a href="updates.html#v27"><code>world.query</code></a>; replicas converge through <a href="updates.html#v28"><code>world.sync</code></a> and <a href="updates.html#v29"><code>world.trust</code></a>. The intended multimodal surface is catalogued on <a href="io.html">Multimodal World I/O</a>.</p>
       <ul>
         <li>Smart homes, offices, and factories</li>
         <li>Vehicles, robots, farms, and warehouses</li>
@@ -394,42 +396,42 @@ Rendering (V16 · V18–V22)</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Core platform through <strong>V29</strong>: an operable world kernel, a service surface, distributed replication, and trust-hardened operation sync. One labeled observation drives the stack; <code>world.query</code> asks the world; <code>world.sync</code> + <code>world.trust</code> converge replicas by exchanging operations and recomputing derived state locally. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~98.5% — see <a href="status.html">architecture status</a>.</p>
+      <p>The kernel is <strong>v1.0</strong> (V30) — a deterministic, transactional, evidence-driven, distributed spatial world kernel. One labeled observation drives the stack; <code>world.query</code> asks the world; <code>world.sync</code> + <code>world.trust</code> converge replicas by exchanging operations and recomputing derived state locally. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~99% — see <a href="status.html">architecture status</a>.</p>
 
       <div class="status-banner">
-        <h3>✅ Latest: V29 Distributed Kernel Hardening &amp; Trust — 355/355 tests</h3>
-        <p>Live: <code>demo_trust</code> → <strong>CONVERGED via operations</strong>, recomputes 1, viewer denied 5, forged package <strong>REJECTED</strong>. Replicate operations, not conclusions.</p>
+        <h3>✅ Latest: V30 Kernel Finalization — Kernel v1.0 · 366/366 tests</h3>
+        <p>Live: <code>kernel_version: 1.0</code>, invariants PASS, replication health 1.0. Canonical regression ALL OK: TinyRoom · Hallway · Apartment · Office · Campus. No more V31/V32 — platform tracks version above the kernel.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">355/355</span><span class="label">Tests (V9–V29)</span></div>
-        <div class="stat"><span class="value">V1–V29</span><span class="label">Kernel · sync · trust</span></div>
-        <div class="stat"><span class="value">98.5%</span><span class="label">Overall vision</span></div>
-        <div class="stat"><span class="value">ops</span><span class="label">Not conclusions</span></div>
-        <div class="stat"><span class="value">REJECTED</span><span class="label">Forged package</span></div>
+        <div class="stat"><span class="value">366/366</span><span class="label">Tests (V9–V30)</span></div>
+        <div class="stat"><span class="value">v1.0</span><span class="label">Kernel declared</span></div>
+        <div class="stat"><span class="value">99%</span><span class="label">Overall vision</span></div>
+        <div class="stat"><span class="value">5/5</span><span class="label">Canonical worlds</span></div>
+        <div class="stat"><span class="value">final</span><span class="label">Kernel milestone</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default</span></div>
       </div>
 
       <h3>Recent milestones</h3>
       <ul>
-        <li><a href="updates.html#v29"><strong>V29</strong></a> — Trust &amp; operation replication (recompute · signatures · provenance)</li>
-        <li><a href="updates.html#v28"><strong>V28</strong></a> — Distributed replication · <a href="updates.html#v27"><strong>V27</strong></a> — Query · <a href="updates.html#v26"><strong>V26</strong></a> — Kernel</li>
+        <li><a href="updates.html#v30"><strong>V30</strong></a> — Kernel v1.0 (regression harness · Ed25519 · governance · last kernel milestone)</li>
+        <li><a href="updates.html#v29"><strong>V29</strong></a> — Trust &amp; ops · <a href="updates.html#v28"><strong>V28</strong></a> — Sync · <a href="updates.html#v27"><strong>V27</strong></a> — Query · <a href="updates.html#v26"><strong>V26</strong></a> — Kernel wiring</li>
         <li><a href="updates.html#v25"><strong>V25</strong></a>–<a href="updates.html#v20"><strong>V20</strong></a> — Reasoning · identity · semantics · neural · reactive · capture</li>
       </ul>
 
       <figure class="figure">
-        <img src="viewer_v29_trust.png" alt="VWM viewer with the Distributed Trust (V29) panel.">
-        <figcaption><strong>Distributed Trust (V29), live.</strong> Operations · recompute · forged REJECTED.</figcaption>
+        <img src="viewer_v30_kernel.png" alt="VWM viewer with the Kernel v1.0 (V30) panel.">
+        <figcaption><strong>Kernel v1.0 (V30), live.</strong> Stable substrate · canonical worlds ALL OK.</figcaption>
       </figure>
 
       <div class="figure-row">
         <figure class="figure" style="flex:1;margin-right:0.75rem">
-          <img src="viewer_v28_replication.png" alt="Distributed World (V28) panel.">
-          <figcaption><strong>V28 Sync.</strong> Many replicas · one logical world.</figcaption>
+          <img src="viewer_v29_trust.png" alt="Distributed Trust (V29) panel.">
+          <figcaption><strong>V29 Trust.</strong> Operations · recompute · forged REJECTED.</figcaption>
         </figure>
         <figure class="figure" style="flex:1">
-          <img src="viewer_v27_query.png" alt="World Query (V27) panel.">
-          <figcaption><strong>V27 Query.</strong> One interface · cross-layer explain.</figcaption>
+          <img src="viewer_v28_replication.png" alt="Distributed World (V28) panel.">
+          <figcaption><strong>V28 Sync.</strong> Many replicas · one logical world.</figcaption>
         </figure>
       </div>
 
@@ -457,7 +459,7 @@ Rendering (V16 · V18–V22)</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V29</strong>: a transactional, evidence-driven, distributed spatial world kernel — robots, AI, twins, FRAME, and the browser go through <code>world.query</code>; replicas exchange operations under <code>world.trust</code> and recompute derived knowledge locally. Next (<a href="roadmap.html#v30">V30+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK</strong> → learned models on existing hooks → heavier generative weights — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
+      <p>Shipped through <strong>Kernel v1.0</strong> (V30): a transactional, evidence-driven, distributed spatial world kernel — robots, AI, twins, FRAME, and the browser go through <code>world.query</code>; replicas exchange operations under <code>world.trust</code> and recompute derived knowledge locally. Next work is <strong>above</strong> the kernel in independently versioned tracks (<a href="roadmap.html#tracks">Perception · Simulation · Neural · Developer · Robotics · FRAME · Visualization</a>) — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 
@@ -477,6 +479,7 @@ Rendering (V16 · V18–V22)</div>
         <span class="pill">World Query</span>
         <span class="pill">Distributed Sync</span>
         <span class="pill">Distributed Trust</span>
+        <span class="pill">Kernel v1.0</span>
         <span class="pill">Sensor Frameworks</span>
         <span class="pill">AI Tooling</span>
         <span class="pill">Robotics Interfaces</span>

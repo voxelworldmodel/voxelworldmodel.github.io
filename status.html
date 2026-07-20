@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Status — Voxel World Model</title>
-  <meta name="description" content="Current VWM architecture completion through V29 distributed trust — operations replicated, confidence recomputed locally.">
+  <meta name="description" content="Current VWM architecture completion through Kernel v1.0 (V30) — final kernel milestone, platform tracks above.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <header>
       <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
       <h1>Architecture Status</h1>
-      <p class="lead">Completion against the end-to-end pipeline after V29. The world is a queryable, replicable, trust-enforced service; twins, learned models, and full-frame AI remain open.</p>
+      <p class="lead">Completion against the end-to-end pipeline after Kernel v1.0. The kernel is a stable substrate; twins, learned models, and full-frame AI proceed as independently versioned tracks.</p>
       <nav>
         <a href="#overall">Overall</a>
         <a href="#core">Core</a>
@@ -28,13 +28,13 @@
         <a href="#platform">Platform</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="roadmap.html">Roadmap</a>
-        <a href="updates.html#v29">V29</a>
+        <a href="updates.html#v30">V30</a>
       </nav>
     </header>
 
     <section id="overall">
       <div class="status-banner">
-        <h3>Snapshot — July 2026 (post-V29)</h3>
+        <h3>Snapshot — July 2026 (Kernel v1.0)</h3>
         <p>Percentages are engineering judgment of shipped capability vs. the intended production path — not marketing scores. Mapped to the <a href="pipeline.html">end-to-end pipeline</a>.</p>
       </div>
 
@@ -42,7 +42,7 @@
       <div class="status-summary">
         <div class="status-row">
           <div class="status-label">
-            <span class="status-name">Core Engine (V1–V29)</span>
+            <span class="status-name">Core Engine (V1–V30 / Kernel v1.0)</span>
             <span class="status-pct done">100%</span>
           </div>
           <div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div>
@@ -64,9 +64,9 @@
         <div class="status-row status-row-hero">
           <div class="status-label">
             <span class="status-name">Overall VWM Vision</span>
-            <span class="status-pct">98.5%</span>
+            <span class="status-pct">99%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:98%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="99" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:99%"></div></div>
         </div>
       </div>
     </section>
@@ -86,12 +86,14 @@
 
     <section id="kernel" class="status-section">
       <h2>Integrated world kernel</h2>
-      <p class="status-section-lead"><a href="updates.html#v26">V26</a> — transactions, snapshots, invariants.</p>
+      <p class="status-section-lead"><a href="updates.html#v30">V30</a> — Kernel v1.0 declared; <a href="updates.html#v26">V26</a> wired transactions, snapshots, invariants.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">World Kernel + Reactors</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Atomic Transactions</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Whole-World Snapshot</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Executable Invariants</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Canonical Regression Harness</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Governance + KERNEL_API Contract</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Incremental Snapshots</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
     </section>
@@ -132,12 +134,15 @@
         <div class="status-row"><div class="status-label"><span class="status-name">Operation Replication + Local Recompute</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Trust / Roles / Capability Gate</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">HMAC Package Signatures</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Ed25519 Public-Key Backend</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Trust Federation Chains</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Provenance + Policy Versions</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Log Compaction / Partial Sync / Anti-Entropy</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Public-Key Signatures (ed25519)</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Policy Migration (transform)</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Observation-Driven Identity Sync</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Native Ed25519 (fast default)</span><span class="status-pct low">15%</span></div><div class="status-track" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:15%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Bundled Cross-Version Policy Migrations</span><span class="status-pct low">20%</span></div><div class="status-track" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:20%"></div></div></div>
       </div>
-      <p class="status-note">HMAC is shipped; ed25519 is the documented drop-in (ADR-0004). Policy mismatch is detected, not migrated.</p>
+      <p class="status-note">Pure-Python Ed25519 is shipped and tested; HMAC remains the fast default. Policy migration interface exists; concrete migrations are app-registered.</p>
     </section>
 
     <section id="semantic" class="status-section">
@@ -170,8 +175,8 @@
     <section>
       <h2>Read next</h2>
       <p>
-        <a class="cta-link" href="updates.html#v29">V29 report →</a>
-        <a class="cta-link" href="updates.html#v28" style="margin-left: 0.5rem">V28 →</a>
+        <a class="cta-link" href="updates.html#v30">V30 / Kernel v1.0 →</a>
+        <a class="cta-link" href="updates.html#v29" style="margin-left: 0.5rem">V29 →</a>
         <a class="cta-link" href="pipeline.html" style="margin-left: 0.5rem">Pipeline →</a>
         <a class="cta-link" href="roadmap.html" style="margin-left: 0.5rem">Roadmap →</a>
       </p>
