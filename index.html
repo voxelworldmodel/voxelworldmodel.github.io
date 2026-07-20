@@ -4,21 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voxel World Model</title>
-  <meta name="description" content="An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge.">
+  <meta name="description" content="An open platform for authoritative voxel worlds — reality capture, reactive runtime, semantics, persistent identity, and interchangeable neural rendering.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <div class="wrap">
     <header class="home">
       <h1 aria-label="Voxel World Model"><span class="title-voxel-blocks" aria-hidden="true"><span class="vletter"><b style="grid-area:1/1"></b><b style="grid-area:1/5"></b><b style="grid-area:2/1"></b><b style="grid-area:2/5"></b><b style="grid-area:3/1"></b><b style="grid-area:3/5"></b><b style="grid-area:4/2"></b><b style="grid-area:4/4"></b><b style="grid-area:5/3"></b></span><span class="vletter"><b style="grid-area:1/2"></b><b style="grid-area:1/3"></b><b style="grid-area:2/1"></b><b style="grid-area:2/4"></b><b style="grid-area:3/1"></b><b style="grid-area:3/4"></b><b style="grid-area:4/1"></b><b style="grid-area:4/4"></b><b style="grid-area:5/2"></b><b style="grid-area:5/3"></b></span><span class="vletter"><b style="grid-area:1/1"></b><b style="grid-area:1/5"></b><b style="grid-area:2/2"></b><b style="grid-area:2/4"></b><b style="grid-area:3/3"></b><b style="grid-area:4/2"></b><b style="grid-area:4/4"></b><b style="grid-area:5/1"></b><b style="grid-area:5/5"></b></span><span class="vletter"><b style="grid-area:1/1"></b><b style="grid-area:1/2"></b><b style="grid-area:1/3"></b><b style="grid-area:2/1"></b><b style="grid-area:3/1"></b><b style="grid-area:3/2"></b><b style="grid-area:4/1"></b><b style="grid-area:5/1"></b><b style="grid-area:5/2"></b><b style="grid-area:5/3"></b></span><span class="vletter"><b style="grid-area:1/1"></b><b style="grid-area:2/1"></b><b style="grid-area:3/1"></b><b style="grid-area:4/1"></b><b style="grid-area:5/1"></b><b style="grid-area:5/2"></b><b style="grid-area:5/3"></b></span></span> <span class="title-rainbow">World Model</span></h1>
-      <p class="lead">An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge.</p>
+      <p class="lead">An open platform for building real-time digital worlds where reality, simulation, AI, robotics, and neural rendering converge — with the voxel world as the single source of geometric truth.</p>
       <nav>
         <a href="#what">What is VWM?</a>
         <a href="#philosophy">Philosophy</a>
         <a href="#twins">Digital Twins</a>
-        <a href="#semantic">Semantic Worlds</a>
+        <a href="#semantic">Semantics &amp; Identity</a>
         <a href="#rendering">Neural Rendering</a>
         <a href="#enhancement">Frame Enhancement</a>
+        <a href="#capture">Capture &amp; Understanding</a>
         <a href="#status">Development Status</a>
         <a href="updates.html">Updates</a>
         <a href="benchmarks.html">Benchmarks</a>
@@ -34,12 +35,26 @@
 
     <section id="what">
       <h2>What is Voxel World Model?</h2>
-      <p><strong>Voxel World Model (VWM)</strong> is an open architecture for representing the world as a living, synchronized voxel simulation.</p>
-      <p>Rather than treating AI rendering as the simulation itself, VWM separates <strong>simulation</strong>, <strong>understanding</strong>, and <strong>visualization</strong> into independent layers.</p>
+      <p><strong>Voxel World Model (VWM)</strong> is an open architecture for representing the world as a living, synchronized voxel simulation — not a one-shot reconstruction, but a continuously evolving world model.</p>
+      <p>Rather than treating AI rendering as the simulation itself, VWM separates <strong>geometry</strong>, <strong>meaning</strong>, <strong>identity through time</strong>, and <strong>visualization</strong> into independent layers that never rewrite each other.</p>
       <div class="highlight">
-        <p>The <strong>voxel world is the authoritative source of truth</strong>.</p>
-        <p>Everything else, including photorealistic rendering, is simply another way of <em>observing</em> that world.</p>
+        <p>The <strong>Adaptive Voxel World is the authoritative source of geometric truth</strong>.</p>
+        <p>Semantics propose meaning. Identity tracks continuity. Renderers — including photoreal neural ones — only <em>observe</em>.</p>
       </div>
+      <div class="diagram">Reality Capture (V20)
+        ↓
+Authoritative Voxel World
+        ↓
+┌─────────────┼─────────────┐
+│             │             │
+Semantics   Identity    Simulation
+ (V23)       (V24)        (V17)
+│             │             │
+└─────────────┼─────────────┘
+        ↓
+Reactive Runtime (V21) · Compiler (V15) · Viz (V16)
+        ↓
+Gaussian enhance / evolve / neural backends (V18–V22)</div>
     </section>
 
     <section id="philosophy">
@@ -55,6 +70,8 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
  Authoritative Voxel World
 ═══════════════════════════════
     │
+    ├── Semantics (meaning, evidence)
+    ├── Identity (continuity through time)
     ├── Native Voxel Rendering
     ├── Stylized Rendering
     ├── Neural Rendering
@@ -68,16 +85,16 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
         <div class="card"><h4>Deterministic</h4><p>Reproducible, predictable simulation behavior.</p></div>
         <div class="card"><h4>Editable</h4><p>Environments you can change and reason about.</p></div>
         <div class="card"><h4>Networked</h4><p>Efficient sync across devices and players.</p></div>
-        <div class="card"><h4>Persistent</h4><p>World state that survives and evolves.</p></div>
-        <div class="card"><h4>Semantic</h4><p>Meaning, not just geometry, a chair is a chair.</p></div>
+        <div class="card"><h4>Persistent</h4><p>Objects keep identity as the world evolves (V24).</p></div>
+        <div class="card"><h4>Semantic</h4><p>Meaning with confidence, not bare labels (V23).</p></div>
         <div class="card"><h4>Simple Physics</h4><p>Straightforward rules for real interaction.</p></div>
       </div>
-      <p>Instead of storing only pixels or meshes, VWM stores <strong>meaning</strong>. A door is a door. A vehicle is a vehicle, not simply millions of triangles.</p>
+      <p>Instead of storing only pixels or meshes, VWM stores <strong>geometry, meaning, and continuity</strong>. A door is a door — with evidence, competing hypotheses, and a life history — not simply millions of triangles.</p>
     </section>
 
     <section id="twins">
       <h2>Digital Twins</h2>
-      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong>, real-world devices continuously synchronized into the voxel world.</p>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v25">V25+</a> horizon.</p>
       <ul>
         <li>Smart homes, offices, and factories</li>
         <li>Vehicles, robots, farms, and warehouses</li>
@@ -86,50 +103,64 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
       <p>Real-world events become voxel events. Opening your real office door can open the corresponding voxel door. Smart lights update the virtual room. Vehicle telemetry updates your vehicle inside the world.</p>
 
       <h3>Reality is an Input</h3>
-      <p>Everything becomes an event. The simulation does not care where data originated, only that the world changed.</p>
+      <p>Everything becomes an event. The simulation does not care where data originated, only that the world changed. <a href="updates.html#v20">V20</a> unified observation intake; <a href="updates.html#v21">V21</a> made subsystems react on an event bus instead of orchestration chains.</p>
       <div class="diagram">Door Sensor · Temperature · Camera · GPS · Vehicle · Player · Robot
         │
         ▼
 ──────────────
- World Events
+ World Events  (V21 Runtime)
 ──────────────
         │
         ▼
-Voxel Simulation</div>
+Voxel Simulation · Semantics · Identity</div>
     </section>
 
     <section id="semantic">
-      <h2>Semantic Worlds</h2>
-      <p>Unlike traditional voxel engines, objects are not merely blocks. Every object can contain semantic information that enriches understanding without changing gameplay.</p>
+      <h2>Semantics &amp; Identity</h2>
+      <p>Unlike traditional voxel engines, objects are not merely blocks. <a href="updates.html#v23">V23</a> stores <strong>meaning</strong> fully decoupled from geometry; <a href="updates.html#v24">V24</a> stores <strong>continuity</strong> so the same object survives moves, recolors, and occlusion.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Semantic World Engine <span class="badge badge-ok">V23</span></h4>
+          <p>Entities own competing class hypotheses, attributes, and relationships — they only <em>reference</em> authoritative voxels. One mutation path: evidence → confidence → hypothesis. AI/heuristics propose; humans verify.</p>
+        </div>
+        <div class="card">
+          <h4>Persistent Identity <span class="badge badge-ok">V24</span></h4>
+          <p>Objects keep UUIDs across observations. Probabilistic multi-signal matching, accumulated confidence, immutable history, change detection, and replay without mutating the present.</p>
+        </div>
+      </div>
+
       <div class="meta-block"><span class="label">Door</span>
 
 Material:  Oak
 Finish:    Satin
 Age:       15 years
 State:     Open
+Hypothesis: Door 0.82 · Wall 0.50  [proposed]
+Identity:  obj-… · Tracked · v5
 Description: Office entrance</div>
 
       <h3>Hierarchical Context</h3>
-      <p>Semantic information exists at every level, from the whole world down to individual components:</p>
+      <p>Semantic information exists at every level, from the whole world down to individual components — queryable by class, room, and relationship:</p>
       <div class="diagram">World → Region → Building → Room → Object → Component
 
 World:    Modern suburban neighborhood
 Building: Engineering office
 Room:     Electronics laboratory
 Desk:     Walnut standing desk
-Object:   Oscilloscope</div>
+Object:   Oscilloscope  (same UUID after it moves)</div>
 
       <figure class="figure">
         <img src="voxel_color.png" alt="Isometric voxel house with semantic labels for vehicle, room, desk, and door.">
-        <figcaption><strong>Semantic voxel world.</strong> Objects carry meaning at every level, a vehicle in the garage, rooms, furniture, and doors are labeled and understood, not just drawn as geometry.</figcaption>
+        <figcaption><strong>Semantic voxel world.</strong> Objects carry meaning at every level — a vehicle in the garage, rooms, furniture, and doors are labeled and understood, not just drawn as geometry.</figcaption>
       </figure>
 
-      <p>AI systems receive rich contextual information instead of only geometry.</p>
+      <p>AI systems receive rich contextual information — and an auditable evidence trail — instead of only geometry.</p>
     </section>
 
     <section id="rendering">
       <h2>Neural Rendering</h2>
-      <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines, changing renderers never changes simulation.</p>
+      <p><strong>Photorealism is not the simulation. Photorealism is a renderer.</strong> The same voxel world can be viewed through many rendering pipelines; changing renderers never changes simulation.</p>
 
       <h3>The View Generator</h3>
       <p>One authoritative world feeds a view generator; every rendering is just a different way of observing the same state.</p>
@@ -142,7 +173,7 @@ Object:   Oscilloscope</div>
   Geometry       Materials      Semantics
   Components     Relationships  Physics
   Confidence     History        Sensors
-  Metadata       Observations   AI Knowledge
+  Identity       Observations   AI Knowledge
 ═══════════════════════════════════════════
         │
         ▼
@@ -264,13 +295,13 @@ DOF, temporal reconstruction)
 
       <div class="card-grid">
         <div class="card">
-          <h4>Layer 1 — Local Enhancement <span class="badge badge-ok">V18 shipped</span></h4>
+          <h4>Layer 1 — Local Enhancement <span class="badge badge-ok">V18–V22</span></h4>
           <p>Improves the rendered Gaussian image itself. Consumes RGB, depth, normals, motion vectors, semantic labels, material IDs, and voxel metadata embeddings.</p>
-          <p>Jobs: better brick / grass / bark / glass / reflections, cleaner edges, anti-aliasing, fine geometric detail — making the Gaussian frame look like a high-quality photograph of that surface. Live classical-CV chain; AI models plug in when weights are available.</p>
+          <p>Jobs: better brick / grass / bark / glass / reflections, cleaner edges, anti-aliasing, fine geometric detail. Classical-CV chain is live (V18); background evolution caches revisions (V19); Real-ESRGAN runs on CUDA as a registry backend (V22) — never the renderer.</p>
         </div>
         <div class="card">
           <h4>Layer 2 — Global Enhancement</h4>
-          <p>Treats the result as a finished frame. Does not care about individual bricks.</p>
+          <p>Treats the result as a finished frame. Does not care about individual bricks. Still open polish (alongside V13 streaming).</p>
           <p>Jobs: HDR tone mapping, cinematic color grading, GI enhancement, atmospheric haze, lens effects, bloom, DOF, motion blur, temporal stabilization, noise reduction, upscaling, and stylization (anime, watercolor, thermal, …).</p>
         </div>
       </div>
@@ -281,8 +312,8 @@ DOF, temporal reconstruction)
 
       <h3>Independent Configuration</h3>
       <div class="diagram">frame_enhancement:
-  local_ai: off    # or on
-  global_ai: off   # or on
+  local_ai: off    # or on  (V18 classical · V22 RealESRGAN)
+  global_ai: off   # or on  (still open)
 
 # off / off  → pure Gaussian raster
 # on  / off  → photoreal surfaces, no cinematic pass
@@ -306,7 +337,7 @@ world:
   exposure: EV 11
   time_of_day: sunset</div>
       </div>
-      <p>One model understands <strong>what this surface is</strong>; the other understands <strong>what this scene is</strong>. Deterministic world simulation and Gaussian rasterization stay authoritative; local and global AI only observe and enhance. That matches the modular philosophy through V16 and FRAME: each stage has a narrow job, can be toggled off, and can improve without rewriting the rest of the pipeline.</p>
+      <p>One model understands <strong>what this surface is</strong>; the other understands <strong>what this scene is</strong>. Deterministic world simulation and Gaussian rasterization stay authoritative; local and global AI only observe and enhance. Neural backends are interchangeable through a registry — drop FLUX/HiDream weights later without rewriting the engine.</p>
 
       <figure class="figure">
         <img src="voxel_pointcloud.png" alt="VWM point cloud view of a house with semantic overlays identifying vehicle, desk, and door.">
@@ -325,51 +356,71 @@ world:
       <p>Objects may optionally include rendering hints (material, lighting, condition, style). The renderer uses these as conditioning information. <strong>Hard facts remain deterministic. Soft hints remain artistic guidance.</strong></p>
     </section>
 
-    <section>
+    <section id="capture">
       <h2>Reality Capture &amp; Understanding</h2>
-      <p>The platform ingests information from many sources, RGB and depth cameras, LiDAR, radar, GPS, smart home devices, industrial sensors, and more. Future pipelines (Gaussian splatting, neural reconstruction, semantic scene understanding) can all contribute to building or updating the voxel world.</p>
-      <p>VWM is intended to evolve beyond rendering, reasoning about objects, relationships, ownership, events, history, behaviors, automation, navigation, and robotics. <strong>The world becomes understandable, not merely visible.</strong></p>
+      <p>The platform ingests information from many sources — RGB and depth cameras, LiDAR, radar, GPS, smart home devices, industrial sensors, and more. <a href="updates.html#v20">V20</a> unified that intake through Registration + Evidence; Gaussian observation, semantic understanding, and persistent identity all contribute without becoming authority.</p>
+      <p>VWM reasons about objects, relationships, events, and history — not only pixels. <strong>The world becomes understandable, not merely visible.</strong></p>
 
       <h3>Replay Everything</h3>
-      <p>Every change can be recorded: player movement, sensor events, AI actions, vehicle telemetry, automation, weather, and world modifications. Entire worlds become replayable for debugging, simulation, training datasets, and historical analysis.</p>
+      <p>Every change can be recorded: player movement, sensor events, AI actions, vehicle telemetry, automation, weather, and world modifications. <a href="updates.html#v24">V24</a> already reconstructs object state at any past time from an immutable log — without modifying the present. Entire worlds become replayable for debugging, simulation, training datasets, and historical analysis.</p>
 
       <h3>Modular by Design</h3>
-      <div class="diagram">Reality Capture
+      <div class="diagram">Reality Capture (V20)
         ↓
 World Reconstruction
         ↓
-Voxel Simulation
+Voxel Simulation (V17)
         ↓
-Knowledge Layer
+Semantics (V23) · Identity (V24)
         ↓
-AI Systems
+AI Systems · Reactive Runtime (V21)
         ↓
-Rendering</div>
+Rendering (V16 · V18–V22)</div>
       <p>Every subsystem is replaceable. New renderers, AI models, sensors, and robotics systems integrate without redesigning the platform.</p>
     </section>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V24, Persistent World Identity</strong> — objects keep UUIDs across observations; probabilistic multi-signal matching; immutable history + replay. Prior: V23 semantic world, V22 neural backends, V21 reactive runtime. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Core platform through <strong>V24</strong> is operable: capture → world → react → simulate → compile → visualize → enhance/evolve/neural → semantics → persistent identity. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~94% — see <a href="status.html">architecture status</a>.</p>
 
       <div class="status-banner">
-        <h3>✅ V24: chair moved · wall repainted · occlusion lifecycle — 276/276 tests</h3>
-        <p>Demo timeline: Chair Observed→Verified→Tracked→Occluded (5 versions); moved rooms then recolored; wall identity persists through paint. Replay reconstructs past state without touching the present.</p>
+        <h3>✅ Latest: V24 Persistent World Identity — 276/276 tests</h3>
+        <p>Objects keep UUIDs across observations. Live demo: chair moved rooms then recolored (Observed→Verified→Tracked→Occluded); wall repainted with same identity; replay without mutating the present.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">276/276</span><span class="label">Tests (16 V24 + prior)</span></div>
-        <div class="stat"><span class="value">7</span><span class="label">Match signals</span></div>
-        <div class="stat"><span class="value">8</span><span class="label">Lifecycle states</span></div>
-        <div class="stat"><span class="value">5</span><span class="label">Chair versions (live)</span></div>
-        <div class="stat"><span class="value">append-only</span><span class="label">Immutable history</span></div>
-        <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
+        <div class="stat"><span class="value">276/276</span><span class="label">Tests (V9–V24)</span></div>
+        <div class="stat"><span class="value">V1–V24</span><span class="label">Core engine</span></div>
+        <div class="stat"><span class="value">94%</span><span class="label">Overall vision</span></div>
+        <div class="stat"><span class="value">cuda</span><span class="label">RealESRGAN (V22)</span></div>
+        <div class="stat"><span class="value">decoupled</span><span class="label">Meaning · geometry</span></div>
+        <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default</span></div>
       </div>
+
+      <h3>Recent milestones</h3>
+      <ul>
+        <li><a href="updates.html#v24"><strong>V24</strong></a> — Persistent identity, lifecycle, immutable timeline, replay</li>
+        <li><a href="updates.html#v23"><strong>V23</strong></a> — Semantic world engine (evidence → hypotheses, relationships)</li>
+        <li><a href="updates.html#v22"><strong>V22</strong></a> — Neural enhancement backends (RealESRGAN on CUDA)</li>
+        <li><a href="updates.html#v21"><strong>V21</strong></a> — Reactive runtime (event bus + reactors)</li>
+        <li><a href="updates.html#v20"><strong>V20</strong></a> — Reality capture pipeline (unified ObservationPacket)</li>
+      </ul>
 
       <figure class="figure">
         <img src="viewer_v24_identity.png" alt="VWM viewer with the Persistent Identity (V24) panel.">
         <figcaption><strong>Persistent Identity (V24), live.</strong> Objects · lifecycle · change timeline · Box3 highlight — identity survives geometry change.</figcaption>
       </figure>
+
+      <div class="figure-row">
+        <figure class="figure" style="flex:1;margin-right:0.75rem">
+          <img src="viewer_v23_semantic.png" alt="Semantic World (V23) panel.">
+          <figcaption><strong>V23 Semantics.</strong> Competing hypotheses · highlight.</figcaption>
+        </figure>
+        <figure class="figure" style="flex:1">
+          <img src="viewer_v22_neural.png" alt="Neural Backends (V22) panel.">
+          <figcaption><strong>V22 Neural.</strong> RealESRGAN on CUDA · registry.</figcaption>
+        </figure>
+      </div>
 
       <p>Full milestone reports and benchmark tables:</p>
       <a class="cta-link" href="paper.html">Technical paper →</a>
@@ -394,7 +445,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V24</strong> (persistent identity) · <strong>V23</strong> (semantic world) · <strong>V22</strong> (neural backends) · <strong>V21</strong> reactive runtime · <strong>V20</strong> reality capture. Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V24</strong>: an operable kernel that captures reality, reacts, simulates, compiles views, enhances with neural backends, stores meaning, and tracks identity through time. Next (<a href="roadmap.html#v25">V25+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> (learned perception &amp; identity on existing hooks) → heavier generative weights (FLUX/HiDream) — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 
@@ -408,6 +459,7 @@ Rendering</div>
         <span class="pill">Gaussian Reconstruction</span>
         <span class="pill">World Synchronization</span>
         <span class="pill">Semantic Understanding</span>
+        <span class="pill">Persistent Identity</span>
         <span class="pill">Sensor Frameworks</span>
         <span class="pill">AI Tooling</span>
         <span class="pill">Robotics Interfaces</span>
