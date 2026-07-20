@@ -14,6 +14,7 @@
       <h1>Viewer Gallery</h1>
       <p class="lead">Every view is the same Three.js engineering client over the one authoritative VoxelWorld — no private scene graphs, no second engine. Each milestone added worlds and render modes; this page collects the blocky renderings as they evolved.</p>
       <nav>
+        <a href="#g-v28">V28 Distributed World</a>
         <a href="#g-v27">V27 World Query</a>
         <a href="#g-v26">V26 World Kernel</a>
         <a href="#g-v25">V25 World Reasoning</a>
@@ -44,6 +45,18 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <!-- ─────────────── V28 replication ─────────────── -->
+    <section id="g-v28">
+      <h2>V28, Distributed World</h2>
+      <p>Many replicas, one logical world — sync only through validated transactions. <a href="updates.html#v28">Milestone report →</a></p>
+      <div class="gallery-grid">
+        <figure class="figure">
+          <img src="viewer_v28_replication.png" alt="Distributed World (V28) panel showing CONVERGED demo sync with matching checksums and Sink · Sofa entities.">
+          <figcaption><strong>Replication panel.</strong> demo sync CONVERGED · vector clocks · checkpoint (V28).</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <!-- ─────────────── V27 query ─────────────── -->
     <section id="g-v27">
@@ -454,7 +467,7 @@
         </figure>
         <figure class="figure">
           <img src="viewer_v3_free_space.png" alt="Free-space mode: the carved interior air of the hallway as a solid blue volume.">
-          <figcaption><strong>Free space.</strong> The carved air itself — 4 850 FREE voxels, the volume a player walks through.</figcaption>
+          <figcaption><strong>Free space.</strong> The carved air itself — 4 850 FREE voxels, the volume an identity walks through.</figcaption>
         </figure>
         <figure class="figure">
           <img src="viewer_v3_confidence.png" alt="Confidence heatmap of the v3 world.">

@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v28">V28 Distributed world</a>
         <a href="#v27">V27 World query</a>
         <a href="#v26">V26 World kernel</a>
         <a href="#v25">V25 World reasoning</a>
@@ -61,6 +62,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V28 replication ─────────────── -->
+    <section class="bench-milestone" id="v28">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">341/341 tests · distributed world</span>
+      </div>
+      <h2>V28, Distributed World Replication &amp; Synchronization</h2>
+      <p>Many replicas, one logical world — converge through validated transactions, vector clocks, explicit conflicts, and abstract transport.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">341/341</span></div>
+        <div class="bench-chip"><span class="chip-label">E2E scenarios</span><span class="chip-value">8/8</span></div>
+        <div class="bench-chip"><span class="chip-label">Live demo_sync</span><span class="chip-value">converged</span></div>
+        <div class="bench-chip"><span class="chip-label">Entities</span><span class="chip-value">Sink · Sofa</span></div>
+        <div class="bench-chip"><span class="chip-label">Transports</span><span class="chip-value">mem + file</span></div>
+        <div class="bench-chip"><span class="chip-label">Invariants after sync</span><span class="chip-value">preserved</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v28_replication.png" alt="Distributed World (V28) panel with CONVERGED sync and matching checksums.">
+        <figcaption><strong>Live panel.</strong> a→b / b→a 1 tx · CONVERGED · matching checksums · Sink · Sofa.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Sync via validated transactions only</td><td data-label="Verified">peer changes → local <code>world.transaction(source="sync")</code>; no memory copy</td></tr>
+            <tr><td data-label="Claim">Vector-clock causality</td><td data-label="Verified">before/after/concurrent/equal; conflict only if concurrent + overlapping state</td></tr>
+            <tr><td data-label="Claim">Explicit conflicts</td><td data-label="Verified">geometry (manual) · semantic (preserve-alternatives) · schema (reject)</td></tr>
+            <tr><td data-label="Claim">Offline / multi-replica</td><td data-label="Verified">offline robot · 3-replica multi-robot · file transfer · checkpoint recovery</td></tr>
+            <tr><td data-label="Claim">V26 invariants after sync</td><td data-label="Verified"><code>test_replication_never_violates_invariants</code></td></tr>
+            <tr><td data-label="Claim">Honest live demo</td><td data-label="Verified">fresh transactional replicas (hallway snapshot is not in the replication log)</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: mem+file transports only; state merge by uuid (not per-tx semantic deltas); discovery is abstract; HTTP/WebSocket not built.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v28">Read full V28 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V27 query ─────────────── -->
     <section class="bench-milestone" id="v27">

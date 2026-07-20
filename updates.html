@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v27">Latest: V27 world query</a>
+        <a href="#v28">Latest: V28 distributed world</a>
+        <a href="#v27">V27 world query</a>
         <a href="#v26">V26 world kernel</a>
         <a href="#v25">V25 world reasoning</a>
         <a href="#v24">V24 persistent identity</a>
@@ -52,6 +53,69 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v28">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">341/341 tests · VWM is a distributed world</span>
+      </div>
+      <h2>V28, Distributed World Replication &amp; Synchronization</h2>
+      <p>V28 turns the single-process V20–V27 kernel into a <strong>replicated distributed world</strong>: many replicas, one logical world, converging exclusively through validated transactions — never by copying memory. Networking is merely one transport; the kernel depends on none.</p>
+
+      <div class="status-banner">
+        <h3>✅ Peer changes become local <code>world.transaction(source="sync")</code> — every V26 invariant still holds after sync</h3>
+        <p>Live on this publish: <code>POST /api/replication/demo_sync</code> → two fresh replicas of one logical world, disjoint captures, <strong>converged: true</strong>, matching authoritative checksums, entities Sink + Sofa (no duplicates). Panel: replica/world ids, vector clock, conflicts, checkpoints, demo sync.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">341/341</span><span class="label">Tests (12 V28 + prior)</span></div>
+        <div class="stat"><span class="value">8/8</span><span class="label">E2E scenarios</span></div>
+        <div class="stat"><span class="value">converged</span><span class="label">Live demo_sync</span></div>
+        <div class="stat"><span class="value">Sink · Sofa</span><span class="label">Combined entities</span></div>
+        <div class="stat"><span class="value">vector clocks</span><span class="label">No wall-clock order</span></div>
+        <div class="stat"><span class="value">mem + file</span><span class="label">Transports shipped</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v28_replication.png" alt="VWM viewer with the Distributed World (V28) panel showing CONVERGED sync, matching checksums, Sink and Sofa entities, and a checkpoint.">
+        <figcaption><strong>Distributed World — V28 panel, live.</strong> Demo sync CONVERGED · matching checksums · Sink · Sofa · vector clocks · checkpoint. Endpoints: <code>/api/replication/{status,log,checkpoints,conflicts}</code> + POST <code>{export,import,merge,resolve,checkpoint,demo_sync}</code>.</figcaption>
+      </figure>
+
+      <h3>What shipped — <code>vwm/replication/</code> (<code>world.sync</code>)</h3>
+      <ul>
+        <li><strong>Replica &amp; logical-world identity</strong> — stable <code>ReplicaID</code>; one shared <code>world_uuid</code>.</li>
+        <li><strong>Replication log first-class</strong> — a <code>_replication_hook</code> on the TransactionManager logs every commit’s effective changeset + vector clock.</li>
+        <li><strong>Vector clocks</strong> — causality (before / after / concurrent / equal) without wall-clock ordering; a conflict is flagged only when clocks are concurrent <em>and</em> touch overlapping state.</li>
+        <li><strong>Explicit conflicts + pluggable resolution</strong> — concurrent-geometry (default: manual, never silent overwrite), concurrent-semantic (default: preserve-alternatives — both classifications kept, evidence retained), schema-mismatch (reject). Strategies: reject / last_writer / preserve_alternatives / merge_if_safe / manual / custom.</li>
+        <li><strong>What replicates</strong> — geometry via incremental transaction log (replayed on import); semantics / identity / reasoning merged by uuid (globally unique ⇒ no duplicates across replicas).</li>
+        <li><strong>Checkpoints</strong> — late replica resumes then replays the tail; abstract transport (in-memory + file, both real); schema negotiation; offline workflow.</li>
+      </ul>
+
+      <h3>Eight required end-to-end scenarios (all pass)</h3>
+      <ul>
+        <li><strong>Two cameras</strong> — converge, no duplicate entities</li>
+        <li><strong>Offline robot</strong> — no lost updates</li>
+        <li><strong>Concurrent semantic</strong> — both hypotheses preserved, evidence retained</li>
+        <li><strong>Concurrent geometry</strong> — conflict detected (default: manual)</li>
+        <li><strong>Checkpoint recovery</strong> — checksum matches</li>
+        <li><strong>Multi-robot</strong> — three replicas converge</li>
+        <li><strong>File transfer</strong> — no network dependency</li>
+        <li><strong>Schema version</strong> — graceful rejection, no corruption</li>
+      </ul>
+      <p>Plus sync idempotency / determinism and <code>test_replication_never_violates_invariants</code>.</p>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Hallway snapshot gotcha (handled honestly):</strong> the server’s loaded hallway was read from a snapshot, not through the replication log — so the live demo uses two fresh transactional replicas to show genuine convergence rather than pretending snapshot geometry replicates.</li>
+        <li><strong>Transports:</strong> in-memory + file only. HTTP / WebSocket / QUIC / USB share the <code>Transport</code> contract but are not implemented — deliberate; the kernel depends on none of them.</li>
+        <li><strong>State-description merge</strong> reconciles by uuid through evidence APIs; fine-grained per-transaction semantic deltas are a documented follow-up. Geometry always replicates as incremental transactions.</li>
+        <li><strong>Replica discovery</strong> is an abstract connect/disconnect interface, not a networking / gossip stack. Cross-process transport and simulation-state conflict are interface-level.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> independent replicas evolve one logical world and converge through validated transactions, with vector-clock causality, explicit conflicts, checkpoints, offline operation, and an abstract transport — while every V26 kernel invariant holds and replay stays deterministic. Deliverables: <code>vwm/replication/*</code>, <code>docs/V28_REPORT.md</code>, <code>/api/replication/*</code>, the live panel, and 12 new tests (341 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v27">
       <div class="update-meta">
@@ -1524,7 +1588,7 @@
       </div>
 
       <h3>Viewer Upgraded</h3>
-      <p>The engineering client gained <strong>Walk mode</strong> — gravity, collision, and player height, standing on the reconstructed floor and walking the hallway with WASD, blocked by matter with no clipping — plus three new modes: Adaptive Resolution, LOD Heatmap, and Inferred Fill. Still <strong>63 FPS at 16 212 instanced voxels</strong>, single draw call, mode switches with no rebuild. It still owns no world state: it loads the authoritative v4 occupancy via the API, and edits POST back with local 3×3×3 recompile.</p>
+      <p>The engineering client gained <strong>Walk mode</strong> — gravity, collision, and identity height, standing on the reconstructed floor and walking the hallway with WASD, blocked by matter with no clipping — plus three new modes: Adaptive Resolution, LOD Heatmap, and Inferred Fill. Still <strong>63 FPS at 16 212 instanced voxels</strong>, single draw call, mode switches with no rebuild. It still owns no world state: it loads the authoritative v4 occupancy via the API, and edits POST back with local 3×3×3 recompile.</p>
 
       <h3>Honest Recognizability Assessment</h3>
       <p>v4 is materially more recognizable than v3 — the hallway now reads as a continuous hollow corridor with wood/stone colouring and a clear floor/wall/ceiling shell rather than a sparse speckled shell. <strong>But it is not photo-recognizable at fine scale:</strong> the base voxel is 5 cm and the single forward-walk capture never densely observed small features (handles, switches, trim), so those cannot be resolved without either a richer capture or hallucination — <strong>and we do not hallucinate.</strong> The reconstruction is a faithful, continuous, adaptive voxelized version of exactly what the camera saw.</p>
@@ -1646,7 +1710,7 @@
         <li><strong>Bounded, provenance-tagged wall thickness:</strong> 2 716 voxels extruded ≤2 voxels behind surfaces, only into UNKNOWN, never into FREE, and labelled inferred rather than observed. No filled hallways, no giant slabs.</li>
         <li><strong>Free-space connectivity graph</strong> (<code>free_space_graph.json</code>): one navigable component of 4 810 voxels — the walkable hallway — with a clearance (distance-to-surface) field computed.</li>
         <li><strong>Live authoritative VoxelWorld import is operational.</strong> The previous HAV stall is fixed: 10 763 SURFACE+OCCUPIED voxels → <strong>15 177 HAV leaves in 9.9 s</strong> (1 090 fills/s). The fix was structural, not a tweak: TSDF yields a compact shell over a ~31³ span, versus v1's 137k splats over a 1 000-unit span. The world is native VoxelWorld/HAV state now, not just an NPZ.</li>
-        <li><strong>Free-space spawn:</strong> a spawn voxel in confirmed FREE space is exported, so the player materializes in air, not inside a wall.</li>
+        <li><strong>Free-space spawn:</strong> a spawn voxel in confirmed FREE space is exported, so the identity materializes in air, not inside a wall.</li>
       </ul>
 
       <h3>v1 → v2 → v3</h3>
@@ -1668,7 +1732,7 @@
 
       <h3>Partial / Not Done (Honest)</h3>
       <ul>
-        <li><strong>Live Luanti client walkthrough — not run.</strong> The free-space spawn, flood-fill proof, and walkable free-space graph establish that a player <em>would</em> spawn in air and traverse connected free space, but the interactive in-client walk with framebuffer capture needs a human session. The world is imported and ready.</li>
+        <li><strong>Live Luanti client walkthrough — not run.</strong> The free-space spawn, flood-fill proof, and walkable free-space graph establish that an identity <em>would</em> spawn in air and traverse connected free space, but the interactive in-client walk with framebuffer capture needs a human session. The world is imported and ready.</li>
         <li><strong>Restart persistence / export-import round-trip</strong> — not run this pass.</li>
         <li><strong>Held-out real-view appearance validation, exposure normalisation, view-dependent appearance</strong> — not this pass.</li>
         <li><strong>Explicit portals and multi-room segmentation:</strong> the free-space graph is built and is a single hallway region here; portal extraction and multi-room splitting are not emitted.</li>

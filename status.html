@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Status — Voxel World Model</title>
-  <meta name="description" content="Current VWM architecture completion through V27 world query — the world is a service with cross-layer explain.">
+  <meta name="description" content="Current VWM architecture completion through V28 distributed replication — many replicas, one logical world.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,12 +12,13 @@
     <header>
       <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
       <h1>Architecture Status</h1>
-      <p class="lead">Completion against the end-to-end pipeline after V27. The world is a queryable service; twins, learned models, and full-frame AI remain open.</p>
+      <p class="lead">Completion against the end-to-end pipeline after V28. The world is a queryable, replicable service; twins, learned models, and full-frame AI remain open.</p>
       <nav>
         <a href="#overall">Overall</a>
         <a href="#core">Core</a>
         <a href="#kernel">Kernel</a>
         <a href="#query">Query</a>
+        <a href="#replication">Replication</a>
         <a href="#semantic">Semantic</a>
         <a href="#identity">Identity</a>
         <a href="#reasoning">Reasoning</a>
@@ -26,13 +27,13 @@
         <a href="#platform">Platform</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="roadmap.html">Roadmap</a>
-        <a href="updates.html#v27">V27</a>
+        <a href="updates.html#v28">V28</a>
       </nav>
     </header>
 
     <section id="overall">
       <div class="status-banner">
-        <h3>Snapshot — July 2026 (post-V27)</h3>
+        <h3>Snapshot — July 2026 (post-V28)</h3>
         <p>Percentages are engineering judgment of shipped capability vs. the intended production path — not marketing scores. Mapped to the <a href="pipeline.html">end-to-end pipeline</a>.</p>
       </div>
 
@@ -40,7 +41,7 @@
       <div class="status-summary">
         <div class="status-row">
           <div class="status-label">
-            <span class="status-name">Core Engine (V1–V27)</span>
+            <span class="status-name">Core Engine (V1–V28)</span>
             <span class="status-pct done">100%</span>
           </div>
           <div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div>
@@ -62,9 +63,9 @@
         <div class="status-row status-row-hero">
           <div class="status-label">
             <span class="status-name">Overall VWM Vision</span>
-            <span class="status-pct">97%</span>
+            <span class="status-pct">98%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="97" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:97%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:98%"></div></div>
         </div>
       </div>
     </section>
@@ -108,6 +109,21 @@
       <p class="status-note"><code>ask()</code> is a transparent keyword parser today (15% = pattern coverage); a learned understander slots behind the same entrypoint.</p>
     </section>
 
+    <section id="replication" class="status-section">
+      <h2>Distributed replication</h2>
+      <p class="status-section-lead"><a href="updates.html#v28">V28</a> — many replicas, one logical world; sync via validated transactions.</p>
+      <div class="status-list">
+        <div class="status-row"><div class="status-label"><span class="status-name">Replica + Logical World Identity</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Replication Log + Vector Clocks</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Conflict Detection / Resolution</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Checkpoints + Offline Converge</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">In-Memory + File Transport</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">HTTP / WebSocket / Network Stack</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Automatic Replica Discovery</span><span class="status-pct low">10%</span></div><div class="status-track" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:10%"></div></div></div>
+      </div>
+      <p class="status-note">Transport contract exists; only mem+file implementations ship. Discovery is an abstract interface (10%), not gossip.</p>
+    </section>
+
     <section id="semantic" class="status-section">
       <h2>Semantic · Identity · Reasoning</h2>
       <div class="status-list">
@@ -138,8 +154,8 @@
     <section>
       <h2>Read next</h2>
       <p>
-        <a class="cta-link" href="updates.html#v27">V27 report →</a>
-        <a class="cta-link" href="updates.html#v26" style="margin-left: 0.5rem">V26 →</a>
+        <a class="cta-link" href="updates.html#v28">V28 report →</a>
+        <a class="cta-link" href="updates.html#v27" style="margin-left: 0.5rem">V27 →</a>
         <a class="cta-link" href="pipeline.html" style="margin-left: 0.5rem">Pipeline →</a>
         <a class="cta-link" href="roadmap.html" style="margin-left: 0.5rem">Roadmap →</a>
       </p>

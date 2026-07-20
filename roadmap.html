@@ -14,7 +14,7 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V27)</a>
+        <a href="#shipped">Shipped (→V28)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
@@ -30,7 +30,8 @@
         <a href="#v25">V25 ✓</a>
         <a href="#v26">V26 ✓</a>
         <a href="#v27">V27 ✓</a>
-        <a href="#v28">V28+</a>
+        <a href="#v28">V28 ✓</a>
+        <a href="#v29">V29+</a>
         <a href="updates.html">Updates</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="status.html">Status</a>
@@ -43,7 +44,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>Shipped through <a href="updates.html#v27">V27</a> (world query / services) — applications talk to the world through one interface. Prior: V26 kernel wires V20–V25; V25 capped <strong>reality → meaning → continuity → inference</strong>. V13 streaming / global frame post and V15 Part 2 remain open polish; V28+ are product layers (twins, spatial DB, plugins, heavier generative weights, learned models).</p>
+      <p>Shipped through <a href="updates.html#v28">V28</a> (distributed replication) — many replicas, one logical world, sync via validated transactions. Prior: V27 query service; V26 kernel wires V20–V25; V25 capped <strong>reality → meaning → continuity → inference</strong>. V13 streaming / global frame post and V15 Part 2 remain open polish; V29+ are product layers (twins, spatial DB, plugins, heavier generative weights, learned models).</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -215,7 +216,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       <h2>V18 — Gaussian Enhancement Pipeline</h2>
       <p><strong>Delivered.</strong> Enhances the Gaussian render itself (not full-frame display post). Flow: compiler Gaussian artifact → CPU splat rasterizer → <code>GaussianImagePacket</code> → visible-region metadata → 32-D embedding → chainable enhancers → enhanced image. Voxel world untouched; disabled = deterministic passthrough. Full report: <a href="updates.html#v18">updates.html#v18</a>.</p>
       <p><strong>Honest limits:</strong> classical-CV path is what runs without GPU weights; AI enhancers are guarded stubs; CPU reference rasterizer ≠ browser WebGL; display-mode wiring for the enhanced frame is a follow-up.</p>
-      <p><strong>Note:</strong> Digital Twin / Spatial Database remains planned under V28+ below.</p>
+      <p><strong>Note:</strong> Digital Twin / Spatial Database remains planned under V29+ below.</p>
     </article>
 
     <!-- ─────────────── V19 ─────────────── -->
@@ -316,21 +317,33 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       <p><strong>Honest limits:</strong> <code>ask()</code> is a keyword parser not NLP; planner is index-vs-scan; large-world path planning out of scope.</p>
     </article>
 
-    <!-- ─────────────── V28+ ─────────────── -->
+    <!-- ─────────────── V28 ─────────────── -->
     <article class="update" id="v28">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">Shipped · 341/341 tests</span>
+      </div>
+      <h2>V28 — Distributed World Replication &amp; Synchronization</h2>
+      <p><strong>Delivered.</strong> Many replicas, one logical world — converge through validated transactions, vector clocks, explicit conflicts, checkpoints, offline workflow, and abstract transport (mem + file). Full report: <a href="updates.html#v28">updates.html#v28</a>.</p>
+      <p><strong>Honest limits:</strong> HTTP/WebSocket not built (Transport contract only); state merge by uuid; discovery abstract; hallway snapshot is not in the replication log (live demo uses fresh transactional replicas).</p>
+    </article>
+
+    <!-- ─────────────── V29+ ─────────────── -->
+    <article class="update" id="v29">
       <div class="update-meta">
         <time>Horizon</time>
         <span class="badge">Horizon</span>
       </div>
-      <h2>V28+ — Twins, Plugins, Generative Weights &amp; Learned Intelligence</h2>
-      <p>Product layers on the completed V27 service surface: live device twins + spatial DB, World OS SDK, heavier generative weights, and learned models on existing hooks.</p>
+      <h2>V29+ — Twins, Plugins, Generative Weights &amp; Learned Intelligence</h2>
+      <p>Product layers on the completed V28 distributed service surface: live device twins + spatial DB, World OS SDK, heavier generative weights, and learned models on existing hooks.</p>
 
       <h3>Themes</h3>
       <ul>
         <li><strong>Digital twins / spatial DB</strong> — real CaptureDevice drivers; disk persistence; indexes.</li>
         <li><strong>Public SDK / plugins</strong> — providers, compilers, renderers; versioned compatibility.</li>
         <li><strong>Heavier generative backends</strong> — FLUX/HiDream weights on the V22 registry (no engine rewrite).</li>
-        <li><strong>Learned perception / identity / reasoning / query</strong> — plug into V23–V27 interfaces; next-best-view; multi-agent coordination.</li>
+        <li><strong>Learned perception / identity / reasoning / query</strong> — plug into V23–V28 interfaces; next-best-view; multi-agent coordination.</li>
+        <li><strong>Network transports</strong> — HTTP/WebSocket/QUIC on the existing Transport contract; automatic discovery.</li>
         <li><strong>Prediction layers</strong> — always labeled predicted, never smuggled into authority.</li>
       </ul>
 
@@ -342,7 +355,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       </ul>
 
       <h3>Depends on</h3>
-      <p>V16–V27 operable platform · V27 query service · V26 kernel · V25 reasoning · V24 identity · V23 semantic · V22 neural · V21 events · V20 capture.</p>
+      <p>V16–V28 operable platform · V28 replication · V27 query service · V26 kernel · V25 reasoning · V24 identity · V23 semantic · V22 neural · V21 events · V20 capture.</p>
     </article>
 
     <section>
@@ -364,11 +377,12 @@ V24 ✓   Persistent world identity (timeline + replay)
 V25 ✓   World reasoning engine (inference · causal · explain)
 V26 ✓   Integrated world kernel (tx · events · snapshot · audit)
 V27 ✓   World services &amp; query (cross-layer explain · graph)
+V28 ✓   Distributed replication (vector clocks · conflicts · checkpoints)
    │
    ▼
 V13     Production Gaussian streaming + global frame post
 V15 P2  Viewer migration through /api/viz
-V28+    Twins / spatial DB / plugins / FLUX / learned models</div>
+V29+    Twins / spatial DB / plugins / FLUX / learned models / network transports</div>
       <div class="highlight">
         <p><strong>Shipped milestones earn their place with tests and numbers.</strong> Planned milestones above are the intended product arc; dates are intentionally omitted until a milestone opens with a definition-of-done and an honest environment report — the same standard used for V8–V12.</p>
       </div>

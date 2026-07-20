@@ -88,7 +88,7 @@
       <section class="paper-section" id="introduction">
         <h2>1. Introduction</h2>
         <p>Modern neural rendering systems often conflate <em>observation</em> with <em>simulation</em>: moving a camera triggers expensive generative inference, world state lives inside a neural field, and geometry is implicit. VWM inverts this relationship.</p>
-        <p>The voxel world is the product. Renderers, depth estimators, language models, robots, sensors, replay systems, AR clients, and VR clients are tools that read or update that world under explicit contracts. A player digging a block, a door sensor firing, a robot moving through a room, or a scan fusing depth all interact with the same authoritative structure. Photorealism is a view mode, not the simulation.</p>
+        <p>The voxel world is the product. Renderers, depth estimators, language models, robots, sensors, replay systems, AR clients, and VR clients are tools that read or update that world under explicit contracts. An identity digging a block, a door sensor firing, a robot moving through a room, or a scan fusing depth all interact with the same authoritative structure. Photorealism is a view mode, not the simulation.</p>
 
         <h3>1.1 Contributions</h3>
         <ul>
@@ -119,7 +119,7 @@
           <li>Export always leaves from the voxel world; hierarchy is preserved when possible.</li>
         </ol>
 
-        <div class="diagram paper-diagram">Reality (sensors, players, robots, scans)
+        <div class="diagram paper-diagram">Reality (sensors, identities, robots, scans)
     │
     ▼
 ══════════════════════════════════════
@@ -134,7 +134,7 @@
     └── Export (hav.json, components, timeline)</div>
 
         <p><strong>Why voxels?</strong> Voxel worlds are deterministic, editable, network-efficient, persistent, and naturally semantic. A chair is addressable as a chair. Physics, pathfinding, and AI context compile from the same structure humans edit.</p>
-        <p><strong>Combined product.</strong> In the Luanti integration, VoxelWorld is the mind and Luanti is the body: player dig/place events journal into VoxelWorld; HAV sync drives Luanti nodes and sub-meter entities. Native voxel, photorealistic, stylized, analytical, AR, and VR views can replace one another without changing authority.</p>
+        <p><strong>Combined product.</strong> In the Luanti integration, VoxelWorld is the mind and Luanti is the body: identity dig/place events journal into VoxelWorld; HAV sync drives Luanti nodes and sub-meter entities. Native voxel, photorealistic, stylized, analytical, AR, and VR views can replace one another without changing authority.</p>
       </section>
 
       <section class="paper-section" id="architecture">
@@ -154,7 +154,7 @@
           <li><strong>Semantic world.</strong> Geometry is grouped into hierarchical components with identity, state, behavior, capabilities, relationships, and hard facts / soft hints.</li>
           <li><strong>Persistent appearance.</strong> Real observations and AI compilation fill missing or improved appearance into local persistent representations keyed by authoritative dependencies.</li>
           <li><strong>Visualization.</strong> Native voxel, photorealistic, stylized, analytical, AR, and VR renderers observe the compiled world. Camera movement only changes the observer pose.</li>
-          <li><strong>Simulation and editing.</strong> Players, robots, sensors, AI agents, and automation mutate authoritative voxels, components, state, and events.</li>
+          <li><strong>Simulation and editing.</strong> Identities, robots, sensors, AI agents, and automation mutate authoritative voxels, components, state, and events.</li>
           <li><strong>Localized recompilation.</strong> Edits invalidate only affected components or HAV regions; unchanged appearance, semantics, and surface evidence persist.</li>
           <li><strong>Export and replay.</strong> Worlds export from authority (HAV, components, timeline, optional splats/meshes) and can be replayed from recorded events.</li>
         </ol>
@@ -639,7 +639,7 @@
         <ol>
           <li><strong>Semantic components give identity.</strong> HAV regions become rooms, doors, chairs, desks, machines, shelves, vehicles, or arbitrary user-defined components. Each component owns geometry, hierarchy, state, behavior, capabilities, interfaces, and history.</li>
           <li><strong>All actors share state.</strong> Simulation, AI, robotics, sensors, digital twins, replay, editor tools, and clients read/write through the same VoxelWorld contracts. There is no secondary state graph for a robot, renderer, or AI agent.</li>
-          <li><strong>Events are replayable.</strong> Player edits, sensor changes, robot actions, scans, AI decisions, and scheduled behaviors append to a timeline. Replay reconstructs the world by applying authoritative events, not by replaying pixels.</li>
+          <li><strong>Events are replayable.</strong> Identity edits, sensor changes, robot actions, scans, AI decisions, and scheduled behaviors append to a timeline. Replay reconstructs the world by applying authoritative events, not by replaying pixels.</li>
         </ol>
 
         <h3>20.3 Semantic world to persistent appearance</h3>

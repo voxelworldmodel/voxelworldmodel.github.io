@@ -58,8 +58,10 @@ Reactive Runtime · Compiler · Viz · Neural (V15–V22)
 Snapshot save / restore / replay (V26)
         ↓
 world.query — one service interface (V27)
+        ↓
+world.sync — distributed replicas (V28)
 
-Stack: reality → meaning → continuity → inference · wired as one kernel · exposed as a service</div>
+Stack: reality → meaning → continuity → inference · wired as one kernel · exposed as a service · replicated</div>
     </section>
 
     <section id="philosophy">
@@ -68,7 +70,7 @@ Stack: reality → meaning → continuity → inference · wired as one kernel �
 
       <div class="diagram">Reality
     │
-Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
+Identities · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
     │
     ▼
 ═══════════════════════════════
@@ -90,7 +92,7 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
       <div class="card-grid">
         <div class="card"><h4>Deterministic</h4><p>Reproducible, predictable simulation behavior.</p></div>
         <div class="card"><h4>Editable</h4><p>Environments you can change and reason about.</p></div>
-        <div class="card"><h4>Networked</h4><p>Efficient sync across devices and players.</p></div>
+        <div class="card"><h4>Networked</h4><p>Efficient sync across devices and identities.</p></div>
         <div class="card"><h4>Persistent</h4><p>Objects keep identity as the world evolves (V24).</p></div>
         <div class="card"><h4>Semantic</h4><p>Meaning with confidence, not bare labels (V23).</p></div>
         <div class="card"><h4>Simple Physics</h4><p>Straightforward rules for real interaction.</p></div>
@@ -100,7 +102,7 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
 
     <section id="twins">
       <h2>Digital Twins</h2>
-      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v28">V28+</a> horizon. Apps already talk to the world through <a href="updates.html#v27"><code>world.query</code></a>.</p>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v29">V29+</a> horizon. Apps already talk to the world through <a href="updates.html#v27"><code>world.query</code></a>; replicas converge through <a href="updates.html#v28"><code>world.sync</code></a>.</p>
       <ul>
         <li>Smart homes, offices, and factories</li>
         <li>Vehicles, robots, farms, and warehouses</li>
@@ -110,7 +112,7 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
 
       <h3>Reality is an Input</h3>
       <p>Everything becomes an event. The simulation does not care where data originated, only that the world changed. <a href="updates.html#v20">V20</a> unified observation intake; <a href="updates.html#v21">V21</a> made subsystems react on an event bus instead of orchestration chains.</p>
-      <div class="diagram">Door Sensor · Temperature · Camera · GPS · Vehicle · Player · Robot
+      <div class="diagram">Door Sensor · Temperature · Camera · GPS · Vehicle · Identity · Robot
         │
         ▼
 ──────────────
@@ -389,42 +391,42 @@ Rendering (V16 · V18–V22)</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Core platform through <strong>V27</strong>: an operable world kernel <em>and</em> a service surface. One labeled observation drives the stack; <code>world.query</code> is how every application asks the world — including cross-layer <code>explain</code>. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~97% — see <a href="status.html">architecture status</a>.</p>
+      <p>Core platform through <strong>V28</strong>: an operable world kernel, a service surface, and distributed replication. One labeled observation drives the stack; <code>world.query</code> is how applications ask the world; <code>world.sync</code> is how replicas converge through validated transactions. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~98% — see <a href="status.html">architecture status</a>.</p>
 
       <div class="status-banner">
-        <h3>✅ Latest: V27 World Services &amp; Query Engine — 329/329 tests</h3>
-        <p>Live: ask <code>chairs</code> → Chair1; <code>explain("Chair1")</code> returns geometry + semantic + evidence + reasoning in one WorldExplanation. Graph 19 nodes / 25 edges.</p>
+        <h3>✅ Latest: V28 Distributed World Replication — 341/341 tests</h3>
+        <p>Live: <code>demo_sync</code> → <strong>converged: true</strong>, matching checksums, entities Sink · Sofa. Many replicas, one logical world — sync only through validated transactions.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">329/329</span><span class="label">Tests (V9–V27)</span></div>
-        <div class="stat"><span class="value">V1–V27</span><span class="label">Kernel + service</span></div>
-        <div class="stat"><span class="value">97%</span><span class="label">Overall vision</span></div>
-        <div class="stat"><span class="value">1</span><span class="label">App interface</span></div>
-        <div class="stat"><span class="value">all layers</span><span class="label">In one explain()</span></div>
+        <div class="stat"><span class="value">341/341</span><span class="label">Tests (V9–V28)</span></div>
+        <div class="stat"><span class="value">V1–V28</span><span class="label">Kernel · service · sync</span></div>
+        <div class="stat"><span class="value">98%</span><span class="label">Overall vision</span></div>
+        <div class="stat"><span class="value">8/8</span><span class="label">Replication E2E</span></div>
+        <div class="stat"><span class="value">converged</span><span class="label">Live demo_sync</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default</span></div>
       </div>
 
       <h3>Recent milestones</h3>
       <ul>
-        <li><a href="updates.html#v27"><strong>V27</strong></a> — World query / services (cross-layer explain · graph · ask)</li>
-        <li><a href="updates.html#v26"><strong>V26</strong></a> — Integrated world kernel · <a href="updates.html#v25"><strong>V25</strong></a> — Reasoning · <a href="updates.html#v24"><strong>V24</strong></a> — Identity · <a href="updates.html#v23"><strong>V23</strong></a> — Semantics</li>
+        <li><a href="updates.html#v28"><strong>V28</strong></a> — Distributed replication / sync (vector clocks · conflicts · checkpoints)</li>
+        <li><a href="updates.html#v27"><strong>V27</strong></a> — World query / services · <a href="updates.html#v26"><strong>V26</strong></a> — Kernel · <a href="updates.html#v25"><strong>V25</strong></a>–<a href="updates.html#v23"><strong>V23</strong></a> — Reasoning · identity · semantics</li>
         <li><a href="updates.html#v22"><strong>V22</strong></a>–<a href="updates.html#v20"><strong>V20</strong></a> — Neural · reactive · capture</li>
       </ul>
 
       <figure class="figure">
-        <img src="viewer_v27_query.png" alt="VWM viewer with the World Query (V27) panel.">
-        <figcaption><strong>World Query (V27), live.</strong> Ask the world · one interface · cross-layer answers.</figcaption>
+        <img src="viewer_v28_replication.png" alt="VWM viewer with the Distributed World (V28) panel.">
+        <figcaption><strong>Distributed World (V28), live.</strong> Many replicas · one logical world · CONVERGED.</figcaption>
       </figure>
 
       <div class="figure-row">
         <figure class="figure" style="flex:1;margin-right:0.75rem">
-          <img src="viewer_v26_kernel.png" alt="World Kernel (V26) panel.">
-          <figcaption><strong>V26 Kernel.</strong> One observation → whole stack.</figcaption>
+          <img src="viewer_v27_query.png" alt="World Query (V27) panel.">
+          <figcaption><strong>V27 Query.</strong> One interface · cross-layer explain.</figcaption>
         </figure>
         <figure class="figure" style="flex:1">
-          <img src="viewer_v25_reasoning.png" alt="World Reasoning (V25) panel.">
-          <figcaption><strong>V25 Reasoning.</strong> Facts · causal chains.</figcaption>
+          <img src="viewer_v26_kernel.png" alt="World Kernel (V26) panel.">
+          <figcaption><strong>V26 Kernel.</strong> One observation → whole stack.</figcaption>
         </figure>
       </div>
 
@@ -451,7 +453,7 @@ Rendering (V16 · V18–V22)</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V27</strong>: a transactional world kernel exposed as a service — robots, AI, twins, FRAME, and the browser all go through <code>world.query</code>. Next (<a href="roadmap.html#v28">V28+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK</strong> → learned models on existing hooks → heavier generative weights — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
+      <p>Shipped through <strong>V28</strong>: a transactional world kernel exposed as a service and replicated across peers — robots, AI, twins, FRAME, and the browser go through <code>world.query</code>; replicas converge through <code>world.sync</code>. Next (<a href="roadmap.html#v29">V29+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK</strong> → learned models on existing hooks → heavier generative weights — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 
@@ -469,6 +471,7 @@ Rendering (V16 · V18–V22)</div>
         <span class="pill">World Reasoning</span>
         <span class="pill">World Kernel</span>
         <span class="pill">World Query</span>
+        <span class="pill">Distributed Sync</span>
         <span class="pill">Sensor Frameworks</span>
         <span class="pill">AI Tooling</span>
         <span class="pill">Robotics Interfaces</span>
