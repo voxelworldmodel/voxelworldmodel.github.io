@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v23-semantic">V23 Semantic world</a>
         <a href="#v22">V22 Neural backends</a>
         <a href="#v21">V21 Reactive runtime</a>
         <a href="#v20">V20 Reality capture</a>
@@ -56,6 +57,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V23 semantic ─────────────── -->
+    <section class="bench-milestone" id="v23-semantic">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">260/260 tests · meaning decoupled</span>
+      </div>
+      <h2>V23, Semantic World Engine</h2>
+      <p>Entities own meaning (hypotheses, attributes, relationships) and only reference authoritative voxels — one evidence path; AI/heuristics propose, humans verify.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">260/260</span></div>
+        <div class="bench-chip"><span class="chip-label">Ontology</span><span class="chip-value">22 classes</span></div>
+        <div class="bench-chip"><span class="chip-label">Geometry mutations</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Review states</span><span class="chip-value">3</span></div>
+        <div class="bench-chip"><span class="chip-label">Live entities</span><span class="chip-value">3</span></div>
+        <div class="bench-chip"><span class="chip-label">AI proposal</span><span class="chip-value">Door 0.82</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v23_semantic.png" alt="Semantic World (V23) panel with entities and 3D highlight.">
+        <figcaption><strong>Live panel.</strong> Entity list · competing hypotheses · highlight box over Wall region.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Geometry never modified</td><td data-label="Verified">every semantic op leaves <code>world.coords</code> byte-identical (14 tests)</td></tr>
+            <tr><td data-label="Claim">Evidence-only mutation</td><td data-label="Verified">noisy-OR confidence; human verify/override authoritative</td></tr>
+            <tr><td data-label="Claim">Competing hypotheses</td><td data-label="Verified">Wall entity: Door 0.82 vs Room 0.50 after AI + heuristic proposals</td></tr>
+            <tr><td data-label="Claim">Relationships + inverse</td><td data-label="Verified">contains↔inside auto-inverse; persistent roundtrip</td></tr>
+            <tr><td data-label="Claim">Highlight → world</td><td data-label="Verified">real bounds + voxel refs from authoritative coords</td></tr>
+            <tr><td data-label="Claim">Honest proposer</td><td data-label="Verified">HeuristicProposer shape-based; no bundled perception model</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: <code>search()</code> is lexical; HeuristicProposer is geometric not deep AI; real detectors wire via <code>propose(source="ai")</code> through V22 registry later.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v23">Read full V23 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V22 neural ─────────────── -->
     <section class="bench-milestone" id="v22">
@@ -1847,7 +1892,7 @@
     </div>
 
     <!-- ─────────────── v2.3 ─────────────── -->
-    <section class="bench-milestone" id="v23">
+    <section class="bench-milestone" id="appearance-v23">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-partial">v2.3, not promoted</span>

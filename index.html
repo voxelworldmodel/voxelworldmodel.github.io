@@ -350,25 +350,25 @@ Rendering</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Latest: <strong>V22, Neural Enhancement Backends</strong> — Real-ESRGAN runs real CUDA inference on the RTX 2060 SUPER as a registry-driven evolution backend (never the renderer). Prior: V21 reactive runtime, V20 reality capture. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
+      <p>Latest: <strong>V23, Semantic World Engine</strong> — meaning stored in a layer fully decoupled from geometry; entities reference authoritative voxels only; evidence → competing hypotheses with confidence. Prior: V22 neural backends on CUDA, V21 reactive runtime, V20 reality capture. <strong>Appearance v2.2</strong> remains production default. <strong>v2.4 not trained.</strong></p>
 
       <div class="status-banner">
-        <h3>✅ V22: RealESRGAN on cuda · detail_gain · new cached revision — 246/246 tests</h3>
-        <p>Interchangeable neural backends behind one interface. Live: warmup + optimize → <code>device=cuda</code>, 3 views, 0 failures. FLUX/SwinIR/HiDream stay honest stubs until weights land. World untouched.</p>
+        <h3>✅ V23: evidence-backed entities · competing hypotheses · highlight — 260/260 tests</h3>
+        <p>One meaning-mutation path (<code>add_evidence → recompute</code>). Live: detect entities from real hallway voxels; AI Door proposal vs heuristic Room; highlight returns real bounds. Geometry byte-identical.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">246/246</span><span class="label">Tests (15 V22 + prior)</span></div>
-        <div class="stat"><span class="value">cuda</span><span class="label">RealESRGAN device</span></div>
-        <div class="stat"><span class="value">0.75</span><span class="label">detail_gain (live)</span></div>
-        <div class="stat"><span class="value">5</span><span class="label">Backends registered</span></div>
-        <div class="stat"><span class="value">0</span><span class="label">Failures</span></div>
+        <div class="stat"><span class="value">260/260</span><span class="label">Tests (14 V23 + prior)</span></div>
+        <div class="stat"><span class="value">22</span><span class="label">Ontology classes</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Geometry mutations</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">Review states</span></div>
+        <div class="stat"><span class="value">Door 0.82</span><span class="label">AI proposal (live Wall)</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default (unchanged)</span></div>
       </div>
 
       <figure class="figure">
-        <img src="viewer_v22_neural.png" alt="VWM viewer with the Neural Backends (V22) panel.">
-        <figcaption><strong>Neural Backends (V22), live.</strong> RealESRGAN on CUDA · VRAM · registry — never the renderer.</figcaption>
+        <img src="viewer_v23_semantic.png" alt="VWM viewer with the Semantic World (V23) panel.">
+        <figcaption><strong>Semantic World (V23), live.</strong> Entities · hypotheses · evidence · 3D highlight — meaning never mutates voxels.</figcaption>
       </figure>
 
       <p>Full milestone reports and benchmark tables:</p>
@@ -394,7 +394,7 @@ Rendering</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V22</strong> (neural backends on CUDA) · <strong>V21</strong> reactive runtime · <strong>V20</strong> reality capture. Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
+      <p>Shipped through <strong>V23</strong> (semantic world engine) · <strong>V22</strong> (neural backends on CUDA) · <strong>V21</strong> reactive runtime · <strong>V20</strong> reality capture. Capability layers next: <strong>digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK / World OS</strong> → <strong>world intelligence</strong> — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration. Full definitions of done and dependencies:</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 

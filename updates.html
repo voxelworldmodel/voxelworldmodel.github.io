@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v22">Latest: V22 neural backends</a>
+        <a href="#v23">Latest: V23 semantic world</a>
+        <a href="#v22">V22 neural backends</a>
         <a href="#v21">V21 reactive runtime</a>
         <a href="#v20">V20 reality capture</a>
         <a href="#v19">V19 Gaussian evolution</a>
@@ -47,6 +48,60 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v23">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">260/260 tests · meaning decoupled</span>
+      </div>
+      <h2>V23, Semantic World Engine</h2>
+      <p>Meaning lives in a layer fully decoupled from geometry. <strong>WorldEntity</strong> objects own hypotheses, attributes, and relationships — they only <em>reference</em> authoritative voxels, never store or mutate them. One mutation path: <code>add_evidence → recompute hypothesis</code>. AI and heuristics propose; humans verify or override.</p>
+
+      <div class="status-banner">
+        <h3>✅ Evidence-backed entities from real voxels · competing hypotheses · highlight — geometry byte-identical</h3>
+        <p>Live on this publish: “detect entities” seeded Room/Wall/Desk from the hallway NPZ; heuristic proposals + an AI <code>Door</code> proposal on Wall produced competing hypotheses (Door 0.82 vs Room 0.50); <code>/api/semantic/highlight</code> returned real bounds and voxel refs. Hallway end-to-end test: Wall 0.9 / Door 0.82; Monitor highlight 448 voxels. Every semantic op leaves <code>world.coords</code> untouched.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">260/260</span><span class="label">Tests (14 V23 + prior)</span></div>
+        <div class="stat"><span class="value">22</span><span class="label">Ontology classes</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">Meaning-mutation path</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">Review states</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Geometry mutations</span></div>
+        <div class="stat"><span class="value">11</span><span class="label">Goals tested</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v23_semantic.png" alt="VWM viewer with the Semantic World (V23) panel showing entities, hypotheses, and a 3D highlight box.">
+        <figcaption><strong>Semantic World (V23) panel, live.</strong> Entity list · search · live counts · per-entity hypotheses/evidence/relationships · 3D bounding box over selected region. Endpoints: <code>/api/semantic/{entities,entity,search,highlight,diagnostics}</code> + POST <code>/api/semantic/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/semantic/</code>)</h3>
+      <p>Package: <code>entity · hypothesis · ontology · relationships · confidence · evidence · registry · queries · persistence · diagnostics · engine · api</code>. Entry: <code>world.semantic</code> → <code>SemanticWorldEngine</code>. Distinct from legacy <code>vwm/semantics.py</code> (plural), which is untouched.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Geometry ↔ semantics decoupled</strong> — entities reference <code>voxel_refs</code> / <code>component_ref</code>; no geometry storage or mutation.</li>
+        <li><strong>Competing hypotheses</strong> — multiple classes per entity with confidence; threshold-parameterised primary class.</li>
+        <li><strong>Evidence-only mutation</strong> — noisy-OR supporting evidence, refuting attenuation; human verify/override pins confidence (<code>source="human"</code>).</li>
+        <li><strong>Directional relationships</strong> — contains↔inside, parent↔child auto-inverse; queryable and persistent.</li>
+        <li><strong>Subclass-aware ontology + queries</strong> — <code>find</code>, <code>search</code> (lexical), <code>connected</code>, <code>relationships</code>.</li>
+        <li><strong>Independent persistence</strong> — reload into a different world instance without geometry recompile.</li>
+        <li><strong>Browser inspection</strong> — list, search, live diagnostics, per-entity detail, 3D highlight (voxel→scene Y-flip).</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>HeuristicProposer</strong> is a small shape-based classifier (thin-tall-planar → Wall, etc.), labelled <code>source="heuristic"</code> — not deep recognition.</li>
+        <li><strong>search()</strong> is lexical term overlap, not embeddings.</li>
+        <li><strong>No perception model bundled.</strong> Real detectors attach through the same <code>propose(..., source="ai")</code> path; V22 neural registry is the natural home.</li>
+        <li>Every hypothesis is colour-coded <strong>proposed vs verified</strong> — proposals are never shown as truth without evidence or human decision.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> VWM now stores meaning independently of geometry — auditable evidence, competing hypotheses, relationships, and queries that turn concepts back into highlighted world regions. Deliverables: <code>vwm/semantic/*</code>, <code>docs/V23_REPORT.md</code>, <code>/api/semantic/*</code>, the live panel, and 14 new tests (260 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v22">
       <div class="update-meta">
@@ -2027,7 +2082,7 @@
         <li><strong>Honest promotion:</strong> when the checkpoint did not beat v2 on aggregate score and gate failures, v2 stayed default and v2.1 was retained with full documentation.</li>
       </ul>
 
-      <p class="footnote">Superseded as production default by <a href="#v22">Appearance Model v2.2</a>. v2.1 available as <code>vwm_appearance_v21.pt</code>.</p>
+      <p class="footnote">Superseded as production default by <a href="#appearance-v22">Appearance Model v2.2</a>. v2.1 available as <code>vwm_appearance_v21.pt</code>.</p>
     </article>
 
     <article class="update" id="v2">
