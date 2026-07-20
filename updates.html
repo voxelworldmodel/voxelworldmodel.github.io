@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v28">Latest: V28 distributed world</a>
+        <a href="#v29">Latest: V29 trust &amp; ops</a>
+        <a href="#v28">V28 distributed world</a>
         <a href="#v27">V27 world query</a>
         <a href="#v26">V26 world kernel</a>
         <a href="#v25">V25 world reasoning</a>
@@ -53,6 +54,71 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v29">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">355/355 tests · replicate operations, not conclusions</span>
+      </div>
+      <h2>V29, Distributed Kernel Hardening &amp; Trust</h2>
+      <p>V29 completes the distributed guarantees left simplified in V28. Replicas no longer merge semantic/identity/reasoning <em>conclusions</em> by UUID — they exchange <strong>authoritative operations</strong> (evidence, facts), and each replica <strong>recomputes</strong> derived confidence/hypotheses/facts locally. No confidence value is ever copied across the wire.</p>
+
+      <div class="status-banner">
+        <h3>✅ Live <code>demo_trust</code> — CONVERGED via operations · viewer denied 5 · forged package REJECTED</h3>
+        <p>Live on this publish: ops applied 3, recomputes 1 (confidence recomputed locally), viewer denied 5 ops, forged package rejected before mutation. Endpoints: <code>/api/trust/status</code>, <code>/api/policies</code>, <code>/api/operations</code>, extended <code>/api/replication/status</code>.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">355/355</span><span class="label">Tests (14 V29 + prior)</span></div>
+        <div class="stat"><span class="value">ops</span><span class="label">Not conclusions</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">Ops applied (live)</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">Local recomputes</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">Viewer denied</span></div>
+        <div class="stat"><span class="value">REJECTED</span><span class="label">Forged package</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v29_trust.png" alt="VWM viewer with the Distributed Trust (V29) panel showing CONVERGED via operations, recomputes, viewer denied, and forged package REJECTED.">
+        <figcaption><strong>Distributed Trust — V29 panel, live.</strong> CONVERGED via operations · recomputes · viewer denied · forged REJECTED. Buttons: demo sync · demo trust · checkpoint.</figcaption>
+      </figure>
+
+      <h3>What shipped — <code>vwm/trust/</code> (<code>world.trust</code>) + operation replication</h3>
+      <ul>
+        <li><strong>Trust model</strong> — kernel-enforced replica capabilities, trust levels, roles (viewer / robot / simulation / annotator / human_admin / peer), and HMAC-SHA256 signatures. Every imported operation is authorized before apply (viewer denied semantic ops; only admin may verify).</li>
+        <li><strong>Operation replication</strong> — <code>operation</code>, <code>operation_log</code>, <code>operation_codec</code>, and semantic/identity/reasoning deltas capture evidence as operations and apply with local recompute. Reasoning replicates observation facts and re-infers derived facts identically.</li>
+        <li><strong>Signatures + Byzantine safety</strong> — packages signed and hash-checked; forged/tampered packages rejected before any mutation.</li>
+        <li><strong>Provenance</strong> — every operation carries origin replica/transaction/revision + signature status + trust policy; distributed invariant asserts nothing loses its origin.</li>
+        <li><strong>Versioned policies</strong> — differing confidence policy reported incompatible and not merged.</li>
+        <li><strong>Scale &amp; repair</strong> — log compaction (replay-preserving), partial sync (region/class/revision), subscriptions, anti-entropy (detect + repair), distributed invariants.</li>
+      </ul>
+
+      <h3>End-to-end scenarios (Part 13 — all covered)</h3>
+      <ul>
+        <li>Robot evidence → human verify → sync → confidence recomputed → checksums converge</li>
+        <li>Conflicting policies report incompatibility (no silent merge)</li>
+        <li>Log compaction preserves replay</li>
+        <li>Region sync leaves other rooms unchanged</li>
+        <li>Malicious / forged signature rejected, no mutation</li>
+        <li>Long-offline + checkpoint + incremental replay + convergence</li>
+        <li>Subscription filters updates</li>
+        <li>Delete derived reasoning → replay evidence → regenerated identically</li>
+      </ul>
+
+      <h3>Architecture Decision Records</h3>
+      <p>ADR process in <code>docs/adr/</code>: ADR-0001 replicate operations not conclusions · ADR-0002 vector clocks · ADR-0003 transactions are authoritative · ADR-0004 HMAC-now / pluggable public-key.</p>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Signatures are HMAC (symmetric)</strong> — real integrity given key distribution; ed25519 is the documented drop-in behind the same interface (ADR-0004). No <code>cryptography</code>/<code>nacl</code> in this environment.</li>
+        <li><strong>Policy migration is detect-only</strong> — incompatibility reported, not transformed.</li>
+        <li><strong>Anti-entropy is on-demand</strong> (not a background scheduler); Merkle-range reconciliation is a follow-up.</li>
+        <li><strong>Identity ops</strong> copy objects + match-evidence by uuid and recompute confidence; full per-observation identity streams are a follow-up — the headline evidence-recompute guarantee is fully realized for semantic + reasoning.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> a deterministic, transactional, evidence-driven, distributed spatial world kernel that replicates authoritative operations, recomputes derived knowledge locally, preserves provenance, enforces trust and capability policies, supports scalable synchronization, and converges safely across long-lived replicas. Deliverables: <code>vwm/trust/*</code>, extended <code>vwm/replication/</code>, <code>docs/V29_REPORT.md</code>, ADRs, live panel, 14 new tests (355 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v28">
       <div class="update-meta">

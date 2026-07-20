@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v29">V29 Distributed trust</a>
         <a href="#v28">V28 Distributed world</a>
         <a href="#v27">V27 World query</a>
         <a href="#v26">V26 World kernel</a>
@@ -62,6 +63,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V29 trust ─────────────── -->
+    <section class="bench-milestone" id="v29">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge badge-ok">355/355 tests · ops not conclusions</span>
+      </div>
+      <h2>V29, Distributed Kernel Hardening &amp; Trust</h2>
+      <p>Replicas exchange authoritative operations; derived confidence/hypotheses/facts are recomputed locally. Trust, signatures, provenance, and versioned policies are kernel-enforced.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">355/355</span></div>
+        <div class="bench-chip"><span class="chip-label">Ops applied (live)</span><span class="chip-value">3</span></div>
+        <div class="bench-chip"><span class="chip-label">Recomputes</span><span class="chip-value">1</span></div>
+        <div class="bench-chip"><span class="chip-label">Viewer denied</span><span class="chip-value">5</span></div>
+        <div class="bench-chip"><span class="chip-label">Forged package</span><span class="chip-value">REJECTED</span></div>
+        <div class="bench-chip"><span class="chip-label">demo_trust</span><span class="chip-value">converged</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v29_trust.png" alt="Distributed Trust (V29) panel with CONVERGED via operations and forged REJECTED.">
+        <figcaption><strong>Live panel.</strong> CONVERGED via operations · recomputes · viewer denied · forged REJECTED.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Operations, not conclusions</td><td data-label="Verified">evidence/facts replicated; confidence recomputed locally</td></tr>
+            <tr><td data-label="Claim">Trust enforcement</td><td data-label="Verified">viewer denied semantic ops; only admin may verify</td></tr>
+            <tr><td data-label="Claim">Byzantine safety</td><td data-label="Verified">forged/tampered packages rejected before mutation</td></tr>
+            <tr><td data-label="Claim">Policy incompatibility</td><td data-label="Verified">differing confidence policy reported, not merged</td></tr>
+            <tr><td data-label="Claim">Compaction / partial / anti-entropy</td><td data-label="Verified">replay preserved · region sync · detect+repair</td></tr>
+            <tr><td data-label="Claim">Provenance invariant</td><td data-label="Verified">evidence retains origin after sync</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: HMAC (not ed25519 yet); policy migration detect-only; anti-entropy on-demand; identity ops by uuid+recompute (semantic+reasoning fully op-streamed).</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v29">Read full V29 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V28 replication ─────────────── -->
     <section class="bench-milestone" id="v28">
