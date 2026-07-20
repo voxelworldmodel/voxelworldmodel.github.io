@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v24">V24 Persistent identity</a>
         <a href="#v23-semantic">V23 Semantic world</a>
         <a href="#v22">V22 Neural backends</a>
         <a href="#v21">V21 Reactive runtime</a>
@@ -57,6 +58,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V24 identity ─────────────── -->
+    <section class="bench-milestone" id="v24">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">276/276 tests · time-travel ready</span>
+      </div>
+      <h2>V24, Persistent World Identity</h2>
+      <p>Objects keep UUIDs across observations. Probabilistic multi-signal matching, accumulated confidence, immutable history, and replay without mutating the present.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">276/276</span></div>
+        <div class="bench-chip"><span class="chip-label">Match signals</span><span class="chip-value">7</span></div>
+        <div class="bench-chip"><span class="chip-label">Lifecycle states</span><span class="chip-value">8</span></div>
+        <div class="bench-chip"><span class="chip-label">Live objects</span><span class="chip-value">2</span></div>
+        <div class="bench-chip"><span class="chip-label">Chair versions</span><span class="chip-value">5</span></div>
+        <div class="bench-chip"><span class="chip-label">E2E scenarios</span><span class="chip-value">5</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v24_identity.png" alt="Persistent Identity (V24) panel with objects and change timeline.">
+        <figcaption><strong>Live panel.</strong> Chair Occluded · conf ~1.0 · v5 · added/moved/recolored timeline.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Moved object keeps identity</td><td data-label="Verified">chair Office→Conference same UUID; spatial weight deliberately low</td></tr>
+            <tr><td data-label="Claim">Attribute change ≠ new object</td><td data-label="Verified">wall repainted; identity persists, recolored event recorded</td></tr>
+            <tr><td data-label="Claim">Occlusion → re-match</td><td data-label="Verified">lifecycle Tracked→Occluded; UUID preserved on reappear</td></tr>
+            <tr><td data-label="Claim">New object stays distinct</td><td data-label="Verified">size-dominated geometry; cup ≠ chair; ambiguity → competing hypotheses</td></tr>
+            <tr><td data-label="Claim">Replay without mutation</td><td data-label="Verified"><code>state_at</code>/<code>replay</code>/<code>compare</code> from immutable log; versions stamp detection time</td></tr>
+            <tr><td data-label="Claim">Honest matcher</td><td data-label="Verified">weighted multi-signal heuristic; <code>set_matcher</code>/<code>register_embedder</code> hooks only</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: matcher is transparent heuristic not learned embeddings; auto merge/split is explicit API only; capture→identity auto-wiring is next integration.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v24">Read full V24 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V23 semantic ─────────────── -->
     <section class="bench-milestone" id="v23-semantic">

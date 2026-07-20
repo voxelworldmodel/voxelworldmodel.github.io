@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v23">Latest: V23 semantic world</a>
+        <a href="#v24">Latest: V24 persistent identity</a>
+        <a href="#v23">V23 semantic world</a>
         <a href="#v22">V22 neural backends</a>
         <a href="#v21">V21 reactive runtime</a>
         <a href="#v20">V20 reality capture</a>
@@ -48,6 +49,60 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v24">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">276/276 tests · time-travel ready</span>
+      </div>
+      <h2>V24, Persistent World Identity</h2>
+      <p>VWM shifts from a snapshot to a continuously-evolving world. <strong>PersistentObject</strong> identities survive across observations and geometry/semantic change — inferred from accumulated evidence, never a single sighting. Immutable append-only history enables replay and change detection without touching the present.</p>
+
+      <div class="status-banner">
+        <h3>✅ Chair moved rooms · wall repainted · occlusion lifecycle — same UUIDs, immutable timeline</h3>
+        <p>Live on this publish: “demo timeline” produced a chair (Observed→Verified→Tracked→Occluded, 5 versions, confidence ~1.0) that moved Office→Conference then recolored; a wall repainted (identity persists); global change log with added/moved/recolored. Replay reconstructs past state without modifying current world.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">276/276</span><span class="label">Tests (16 V24 + prior)</span></div>
+        <div class="stat"><span class="value">7</span><span class="label">Match signals</span></div>
+        <div class="stat"><span class="value">8</span><span class="label">Lifecycle states</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">Chair versions (live)</span></div>
+        <div class="stat"><span class="value">append-only</span><span class="label">History / versions</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">E2E temporal scenarios</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v24_identity.png" alt="VWM viewer with the Persistent Identity (V24) panel showing objects, lifecycle, and change timeline.">
+        <figcaption><strong>Persistent Identity (V24) panel, live.</strong> Object list · lifecycle colour · confidence · version count · per-object change timeline · Box3 highlight. Endpoints: <code>/api/identity/{object,objects,history,timeline,changes,lifecycle,replay,diagnostics}</code> + POST <code>/api/identity/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/identity/</code>)</h3>
+      <p>Package: <code>object · observation · matcher · tracker · lifecycle · history · versions · confidence · registry · persistence · diagnostics · engine · api</code>. Entry: <code>world.identity</code> → <code>PersistentIdentityEngine</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Identity survives change</strong> — moved chair keeps UUID; repainted wall keeps UUID while attributes update.</li>
+        <li><strong>Probabilistic multi-signal matcher</strong> — semantic/geometry/colour/relationship/spatial/motion/history → confidence, not certainty. Low spatial weight so moved objects match; size-dominated geometry so a cup ≠ a chair.</li>
+        <li><strong>Accumulated confidence</strong> — single sighting provisional (~0.5); firms via noisy-OR over observations.</li>
+        <li><strong>Ambiguity explicit</strong> — competing hypotheses, never a silent pick.</li>
+        <li><strong>Immutable history</strong> — observations, timestamped versions, lifecycle transitions permanently recorded; deleted objects stay queryable.</li>
+        <li><strong>Change detection + world timeline</strong> — moved/rotated/resized/recolored/damaged/repaired/removed/added/merged/split/relationship_changed as evidence-backed events.</li>
+        <li><strong>Replay without mutation</strong> — <code>state_at(t)</code> / <code>replay(t)</code> / <code>compare(t1,t2)</code> reconstruct history from the log.</li>
+        <li><strong>Pluggable future models</strong> — <code>set_matcher</code> / <code>register_embedder</code> interfaces only; no bundled model.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Matcher is a transparent weighted heuristic</strong> — real probabilistic matching with per-signal breakdown; not a learned embedding model. Learned identity plugs into the extension interfaces with zero engine change.</li>
+        <li><strong>Auto merge/split is conservative</strong> — explicit <code>merge()</code>/<code>split()</code> APIs record events; learned automatic merge/split is a follow-up.</li>
+        <li><strong>Capture→detection→identity auto-wiring</strong> is a natural next integration via <code>observe_entity</code> on V23 entities; the engine and temporal guarantees are complete here.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> objects now have lives — persistent UUIDs, immutable timelines, and time-travel queries over a continuously-evolving world. Deliverables: <code>vwm/identity/*</code>, <code>docs/V24_REPORT.md</code>, <code>/api/identity/*</code>, the live panel, and 16 new tests (276 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v23">
       <div class="update-meta">
