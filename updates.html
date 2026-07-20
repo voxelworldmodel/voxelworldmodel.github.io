@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v24">Latest: V24 persistent identity</a>
+        <a href="#v25">Latest: V25 world reasoning</a>
+        <a href="#v24">V24 persistent identity</a>
         <a href="#v23">V23 semantic world</a>
         <a href="#v22">V22 neural backends</a>
         <a href="#v21">V21 reactive runtime</a>
@@ -49,6 +50,60 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v25">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">289/289 tests · stack complete</span>
+      </div>
+      <h2>V25, World Reasoning Engine</h2>
+      <p>The fourth layer — <strong>reality → meaning → continuity → inference</strong> — produces evidence-backed conclusions without ever mutating the authoritative world. Reasoning never owns truth: it proposes, evidence updates confidence, and confidence yields immutable facts.</p>
+
+      <div class="status-banner">
+        <h3>✅ Five scenarios · 18 facts / causal chains · competing hypotheses — world byte-identical</h3>
+        <p>Live on this publish: door→accessible, breaker→outlet→lights off (chain reconstructed), chair→occupancy, vehicle→spot empty, Statue disappearance with three unresolved competing hypotheses. Selecting <code>Light1 is off</code> shows why / evidence / cited premises / causal chain. Predictions stay hypothetical.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">289/289</span><span class="label">Tests (13 V25 + prior)</span></div>
+        <div class="stat"><span class="value">18</span><span class="label">Facts (live demo)</span></div>
+        <div class="stat"><span class="value">8</span><span class="label">Inferred facts</span></div>
+        <div class="stat"><span class="value">14+</span><span class="label">Causal edges</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Classical rules</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">E2E scenarios</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v25_reasoning.png" alt="VWM viewer with the World Reasoning (V25) panel showing facts, explanation, and causal chain.">
+        <figcaption><strong>World Reasoning (V25) panel, live.</strong> Colour-coded facts by source · click for full explanation (why · evidence · cites · assumptions · causal chain · alternatives). Endpoints: <code>/api/reasoning/*</code> + POST <code>/api/reasoning/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/reasoning/</code>)</h3>
+      <p>Package: <code>inference · rules · graph · causality · hypotheses · confidence · explanation · planner · persistence · diagnostics · engine · api</code>. Entry: <code>world.reasoning</code> → <code>WorldReasoningEngine</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Enforced inference chain</strong> — observation → rule/AI proposal → evidence → confidence → immutable <code>WorldFact</code>; nothing skips it.</li>
+        <li><strong>Classical rules without AI</strong> — door→accessible, breaker→outlet→lights, chair→occupancy, vehicle→spot-empty, disappearance→competing explanations.</li>
+        <li><strong>Causal graph</strong> — chains with confidence weakening down each link.</li>
+        <li><strong>Competing hypotheses</strong> — kept until resolved; later observation resolves without deleting alternatives.</li>
+        <li><strong>Explanations</strong> — why / evidence / confidence / assumptions / causal chain / alternatives — no black box.</li>
+        <li><strong>Predictions as hypotheses</strong> — never overwrite current facts.</li>
+        <li><strong>Non-destructive</strong> — observe/infer/predict leave voxels, semantics, and identities byte-identical.</li>
+        <li><strong>AI via same pipeline</strong> — <code>register_reasoner</code>; humans always override.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Classical rules only</strong> — no AI or learned model bundled; disappearance confidences are labelled priors.</li>
+        <li><strong>Prediction</strong> is rule-based persistence projection, not a learned forecaster.</li>
+        <li><strong>AI reasoner path</strong> is an interface (proven with a trivial local reasoner); future hooks are plugins with no model dependency.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> V20→V25 now forms a complete layered stack — capture → reactive runtime → neural backends → semantics → persistent identity → world reasoning — each engine independent, evidence-driven, replayable, and provably non-destructive to the Adaptive Voxel World. Deliverables: <code>vwm/reasoning/*</code>, <code>docs/V25_REPORT.md</code>, <code>/api/reasoning/*</code>, the live panel, and 13 new tests (289 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v24">
       <div class="update-meta">

@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v25">V25 World reasoning</a>
         <a href="#v24">V24 Persistent identity</a>
         <a href="#v23-semantic">V23 Semantic world</a>
         <a href="#v22">V22 Neural backends</a>
@@ -58,6 +59,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V25 reasoning ─────────────── -->
+    <section class="bench-milestone" id="v25">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">289/289 tests · stack complete</span>
+      </div>
+      <h2>V25, World Reasoning Engine</h2>
+      <p>Fourth layer of the stack: evidence-backed inference over the world. Classical rules, causal graphs, competing hypotheses, explanations — never mutates geometry, semantics, or identity.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">289/289</span></div>
+        <div class="bench-chip"><span class="chip-label">Live facts</span><span class="chip-value">18</span></div>
+        <div class="bench-chip"><span class="chip-label">Inferred</span><span class="chip-value">8</span></div>
+        <div class="bench-chip"><span class="chip-label">Rules</span><span class="chip-value">6</span></div>
+        <div class="bench-chip"><span class="chip-label">Unresolved hyps</span><span class="chip-value">1</span></div>
+        <div class="bench-chip"><span class="chip-label">E2E scenarios</span><span class="chip-value">5</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v25_reasoning.png" alt="World Reasoning (V25) panel with causal chain for Light1 is off.">
+        <figcaption><strong>Live panel.</strong> Light1 is off 0.83 · Breaker1 tripped ⇒ Outlet1 no_power ⇒ Light1 off.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Inference chain enforced</td><td data-label="Verified">observation → proposal → evidence → confidence → WorldFact; nothing skips</td></tr>
+            <tr><td data-label="Claim">Classical rules without AI</td><td data-label="Verified">door→accessible, breaker→lights, chair→occupancy, disappearance→3 hyps</td></tr>
+            <tr><td data-label="Claim">Causal chain reconstruction</td><td data-label="Verified">Breaker1 tripped → Outlet1 no_power → Light1 is off (live)</td></tr>
+            <tr><td data-label="Claim">Competing hypotheses</td><td data-label="Verified">Statue disappearance keeps 3 unresolved alternatives</td></tr>
+            <tr><td data-label="Claim">Never mutates the world</td><td data-label="Verified">voxels / semantics / identities byte-identical after infer/predict</td></tr>
+            <tr><td data-label="Claim">Predictions are hypothetical</td><td data-label="Verified"><code>predicted=True</code> facts never overwrite current state</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: classical rules only; disappearance priors labelled as such; prediction is persistence projection; AI reasoner is a plugin interface.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v25">Read full V25 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V24 identity ─────────────── -->
     <section class="bench-milestone" id="v24">

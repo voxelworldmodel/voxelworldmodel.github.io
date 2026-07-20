@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Status — Voxel World Model</title>
-  <meta name="description" content="Current VWM architecture completion through V24 persistent world identity — objects survive across observations with immutable timelines and replay.">
+  <meta name="description" content="Current VWM architecture completion through V25 world reasoning — the layered stack reality → meaning → continuity → inference is complete.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,24 +12,25 @@
     <header>
       <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
       <h1>Architecture Status</h1>
-      <p class="lead">Completion against the end-to-end pipeline after V24. Persistent identity and semantic substrate are shipped; learned matchers and full-frame AI remain open.</p>
+      <p class="lead">Completion against the end-to-end pipeline after V25. The layered understanding stack is shipped; twins, learned models, and full-frame AI remain open.</p>
       <nav>
         <a href="#overall">Overall</a>
         <a href="#core">Core</a>
         <a href="#semantic">Semantic</a>
         <a href="#identity">Identity</a>
+        <a href="#reasoning">Reasoning</a>
         <a href="#gaussian">Gaussians</a>
         <a href="#neural">Neural</a>
         <a href="#platform">Platform</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="roadmap.html">Roadmap</a>
-        <a href="updates.html#v24">V24</a>
+        <a href="updates.html#v25">V25</a>
       </nav>
     </header>
 
     <section id="overall">
       <div class="status-banner">
-        <h3>Snapshot — July 2026 (post-V24)</h3>
+        <h3>Snapshot — July 2026 (post-V25)</h3>
         <p>Percentages are engineering judgment of shipped capability vs. the intended production path — not marketing scores. Mapped to the <a href="pipeline.html">end-to-end pipeline</a>.</p>
       </div>
 
@@ -37,7 +38,7 @@
       <div class="status-summary">
         <div class="status-row">
           <div class="status-label">
-            <span class="status-name">Core Engine (V1–V24)</span>
+            <span class="status-name">Core Engine (V1–V25)</span>
             <span class="status-pct done">100%</span>
           </div>
           <div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div>
@@ -59,16 +60,16 @@
         <div class="status-row status-row-hero">
           <div class="status-label">
             <span class="status-name">Overall VWM Vision</span>
-            <span class="status-pct">94%</span>
+            <span class="status-pct">95%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:94%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:95%"></div></div>
         </div>
       </div>
     </section>
 
     <section id="core" class="status-section">
       <h2>Core (complete)</h2>
-      <p class="status-section-lead">Capture, reactive runtime, authoritative world, simulation, compiler, visualization through V24.</p>
+      <p class="status-section-lead">Capture through reasoning — the V20–V25 understanding stack on top of the operable world OS.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Core Runtime</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Reactive Event Bus</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
@@ -83,29 +84,39 @@
 
     <section id="semantic" class="status-section">
       <h2>Semantic world</h2>
-      <p class="status-section-lead"><a href="updates.html#v23">V23</a> shipped the semantic substrate — entities, evidence, hypotheses, relationships, queries, persistence.</p>
+      <p class="status-section-lead"><a href="updates.html#v23">V23</a> — meaning decoupled from geometry.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Semantic World Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Evidence &amp; Confidence Model</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Ontology &amp; Relationships</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Heuristic Proposer</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Bundled Perception / Recognition</span><span class="status-pct low">12%</span></div><div class="status-track" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:12%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Embedding Search</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
     </section>
 
     <section id="identity" class="status-section">
       <h2>Persistent identity</h2>
-      <p class="status-section-lead"><a href="updates.html#v24">V24</a> shipped continuity through time — probabilistic matching, lifecycle, immutable history, change detection, and replay. Learned matchers plug into extension hooks later.</p>
+      <p class="status-section-lead"><a href="updates.html#v24">V24</a> — continuity through time.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Persistent Identity Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Multi-Signal Matcher</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Lifecycle &amp; Immutable History</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Change Detection &amp; Replay</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Learned Identity Embeddings</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Capture→Identity Auto-Wiring</span><span class="status-pct mid">25%</span></div><div class="status-track" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:25%"></div></div></div>
       </div>
-      <p class="status-note">Matcher is a transparent weighted heuristic with competing hypotheses; <code>set_matcher</code>/<code>register_embedder</code> are interfaces only. Auto-wiring via <code>observe_entity</code> is the natural next integration.</p>
+    </section>
+
+    <section id="reasoning" class="status-section">
+      <h2>World reasoning</h2>
+      <p class="status-section-lead"><a href="updates.html#v25">V25</a> shipped inference — classical rules, causal graphs, competing hypotheses, explanations. Caps the layered stack.</p>
+      <div class="status-list">
+        <div class="status-row"><div class="status-label"><span class="status-name">World Reasoning Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Classical Rule Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Causal Graph &amp; Explanations</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Competing Hypotheses</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Learned / LLM Reasoners</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Learned Forecasters</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+      </div>
+      <p class="status-note">Classical rules only today; <code>register_reasoner</code> / <code>register_predictor</code> are proven plugin interfaces. Disappearance confidences are labelled priors.</p>
     </section>
 
     <section id="gaussian" class="status-section">
@@ -129,22 +140,21 @@
         <div class="status-row"><div class="status-label"><span class="status-name">FLUX / HiDream / SwinIR</span><span class="status-pct low">8%</span></div><div class="status-track" role="progressbar" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:8%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Optional Full-Frame AI</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
-      <p class="status-note">Local AI Refinement reflects RealESRGAN live + classical floor; generative backends are code-complete but weight-guarded.</p>
     </section>
 
     <section id="platform" class="status-section">
       <h2>Platform layers</h2>
       <div class="status-list">
-        <div class="status-row"><div class="status-label"><span class="status-name">Robotics</span><span class="status-pct mid">45%</span></div><div class="status-track" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:45%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">SDK / Ecosystem</span><span class="status-pct mid">68%</span></div><div class="status-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:68%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Robotics</span><span class="status-pct mid">48%</span></div><div class="status-track" role="progressbar" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:48%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">SDK / Ecosystem</span><span class="status-pct mid">70%</span></div><div class="status-track" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:70%"></div></div></div>
       </div>
     </section>
 
     <section>
       <h2>Read next</h2>
       <p>
-        <a class="cta-link" href="updates.html#v24">V24 report →</a>
-        <a class="cta-link" href="updates.html#v23" style="margin-left: 0.5rem">V23 →</a>
+        <a class="cta-link" href="updates.html#v25">V25 report →</a>
+        <a class="cta-link" href="updates.html#v24" style="margin-left: 0.5rem">V24 →</a>
         <a class="cta-link" href="pipeline.html" style="margin-left: 0.5rem">Pipeline →</a>
         <a class="cta-link" href="roadmap.html" style="margin-left: 0.5rem">Roadmap →</a>
       </p>
