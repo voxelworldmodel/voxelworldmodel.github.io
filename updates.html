@@ -143,7 +143,7 @@
       <h3>Honest Scope Notes</h3>
       <ul>
         <li><strong>Incremental snapshots</strong> — <code>save_incremental()</code> returns <code>{"supported": false}</code>; full snapshots only.</li>
-        <li><strong>Cross-layer query package</strong> (<code>vwm/query/</code>) — deferred; <code>reasoning.why</code> stays reasoning-local.</li>
+        <li><strong>Cross-layer query package</strong> — deferred here; delivered in <a href="#v27">V27</a> as <code>world.query</code>.</li>
         <li><strong>Learned perception</strong> — not added; ingested class label is synthetic ground-truth; the <em>wiring</em> is the deliverable.</li>
         <li>No dedicated many-worker concurrency stress suite; single-writer + failure-injection cover correctness.</li>
       </ul>
