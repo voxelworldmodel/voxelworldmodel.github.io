@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v21">Latest: V21 reactive runtime</a>
+        <a href="#v22">Latest: V22 neural backends</a>
+        <a href="#v21">V21 reactive runtime</a>
         <a href="#v20">V20 reality capture</a>
         <a href="#v19">V19 Gaussian evolution</a>
         <a href="#v18">V18 Gaussian enhancement</a>
@@ -33,9 +34,9 @@
         <a href="#real-video">Real video reconstruction</a>
         <a href="#real-capture">Webcam capture</a>
         <a href="#depth-scan">Depth scan</a>
-        <a href="#v23">Appearance v2.3</a>
-        <a href="#v22">Appearance v2.2</a>
-        <a href="#v21">Appearance v2.1</a>
+        <a href="#appearance-v23">Appearance v2.3</a>
+        <a href="#appearance-v22">Appearance v2.2</a>
+        <a href="#appearance-v21">Appearance v2.1</a>
         <a href="#v2">Appearance v2</a>
         <a href="#v1">Appearance v1</a>
         <a href="benchmarks.html">Benchmarks</a>
@@ -46,6 +47,58 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v22">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">246/246 tests · real CUDA</span>
+      </div>
+      <h2>V22, Neural Enhancement Backends</h2>
+      <p>Neural models are interchangeable optimization backends behind one stable interface — <strong>never the renderer</strong>. The Gaussian Evolution Engine drives them purely through a registry; no engine code names a specific model. The Adaptive Voxel World stays authoritative.</p>
+
+      <div class="status-banner">
+        <h3>✅ Real-ESRGAN on RTX 2060 SUPER · device=cuda · new cached revision · world untouched</h3>
+        <p>Official RRDBNet x4 in pure PyTorch (0 missing weight keys). Live on this publish: warmup → optimize → <code>realesrgan</code> on <code>cuda</code>, 3 views / 3 tiles, detail_gain 0.75, 0 failures, VRAM ~1.8/8.1&nbsp;GB. Heavy models (FLUX / SwinIR / HiDream) remain honest guarded stubs until weights land.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">246/246</span><span class="label">Tests (15 V22 + prior)</span></div>
+        <div class="stat"><span class="value">cuda</span><span class="label">RealESRGAN device (live)</span></div>
+        <div class="stat"><span class="value">3</span><span class="label">Views / tiles (hallway)</span></div>
+        <div class="stat"><span class="value">0.75</span><span class="label">detail_gain (live)</span></div>
+        <div class="stat"><span class="value">0</span><span class="label">Failures</span></div>
+        <div class="stat"><span class="value">5</span><span class="label">Backends registered</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v22_neural.png" alt="VWM viewer with the Neural Backends (V22) panel showing RealESRGAN CUDA stats.">
+        <figcaption><strong>Neural Backends (V22) panel, live.</strong> Preferred realesrgan · loaded · VRAM · last cuda result · classical✓ / realesrgan✓ / swinir✗ / flux✗ / hidream✗. Endpoints: <code>/api/neural/{diagnostics,backends,models,settings}</code> + POST <code>/api/neural/control</code>.</figcaption>
+      </figure>
+
+      <h3>The Stack (<code>vwm/neural/</code>)</h3>
+      <p>Package: <code>backend · registry · manager · models · scheduler · cache · jobs · settings · diagnostics · api</code>. Entry: <code>world.neural</code> → <code>NeuralManager</code>. Evolution holds a <code>NeuralBackendOptimizer</code> that only calls <code>backend.optimize(scene)</code>.</p>
+
+      <h3>Definition of Success (all tested)</h3>
+      <ul>
+        <li><strong>Interchangeable backends</strong> — common interface; engine never names FLUX/RealESRGAN/…</li>
+        <li><strong>Real GPU path</strong> — RealESRGAN RRDBNet x4 on the 2060 SUPER; four real-inference tests ran (not skipped) with weights present.</li>
+        <li><strong>VRAM management</strong> — estimation, overlap-blended tiling, CPU fallback on CUDA error, idle unload.</li>
+        <li><strong>Graceful fallback</strong> — OOM / missing weights → classical floor; never crash.</li>
+        <li><strong>Background</strong> — scheduler thread; render/sim/capture keep consuming the best cached scene.</li>
+        <li><strong>World untouched</strong> — neural pass produces a new cached Gaussian revision only.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>classical + realesrgan</strong> are real GPU/CPU-executing paths. <strong>flux_schnell / swinir / hidream</strong> have real code paths but missing weights → <code>available()</code> reports it; <code>optimize</code> raises rather than faking.</li>
+        <li><strong>Scene update is a bounded neural-gated colour-detail transfer</strong> (new checksum), not full inverse-rendering back-projection onto splats — a documented follow-up. V19 <code>quality_score</code> can stay flat on colour-only changes; neural gain is <code>detail_gain</code>.</li>
+        <li><strong>Pre-existing <code>neural.py</code></strong> moved to <code>neural/_legacy.py</code> with re-exports (same class of fix as V21’s <code>runtime</code>).</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> real interchangeable neural backends on an 8&nbsp;GB GPU, driven only through the registry. Drop FLUX/HiDream weights into <code>models/</code> later — no engine change. Sets up heavier generative evolution on the same interface. Deliverables: <code>vwm/neural/*</code>, <code>docs/V22_REPORT.md</code>, <code>/api/neural/*</code>, the live panel, and 15 new tests (246 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v21">
       <div class="update-meta">
@@ -1699,7 +1752,7 @@
       <p class="footnote">Full write-up: <code>checkpoints/vwm_scan/DEPTH_SOURCE_COMPARISON.md</code>. Artifacts in <code>sensor/</code>, <code>ctrl/</code> (DA3), <code>metric/</code> (DA2).</p>
     </article>
 
-    <article class="update" id="v23">
+    <article class="update" id="appearance-v23">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-partial">Complete, not promoted</span>
@@ -1783,7 +1836,7 @@
       <p class="footnote">Artifacts in <code>checkpoints/vwm_appearance_v2_3/</code> including <code>MILESTONE_STATUS.md</code>, <code>memory_fix_validation.json</code>, and <code>vwmscore_v3_frozen.json</code>.</p>
     </article>
 
-    <article class="update" id="v22">
+    <article class="update" id="appearance-v22">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-ok">Promoted, production default</span>
@@ -1887,7 +1940,7 @@
       <p class="footnote">Production default; evaluated against <a href="#v23">v2.3</a> (not promoted). Memory leak fix from v2.3 applies to the fused renderer used by v2.2. See <a href="benchmarks.html">benchmarks</a>.</p>
     </article>
 
-    <article class="update" id="v21">
+    <article class="update" id="appearance-v21">
       <div class="update-meta">
         <time datetime="2026-07-12">July 12, 2026</time>
         <span class="badge badge-partial">Complete, not promoted</span>

@@ -14,7 +14,7 @@
       <h1>Roadmap</h1>
       <p class="lead">What is shipped, what comes next, and how each phase builds on the authoritative Adaptive Voxel World — without rewriting the architecture.</p>
       <nav>
-        <a href="#shipped">Shipped (→V21)</a>
+        <a href="#shipped">Shipped (→V22)</a>
         <a href="#v13">V13</a>
         <a href="#v14">V14 ✓</a>
         <a href="#v15">V15 ✓ P1</a>
@@ -24,7 +24,7 @@
         <a href="#v19">V19 ✓</a>
         <a href="#v20">V20 ✓</a>
         <a href="#v21">V21 ✓</a>
-        <a href="#v22">V22</a>
+        <a href="#v22">V22 ✓</a>
         <a href="#v23">V23+</a>
         <a href="updates.html">Updates</a>
         <a href="pipeline.html">Pipeline</a>
@@ -38,7 +38,7 @@
         <h3>Invariant across every future milestone</h3>
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
-      <p>Shipped through <a href="updates.html#v21">V21</a> (reactive runtime) and <a href="updates.html#v20">V20</a> (reality capture), closing the E2E loop with reactions instead of call chains. V13 streaming / AI weights / global frame post and V15 Part 2 remain open polish; V22+ are capability layers (twins, spatial DB, plugins, intelligence).</p>
+      <p>Shipped through <a href="updates.html#v22">V22</a> (neural backends on CUDA), <a href="updates.html#v21">V21</a> (reactive runtime), and <a href="updates.html#v20">V20</a> (reality capture). V13 streaming / global frame post and V15 Part 2 remain open polish; V23+ are capability layers (twins, spatial DB, plugins, intelligence, heavier generative weights).</p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
@@ -139,7 +139,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
         <li><strong>Progressive initial compile</strong> — background progressive chunk build + live partial views.</li>
         <li><strong>Gaussian rasterizer as a V16 renderer</strong> — consumes only <code>gaussian_scene</code> artifacts; produces frame + G-buffers (RGB, depth, normals, motion, semantics, materials).</li>
         <li><strong>Layer 1 — Local Frame Enhancer</strong> — AI conditioned on per-object / per-voxel metadata (semantic, material, moisture, season, confidence…); improves surface detail, reflections, edges, AA — never invents occupancy. <span class="badge badge-ok">V18: pipeline + classical-CV shipped; AI weights pending</span></li>
-        <li><strong>Background Gaussian evolution / cache</strong> — async splat-data optimization with versioned cache. <span class="badge badge-ok">V19: classical optimizers + cache shipped; FLUX/HiDream pending</span></li>
+        <li><strong>Background Gaussian evolution / cache</strong> — async splat-data optimization with versioned cache. <span class="badge badge-ok">V19 classical + V22 RealESRGAN CUDA</span></li>
         <li><strong>Layer 2 — Global Frame Enhancer</strong> — AI conditioned on scene metadata (weather, fog, sun elevation, exposure, time of day…); HDR, grading, atmosphere, bloom, DOF, temporal, upscaling, stylization.</li>
         <li><strong>Independent toggles</strong> — <code>local_ai</code> / <code>global_ai</code> on|off: pure Gaussian, photoreal surfaces only, fast cinematic, or maximum realism.</li>
         <li><strong>Optional WebGPU path</strong> — GPU splat sort / raster when available; WebGL elliptical quads remain the fallback.</li>
@@ -248,23 +248,12 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
     <!-- ─────────────── V22 ─────────────── -->
     <article class="update" id="v22">
       <div class="update-meta">
-        <time>Next</time>
-        <span class="badge">Planned</span>
-        <span class="badge badge-ok">Foundation: V10–V21 kernel</span>
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">Shipped · 246/246 tests · real CUDA</span>
       </div>
-      <h2>V22 — Digital Twin Platform &amp; Spatial Database</h2>
-      <p>Keep real devices and spaces continuously synchronized into the same world, and scale that world into a persistent spatial database.</p>
-
-      <h3>Goals</h3>
-      <ul>
-        <li><strong>Live sensor adapters</strong> on the V20 CaptureDevice interface (real drivers, not stubs).</li>
-        <li><strong>Bidirectional twins</strong> — Component state mirrors device state; commanded changes emit actuations.</li>
-        <li><strong>Disk persistence</strong> — evidence, revisions, Captures, Components, compiler artifacts survive restart.</li>
-        <li><strong>Spatial &amp; semantic indexes</strong> — SVO + secondary indexes for materials, types, confidence, time.</li>
-      </ul>
-
-      <h3>Depends on</h3>
-      <p>V20 capture · V14 registration · V11 evidence · V21 events · V17 sim feedback.</p>
+      <h2>V22 — Neural Enhancement Backends</h2>
+      <p><strong>Delivered.</strong> Interchangeable neural optimization backends (never the renderer). Real-ESRGAN RRDBNet x4 runs on the RTX 2060 SUPER (<code>device=cuda</code>); evolution drives them via registry only. VRAM tiling + CPU fallback; FLUX/SwinIR/HiDream guarded until weights land. Full report: <a href="updates.html#v22">updates.html#v22</a>.</p>
+      <p><strong>Honest limits:</strong> scene update is neural-gated colour-detail transfer (<code>detail_gain</code>), not full splat inverse-rendering.</p>
     </article>
 
     <!-- ─────────────── V23+ ─────────────── -->
@@ -273,12 +262,14 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
         <time>Horizon</time>
         <span class="badge">Horizon</span>
       </div>
-      <h2>V23+ — Plugin SDK, World OS &amp; World Intelligence</h2>
-      <p>Productize the World OS SDK and agents that understand, plan, and act inside the same authoritative world — without treating a neural render as reality.</p>
+      <h2>V23+ — Twins, Plugins, Generative Weights &amp; World Intelligence</h2>
+      <p>Next capability layers on the V22 kernel: live device twins + spatial DB, World OS SDK, dropping FLUX/HiDream weights into the existing neural interface, and agents that plan inside the authoritative world.</p>
 
       <h3>Themes</h3>
       <ul>
-        <li><strong>Public SDK / plugins</strong> — providers, compilers, renderers, sensors; versioned compatibility.</li>
+        <li><strong>Digital twins / spatial DB</strong> — real CaptureDevice drivers; disk persistence; indexes.</li>
+        <li><strong>Public SDK / plugins</strong> — providers, compilers, renderers; versioned compatibility.</li>
+        <li><strong>Heavier generative backends</strong> — FLUX/HiDream weights on the V22 registry (no engine rewrite).</li>
         <li><strong>World understanding &amp; planning</strong> — semantic graphs, next-best-view, multi-agent coordination.</li>
         <li><strong>Prediction layers</strong> — always labeled predicted, never smuggled into authority.</li>
       </ul>
@@ -291,7 +282,7 @@ Global AI (optional)   (HDR, grading, atmosphere, bloom, DOF, temporal, style)
       </ul>
 
       <h3>Depends on</h3>
-      <p>V16–V22 as the operable platform · V21 reactive events · V20 capture · V11 evidence · V17 sim.</p>
+      <p>V16–V22 operable platform · V22 neural registry · V21 events · V20 capture · V11 evidence · V17 sim.</p>
     </article>
 
     <section>
@@ -307,12 +298,12 @@ V18 ✓   Gaussian enhancement pipeline (classical-CV live)
 V19 ✓   Gaussian evolution engine (async splat cache)
 V20 ✓   Reality capture pipeline (unified ObservationPacket)
 V21 ✓   Reactive world pipeline (event bus + reactors)
+V22 ✓   Neural enhancement backends (RealESRGAN on CUDA)
    │
    ▼
-V13     Production Gaussian streaming + AI weights + global frame post
+V13     Production Gaussian streaming + global frame post
 V15 P2  Viewer migration through /api/viz
-V22     Digital twins + spatial database
-V23+    Plugin SDK / World OS / world intelligence</div>
+V23+    Twins / spatial DB / plugins / FLUX weights / intelligence</div>
       <div class="highlight">
         <p><strong>Shipped milestones earn their place with tests and numbers.</strong> Planned milestones above are the intended product arc; dates are intentionally omitted until a milestone opens with a definition-of-done and an honest environment report — the same standard used for V8–V12.</p>
       </div>

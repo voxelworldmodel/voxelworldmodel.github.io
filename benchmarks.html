@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v22">V22 Neural backends</a>
         <a href="#v21">V21 Reactive runtime</a>
         <a href="#v20">V20 Reality capture</a>
         <a href="#v19">V19 Gaussian evolution</a>
@@ -55,6 +56,49 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V22 neural ─────────────── -->
+    <section class="bench-milestone" id="v22">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">246/246 tests · real CUDA</span>
+      </div>
+      <h2>V22, Neural Enhancement Backends</h2>
+      <p>Neural models as interchangeable evolution backends — never the renderer. Real-ESRGAN RRDBNet x4 runs on the RTX 2060 SUPER; registry-driven; world untouched.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">246/246</span></div>
+        <div class="bench-chip"><span class="chip-label">Live device</span><span class="chip-value">cuda</span></div>
+        <div class="bench-chip"><span class="chip-label">detail_gain</span><span class="chip-value">0.75</span></div>
+        <div class="bench-chip"><span class="chip-label">Views / tiles</span><span class="chip-value">3 / 3</span></div>
+        <div class="bench-chip"><span class="chip-label">Failures</span><span class="chip-value">0</span></div>
+        <div class="bench-chip"><span class="chip-label">Backends</span><span class="chip-value">5</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v22_neural.png" alt="Neural Backends (V22) panel with realesrgan CUDA diagnostics.">
+        <figcaption><strong>Live panel.</strong> Preferred realesrgan · VRAM · last cuda optimize.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">Real GPU inference</td><td data-label="Verified">RealESRGAN on RTX 2060 SUPER; 0 missing weight keys; live <code>/api/neural/control</code> optimize</td></tr>
+            <tr><td data-label="Claim">Registry-only</td><td data-label="Verified">evolution calls <code>backend.optimize(scene)</code>; engine names no model</td></tr>
+            <tr><td data-label="Claim">New cached revision</td><td data-label="Verified">hallway pass produces new evolution cache entry; world untouched</td></tr>
+            <tr><td data-label="Claim">VRAM / fallback</td><td data-label="Verified">tiling within budget; CPU fallback on CUDA error; OOM → classical</td></tr>
+            <tr><td data-label="Claim">Honest stubs</td><td data-label="Verified">FLUX/SwinIR/HiDream report missing weights; never fake</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: scene update is neural-gated colour-detail transfer (detail_gain), not full splat inverse-rendering; quality_score can stay flat on colour-only changes.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v22">Read full V22 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V21 reactive ─────────────── -->
     <section class="bench-milestone" id="v21">
