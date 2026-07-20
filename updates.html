@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v26">Latest: V26 world kernel</a>
+        <a href="#v27">Latest: V27 world query</a>
+        <a href="#v26">V26 world kernel</a>
         <a href="#v25">V25 world reasoning</a>
         <a href="#v24">V24 persistent identity</a>
         <a href="#v23">V23 semantic world</a>
@@ -51,6 +52,56 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v27">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">329/329 tests · the world is a service</span>
+      </div>
+      <h2>V27, World Services &amp; Query Engine</h2>
+      <p>V27 turns VWM from an internal engine into a <strong>platform</strong>: applications talk to one interface — <code>world.query</code> — instead of importing semantic, identity, or reasoning internals. This is the cross-layer query package V26 deferred, now delivered.</p>
+
+      <div class="status-banner">
+        <h3>✅ Cross-layer explain — one call returns geometry + semantic + identity + evidence + reasoning</h3>
+        <p>Live on this publish: ask <code>chairs</code> → Chair1; <code>explain("Chair1")</code> joined all layers (8 voxels, Chair 0.85 / 2 hyps, 2 evidence, 3 facts). World graph: 19 nodes / 25 edges. Panel: type a query → results → click → cross-layer explanation.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">329/329</span><span class="label">Tests (18 V27 + prior)</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">App interface</span></div>
+        <div class="stat"><span class="value">6</span><span class="label">Query families</span></div>
+        <div class="stat"><span class="value">~0.2 ms</span><span class="label">Explain (live)</span></div>
+        <div class="stat"><span class="value">19 / 25</span><span class="label">Graph nodes / edges</span></div>
+        <div class="stat"><span class="value">all layers</span><span class="label">In one WorldExplanation</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v27_query.png" alt="VWM viewer with the World Query (V27) panel showing ask chairs and cross-layer explain for Chair1.">
+        <figcaption><strong>World Query — V27 panel, live.</strong> Ask → results → cross-layer explanation (geometry · semantic · identity · evidence · reasoning). Endpoints: <code>/api/query</code>, <code>/api/query/{explain,graph,spatial,temporal,history,diagnostics}</code>.</figcaption>
+      </figure>
+
+      <h3>Query families (all tested)</h3>
+      <ul>
+        <li><strong>Spatial</strong> — nearest / inside / contains / intersects / adjacent / line_of_sight (SVO) / visible / reachable (free-space BFS)</li>
+        <li><strong>Temporal</strong> — changed(since=…) / state_at / timeline / between</li>
+        <li><strong>Semantic</strong> — entities / find (Django-style <code>confidence__gte</code>) / classes (subclass-aware)</li>
+        <li><strong>Identity</strong> — objects / track / versions / lifecycle / merge_candidates / moved_more_than</li>
+        <li><strong>Reasoning</strong> — why / causes / effects / alternatives / predictions / explain_access</li>
+        <li><strong>World graph</strong> — Entity / Identity / Fact / Evidence / Event / Room nodes with traversal</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong><code>ask()</code> is a transparent keyword parser</strong>, not NLP/LLM — patterns only; a learned understander slots behind the same entrypoint.</li>
+        <li><strong>Planner</strong> is index-vs-scan, not a cost-based optimizer.</li>
+        <li>V10 component DSL preserved as <code>world.query.select(...)</code> / <code>world.query_components(qs)</code>.</li>
+        <li>No package collision — <code>vwm/query/</code> is distinct from <code>vwm.worldos.query</code>.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> V20–V26 answered “how does the world work internally?”; V27 answers “how does everything else talk to the world?” — robots, AI, twins, FRAME, and the browser all go through <code>world.query</code>. Deliverables: <code>vwm/query/*</code>, <code>docs/V27_REPORT.md</code>, <code>/api/query/*</code>, the live panel, and 18 new tests (329 total).</p>
+      </div>
+    </article>
 
     <article class="update" id="v26">
       <div class="update-meta">

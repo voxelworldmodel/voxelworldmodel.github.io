@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voxel World Model</title>
-  <meta name="description" content="An open platform for authoritative voxel worlds — a transactional, event-driven, evidence-based persistent spatial world kernel through V26.">
+  <meta name="description" content="An open platform for authoritative voxel worlds — a transactional kernel with world.query as the single service interface for apps, robots, and AI.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -56,8 +56,10 @@ Semantics Identity  Reasoning  Simulation
 Reactive Runtime · Compiler · Viz · Neural (V15–V22)
         ↓
 Snapshot save / restore / replay (V26)
+        ↓
+world.query — one service interface (V27)
 
-Stack: reality → meaning → continuity → inference · wired as one kernel</div>
+Stack: reality → meaning → continuity → inference · wired as one kernel · exposed as a service</div>
     </section>
 
     <section id="philosophy">
@@ -98,7 +100,7 @@ Players · AI Agents · Robots · IoT · Vehicles · Automation · Sensors
 
     <section id="twins">
       <h2>Digital Twins</h2>
-      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v27">V27+</a> horizon.</p>
+      <p>One of the primary goals of VWM is creating <strong>live digital twins</strong> — real-world devices continuously synchronized into the voxel world. The substrate for that is largely in place; full device twins and a spatial database remain on the <a href="roadmap.html#v28">V28+</a> horizon. Apps already talk to the world through <a href="updates.html#v27"><code>world.query</code></a>.</p>
       <ul>
         <li>Smart homes, offices, and factories</li>
         <li>Vehicles, robots, farms, and warehouses</li>
@@ -387,42 +389,42 @@ Rendering (V16 · V18–V22)</div>
 
     <section id="status">
       <h2>Development Status</h2>
-      <p>Core platform through <strong>V26</strong> is an operable <strong>world kernel</strong>: one labeled observation enters; no downstream subsystem is called manually; the world updates transactionally; meaning, identity, and reasoning compose via events; the whole world saves and restores with an identical authoritative checksum. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~96% — see <a href="status.html">architecture status</a>.</p>
+      <p>Core platform through <strong>V27</strong>: an operable world kernel <em>and</em> a service surface. One labeled observation drives the stack; <code>world.query</code> is how every application asks the world — including cross-layer <code>explain</code>. <strong>Appearance v2.2</strong> remains the production appearance default. <strong>v2.4 not trained.</strong> Overall vision ~97% — see <a href="status.html">architecture status</a>.</p>
 
       <div class="status-banner">
-        <h3>✅ Latest: V26 Integrated World Kernel — 311/311 tests</h3>
-        <p>Live: ObservationReceived → WorldTransactionCommitted → SemanticEntityCreated → IdentityCreated → WorldFactCreated. Invariants PASS (7/7). Hallway snapshot checksum-identical.</p>
+        <h3>✅ Latest: V27 World Services &amp; Query Engine — 329/329 tests</h3>
+        <p>Live: ask <code>chairs</code> → Chair1; <code>explain("Chair1")</code> returns geometry + semantic + evidence + reasoning in one WorldExplanation. Graph 19 nodes / 25 edges.</p>
       </div>
 
       <div class="stats-grid">
-        <div class="stat"><span class="value">311/311</span><span class="label">Tests (V9–V26)</span></div>
-        <div class="stat"><span class="value">V1–V26</span><span class="label">World kernel</span></div>
-        <div class="stat"><span class="value">96%</span><span class="label">Overall vision</span></div>
-        <div class="stat"><span class="value">~1.4 ms</span><span class="label">Tx commit</span></div>
-        <div class="stat"><span class="value">identical</span><span class="label">Save→load checksum</span></div>
+        <div class="stat"><span class="value">329/329</span><span class="label">Tests (V9–V27)</span></div>
+        <div class="stat"><span class="value">V1–V27</span><span class="label">Kernel + service</span></div>
+        <div class="stat"><span class="value">97%</span><span class="label">Overall vision</span></div>
+        <div class="stat"><span class="value">1</span><span class="label">App interface</span></div>
+        <div class="stat"><span class="value">all layers</span><span class="label">In one explain()</span></div>
         <div class="stat"><span class="value">v2.2</span><span class="label">Appearance default</span></div>
       </div>
 
       <h3>Recent milestones</h3>
       <ul>
-        <li><a href="updates.html#v26"><strong>V26</strong></a> — Integrated world kernel (transactions · events · snapshot · invariants)</li>
-        <li><a href="updates.html#v25"><strong>V25</strong></a> — World reasoning · <a href="updates.html#v24"><strong>V24</strong></a> — Persistent identity · <a href="updates.html#v23"><strong>V23</strong></a> — Semantics</li>
-        <li><a href="updates.html#v22"><strong>V22</strong></a> — Neural backends · <a href="updates.html#v21"><strong>V21</strong></a> — Reactive runtime · <a href="updates.html#v20"><strong>V20</strong></a> — Reality capture</li>
+        <li><a href="updates.html#v27"><strong>V27</strong></a> — World query / services (cross-layer explain · graph · ask)</li>
+        <li><a href="updates.html#v26"><strong>V26</strong></a> — Integrated world kernel · <a href="updates.html#v25"><strong>V25</strong></a> — Reasoning · <a href="updates.html#v24"><strong>V24</strong></a> — Identity · <a href="updates.html#v23"><strong>V23</strong></a> — Semantics</li>
+        <li><a href="updates.html#v22"><strong>V22</strong></a>–<a href="updates.html#v20"><strong>V20</strong></a> — Neural · reactive · capture</li>
       </ul>
 
       <figure class="figure">
-        <img src="viewer_v26_kernel.png" alt="VWM viewer with the World Kernel (V26) panel.">
-        <figcaption><strong>World Kernel (V26), live.</strong> One observation → whole stack · invariants PASS · correlation-traced events.</figcaption>
+        <img src="viewer_v27_query.png" alt="VWM viewer with the World Query (V27) panel.">
+        <figcaption><strong>World Query (V27), live.</strong> Ask the world · one interface · cross-layer answers.</figcaption>
       </figure>
 
       <div class="figure-row">
         <figure class="figure" style="flex:1;margin-right:0.75rem">
-          <img src="viewer_v25_reasoning.png" alt="World Reasoning (V25) panel.">
-          <figcaption><strong>V25 Reasoning.</strong> Facts · causal chains.</figcaption>
+          <img src="viewer_v26_kernel.png" alt="World Kernel (V26) panel.">
+          <figcaption><strong>V26 Kernel.</strong> One observation → whole stack.</figcaption>
         </figure>
         <figure class="figure" style="flex:1">
-          <img src="viewer_v24_identity.png" alt="Persistent Identity (V24) panel.">
-          <figcaption><strong>V24 Identity.</strong> Lifecycle · timeline.</figcaption>
+          <img src="viewer_v25_reasoning.png" alt="World Reasoning (V25) panel.">
+          <figcaption><strong>V25 Reasoning.</strong> Facts · causal chains.</figcaption>
         </figure>
       </div>
 
@@ -449,7 +451,7 @@ Rendering (V16 · V18–V22)</div>
       <div class="highlight">
         <p><strong>The simulation remains stable. The visualization evolves forever.</strong></p>
       </div>
-      <p>Shipped through <strong>V26</strong>: a transactional, event-driven, evidence-based persistent spatial world kernel — geometry, semantics, identity, history, reasoning, compilation, and rendering compose automatically and can be saved, restored, audited, and replayed. Next (<a href="roadmap.html#v27">V27+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK</strong> → learned models on existing hooks → cross-layer query → heavier generative weights — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
+      <p>Shipped through <strong>V27</strong>: a transactional world kernel exposed as a service — robots, AI, twins, FRAME, and the browser all go through <code>world.query</code>. Next (<a href="roadmap.html#v28">V28+</a>): <strong>live digital twins</strong> → <strong>spatial database</strong> → <strong>plugin SDK</strong> → learned models on existing hooks → heavier generative weights — plus polish <strong>V13</strong> streaming / global frame post and <strong>V15 Part 2</strong> browser migration.</p>
       <a class="cta-link" href="roadmap.html">Full roadmap →</a>
     </section>
 
@@ -466,6 +468,7 @@ Rendering (V16 · V18–V22)</div>
         <span class="pill">Persistent Identity</span>
         <span class="pill">World Reasoning</span>
         <span class="pill">World Kernel</span>
+        <span class="pill">World Query</span>
         <span class="pill">Sensor Frameworks</span>
         <span class="pill">AI Tooling</span>
         <span class="pill">Robotics Interfaces</span>

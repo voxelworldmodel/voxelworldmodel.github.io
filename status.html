@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Status — Voxel World Model</title>
-  <meta name="description" content="Current VWM architecture completion through V26 integrated world kernel — transactional, event-driven, save/restore proven.">
+  <meta name="description" content="Current VWM architecture completion through V27 world query — the world is a service with cross-layer explain.">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -12,11 +12,12 @@
     <header>
       <p class="eyebrow"><a href="index.html">← Voxel World Model</a></p>
       <h1>Architecture Status</h1>
-      <p class="lead">Completion against the end-to-end pipeline after V26. The world kernel is transactional and event-driven; twins, learned models, and full-frame AI remain open.</p>
+      <p class="lead">Completion against the end-to-end pipeline after V27. The world is a queryable service; twins, learned models, and full-frame AI remain open.</p>
       <nav>
         <a href="#overall">Overall</a>
         <a href="#core">Core</a>
         <a href="#kernel">Kernel</a>
+        <a href="#query">Query</a>
         <a href="#semantic">Semantic</a>
         <a href="#identity">Identity</a>
         <a href="#reasoning">Reasoning</a>
@@ -25,13 +26,13 @@
         <a href="#platform">Platform</a>
         <a href="pipeline.html">Pipeline</a>
         <a href="roadmap.html">Roadmap</a>
-        <a href="updates.html#v26">V26</a>
+        <a href="updates.html#v27">V27</a>
       </nav>
     </header>
 
     <section id="overall">
       <div class="status-banner">
-        <h3>Snapshot — July 2026 (post-V26)</h3>
+        <h3>Snapshot — July 2026 (post-V27)</h3>
         <p>Percentages are engineering judgment of shipped capability vs. the intended production path — not marketing scores. Mapped to the <a href="pipeline.html">end-to-end pipeline</a>.</p>
       </div>
 
@@ -39,7 +40,7 @@
       <div class="status-summary">
         <div class="status-row">
           <div class="status-label">
-            <span class="status-name">Core Engine (V1–V26)</span>
+            <span class="status-name">Core Engine (V1–V27)</span>
             <span class="status-pct done">100%</span>
           </div>
           <div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div>
@@ -61,22 +62,20 @@
         <div class="status-row status-row-hero">
           <div class="status-label">
             <span class="status-name">Overall VWM Vision</span>
-            <span class="status-pct">96%</span>
+            <span class="status-pct">97%</span>
           </div>
-          <div class="status-track" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:96%"></div></div>
+          <div class="status-track" role="progressbar" aria-valuenow="97" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:97%"></div></div>
         </div>
       </div>
     </section>
 
     <section id="core" class="status-section">
       <h2>Core (complete)</h2>
-      <p class="status-section-lead">Capture through reasoning on a transactional kernel.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Core Runtime</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Reactive Event Bus</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Reality Capture Pipeline</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Adaptive Voxel World</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Registration &amp; Evidence</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">World Simulation</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Compiler</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Visualization</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
@@ -85,79 +84,62 @@
 
     <section id="kernel" class="status-section">
       <h2>Integrated world kernel</h2>
-      <p class="status-section-lead"><a href="updates.html#v26">V26</a> — one observation drives the stack; transactions, snapshots, invariants.</p>
+      <p class="status-section-lead"><a href="updates.html#v26">V26</a> — transactions, snapshots, invariants.</p>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">World Kernel + Reactors</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Atomic Transactions</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Whole-World Snapshot</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Executable Invariants</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Canonical Evidence Core</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">Incremental Snapshots</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Cross-Layer Query Package</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
-      <p class="status-note">Hallway save→load checksum identical (10,763 voxels). <code>save_incremental()</code> honestly returns unsupported.</p>
+    </section>
+
+    <section id="query" class="status-section">
+      <h2>World services &amp; query</h2>
+      <p class="status-section-lead"><a href="updates.html#v27">V27</a> — one interface for every application; cross-layer explain.</p>
+      <div class="status-list">
+        <div class="status-row"><div class="status-label"><span class="status-name">World Query Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Cross-Layer Explain</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">World Graph</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Spatial / Temporal / Semantic Families</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Natural-Language ask() (NLP/LLM)</span><span class="status-pct low">15%</span></div><div class="status-track" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:15%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Cost-Based Query Planner</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+      </div>
+      <p class="status-note"><code>ask()</code> is a transparent keyword parser today (15% = pattern coverage); a learned understander slots behind the same entrypoint.</p>
     </section>
 
     <section id="semantic" class="status-section">
-      <h2>Semantic world</h2>
-      <p class="status-section-lead"><a href="updates.html#v23">V23</a> — meaning decoupled from geometry.</p>
+      <h2>Semantic · Identity · Reasoning</h2>
       <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Semantic World Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Bundled Perception / Recognition</span><span class="status-pct low">12%</span></div><div class="status-track" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:12%"></div></div></div>
-      </div>
-    </section>
-
-    <section id="identity" class="status-section">
-      <h2>Persistent identity</h2>
-      <p class="status-section-lead"><a href="updates.html#v24">V24</a> — continuity through time.</p>
-      <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">Persistent Identity Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Learned Identity Embeddings</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
-      </div>
-    </section>
-
-    <section id="reasoning" class="status-section">
-      <h2>World reasoning</h2>
-      <p class="status-section-lead"><a href="updates.html#v25">V25</a> — inference, causal graphs, explanations.</p>
-      <div class="status-list">
         <div class="status-row"><div class="status-label"><span class="status-name">World Reasoning Engine</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Learned / LLM Reasoners</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Learned Perception / Embeddings / Reasoners</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
       </div>
     </section>
 
     <section id="gaussian" class="status-section">
-      <h2>Gaussian path</h2>
+      <h2>Gaussian · Neural</h2>
       <div class="status-list">
-        <div class="status-row"><div class="status-label"><span class="status-name">Gaussian Representation</span><span class="status-pct">95%</span></div><div class="status-track" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:95%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Gaussian Enhancement</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Background Gaussian Learning</span><span class="status-pct">90%</span></div><div class="status-track" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:90%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Dynamic Splat Optimization</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-      </div>
-    </section>
-
-    <section id="neural" class="status-section">
-      <h2>Neural backends</h2>
-      <div class="status-list">
-        <div class="status-row"><div class="status-label"><span class="status-name">Neural Backend Registry</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Gaussian Enhancement / Evolution</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
         <div class="status-row"><div class="status-label"><span class="status-name">RealESRGAN (CUDA)</span><span class="status-pct done">100%</span></div><div class="status-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="status-fill done" style="--pct:100%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">FLUX / HiDream / SwinIR</span><span class="status-pct low">8%</span></div><div class="status-track" role="progressbar" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:8%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">Optional Full-Frame AI</span><span class="status-pct zero">0%</span></div><div class="status-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="status-fill" style="--pct:0%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">FLUX / HiDream / Full-Frame AI</span><span class="status-pct low">8%</span></div><div class="status-track" role="progressbar" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><div class="status-fill low" style="--pct:8%"></div></div></div>
       </div>
     </section>
 
     <section id="platform" class="status-section">
       <h2>Platform layers</h2>
       <div class="status-list">
-        <div class="status-row"><div class="status-label"><span class="status-name">Robotics</span><span class="status-pct mid">50%</span></div><div class="status-track" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:50%"></div></div></div>
-        <div class="status-row"><div class="status-label"><span class="status-name">SDK / Ecosystem</span><span class="status-pct mid">72%</span></div><div class="status-track" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:72%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">Robotics</span><span class="status-pct mid">55%</span></div><div class="status-track" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:55%"></div></div></div>
+        <div class="status-row"><div class="status-label"><span class="status-name">SDK / Ecosystem</span><span class="status-pct mid">78%</span></div><div class="status-track" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"><div class="status-fill mid" style="--pct:78%"></div></div></div>
       </div>
     </section>
 
     <section>
       <h2>Read next</h2>
       <p>
-        <a class="cta-link" href="updates.html#v26">V26 report →</a>
-        <a class="cta-link" href="updates.html#v25" style="margin-left: 0.5rem">V25 →</a>
+        <a class="cta-link" href="updates.html#v27">V27 report →</a>
+        <a class="cta-link" href="updates.html#v26" style="margin-left: 0.5rem">V26 →</a>
         <a class="cta-link" href="pipeline.html" style="margin-left: 0.5rem">Pipeline →</a>
         <a class="cta-link" href="roadmap.html" style="margin-left: 0.5rem">Roadmap →</a>
       </p>

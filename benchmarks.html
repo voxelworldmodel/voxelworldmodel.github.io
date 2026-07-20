@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v27">V27 World query</a>
         <a href="#v26">V26 World kernel</a>
         <a href="#v25">V25 World reasoning</a>
         <a href="#v24">V24 Persistent identity</a>
@@ -60,6 +61,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V27 query ─────────────── -->
+    <section class="bench-milestone" id="v27">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">329/329 tests · world as service</span>
+      </div>
+      <h2>V27, World Services &amp; Query Engine</h2>
+      <p>Applications use <code>world.query</code> only — spatial, temporal, semantic, identity, reasoning, and graph families, plus cross-layer <code>explain</code>.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">329/329</span></div>
+        <div class="bench-chip"><span class="chip-label">Query families</span><span class="chip-value">6</span></div>
+        <div class="bench-chip"><span class="chip-label">Explain (live)</span><span class="chip-value">~0.2 ms</span></div>
+        <div class="bench-chip"><span class="chip-label">Graph</span><span class="chip-value">19n / 25e</span></div>
+        <div class="bench-chip"><span class="chip-label">Index entities</span><span class="chip-value">4</span></div>
+        <div class="bench-chip"><span class="chip-label">Layers in explain</span><span class="chip-value">all</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v27_query.png" alt="World Query (V27) panel with cross-layer explanation.">
+        <figcaption><strong>Live panel.</strong> chairs → Chair1 · geometry + semantic + evidence + reasoning in one WorldExplanation.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">One app interface</td><td data-label="Verified">apps never import semantic/identity/reasoning internals</td></tr>
+            <tr><td data-label="Claim">Cross-layer explain</td><td data-label="Verified">one call joins geometry + class/hyps + identity + evidence + facts + causal</td></tr>
+            <tr><td data-label="Claim">World as graph</td><td data-label="Verified">Entity/Identity/Fact/Evidence/Event nodes with traversal</td></tr>
+            <tr><td data-label="Claim">Spatial / temporal</td><td data-label="Verified">SVO LoS · free-space BFS reachable · changed(since=…)</td></tr>
+            <tr><td data-label="Claim">Persistence / concurrency</td><td data-label="Verified">snapshot→query · replay→query · concurrent query during capture</td></tr>
+            <tr><td data-label="Claim">Honest ask()</td><td data-label="Verified">keyword parser, not NLP; same entrypoint for future LLM</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: ask() is not NLP; planner is index-vs-scan; large-world path planning out of scope.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v27">Read full V27 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V26 kernel ─────────────── -->
     <section class="bench-milestone" id="v26">
