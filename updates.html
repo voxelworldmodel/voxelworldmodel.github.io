@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v30">Latest: V30 kernel v1.0</a>
+        <a href="#frame">Latest: FRAME dApp migration</a>
+        <a href="#v30">V30 kernel v1.0</a>
         <a href="#v29">V29 trust &amp; ops</a>
         <a href="#v28">V28 distributed world</a>
         <a href="#v27">V27 world query</a>
@@ -55,6 +56,71 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="frame">
+      <div class="update-meta">
+        <time datetime="2026-07-20">July 20, 2026</time>
+        <span class="badge">Architecture proposal · no code changed</span>
+      </div>
+      <h2>VWM → FRAME: Migration to a Spatial Computation dApp</h2>
+      <p>A deliberately uncomfortable lead-architect review — <code>docs/FRAME_MIGRATION.md</code>. The finding: <strong>V26–V30 built a platform kernel, and FRAME <em>is</em> that kernel.</strong> Transactions, execution authority, snapshots-as-storage, replication, vector clocks, trust, signatures, federation, capabilities, invariants, and distributed history are now <strong>redundant</strong> and must be deleted or handed to FRAME. Layered on the ~3,800-line pre-V8 integration sprawl, roughly <strong>45–55% of the codebase should leave</strong>.</p>
+
+      <div class="status-banner">
+        <h3>This is a proposal, not a shipped milestone — no code changed yet</h3>
+        <p>Kernel v1.0 (V30) remains as built and tested. This review reframes <em>direction</em>: VWM stops being a stateful authority and becomes a set of <strong>pure, deterministic functions</strong> FRAME invokes — <code>apply(state, op) → state'</code>, <code>project(state) → FrameUnits</code>, <code>query(state, q) → result</code>. It is the "resist the temptation to keep building kernel milestones" warning made concrete.</p>
+      </div>
+
+      <h3>New architecture</h3>
+      <div class="diagram">┌─────────────────────────────────────────────┐
+│                   FRAME                       │
+│  identity · signatures · capabilities · grants│
+│  canonical mutations · execution authority    │
+│  receipts · history · FrameUnit projection    │
+│  storage · networking · clock / ordering      │
+└───────────────┬───────────────────────────────┘
+                │  mutation calls (spatial ops)
+                ▲ projected FrameUnits · query calls
+                ▼
+┌─────────────────────────────────────────────┐
+│              VWM spatial dApp                 │
+│    apply(state, op) → state'                  │
+│    project(state) → spatial FrameUnit payloads│
+│    query(state, q) → result                   │
+│  spatial/   voxels · SVO · geometry · recon   │
+│  knowledge/ classification · continuity · infer│
+│  simulate/  deterministic spatial simulation  │
+└───────────────┬───────────────────────────────┘
+                │  spatial state payloads (read-only)
+                ▼
+┌─────────────────────────────────────────────┐
+│            Voxel View dApp(s)                 │
+│  compiler · Gaussian · neural · renderers     │
+└─────────────────────────────────────────────┘</div>
+
+      <h3>The critical calls</h3>
+      <ul>
+        <li><strong><code>transactions/</code> → FRAME canonical mutations.</strong> VWM keeps only a pure <code>apply(state, op) → state'</code> — no lock, no revision, no commit. FRAME owns ordering and atomicity.</li>
+        <li><strong><code>replication/</code>, <code>trust/</code>, <code>snapshot/</code>, <code>kernel/</code> (as authority), <code>invariants/</code> (as kernel) → deleted.</strong> Networking, identity, signatures, capabilities, grants, storage, history, convergence are all FRAME primitives.</li>
+        <li><strong><code>runtime/</code> event bus → mostly deleted.</strong> The reactive wiring survives as a pure deterministic recompute graph; the event log / replay / networking → FRAME history / receipts.</li>
+        <li><strong>Identity → spatial entity continuity, not authority</strong> → stays as payload computation (renamed <code>knowledge/continuity</code> to avoid confusion with FRAME identity). Trust-identity-as-authority → removed.</li>
+      </ul>
+
+      <h3>What survives — and it's clean</h3>
+      <p>A small, sharp deterministic surface — <code>apply</code> / <code>project</code> / <code>query</code>: voxel data structures, SVO indexing, geometry processing, reconstruction, deterministic simulation, and semantic / identity / reasoning as <strong>payload computation</strong> (authority, persistence, and human-verification stripped out). Rendering (compiler / Gaussian / neural / visualization) externalizes into one or more <strong>Voxel View dApps</strong>.</p>
+      <div class="highlight">
+        <p><strong>End state:</strong> <em>"A deterministic spatial computation dApp for FRAME."</em> VWM contains no I/O, no keys, no clocks, no locks, no network, no disk — if a function is not pure <code>(state, input) → output</code>, it is in the wrong place.</p>
+      </div>
+
+      <h3>Two honest caveats</h3>
+      <ul>
+        <li><strong>FRAME contract unverified.</strong> The migration doc does not have FRAME's actual API in this repo, so every "→ FRAME primitive" mapping (mutation shape, FrameUnit payload limits, receipt/provenance overlap, grant vocabulary) is a <strong>contract to verify against real FRAME docs</strong> first.</li>
+        <li><strong>Determinism is make-or-break — and already proven.</strong> FRAME replay needs deterministic dApps; VWM's determinism is guarded by the V30 canonical-world regression harness. The migration is a deletion-led refactor <strong>guarded by golden-master checksums</strong>, not a redesign — so the hardest part is done; the rest is subtraction and drawing the boundary.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>The single most important reframing:</strong> VWM must shed stateful authority and become pure functions FRAME invokes. The document delivers all 13 required sections — executive summary, architecture diagram, old→new mapping, delete / merge / split / rename lists, new repo layout, ownership boundaries, migration order, risks, and blocking manual-review items. Recommendation: <strong>proceed</strong>, resolve the FRAME contract first, and never re-add an authority concern to VWM again.</p>
+      </div>
+    </article>
 
     <article class="update" id="v30">
       <div class="update-meta">

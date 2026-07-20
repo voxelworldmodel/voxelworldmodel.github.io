@@ -33,6 +33,7 @@
         <a href="#v28">V28 ✓</a>
         <a href="#v29">V29 ✓</a>
         <a href="#v30">V30 ✓ · Kernel v1.0</a>
+        <a href="#frame">FRAME dApp</a>
         <a href="#tracks">Platform tracks</a>
         <a href="updates.html">Updates</a>
         <a href="pipeline.html">Pipeline</a>
@@ -47,6 +48,14 @@
         <p>The Adaptive Voxel World remains the <strong>single source of geometric truth</strong>. Perception proposes observations; the Evidence Engine decides belief; Components preserve identity; the SVO accelerates queries; the runtime coordinates incremental recompiles; every visualization is a derived view. Later milestones add systems — they do not replace the world.</p>
       </div>
       <p>Shipped through <a href="updates.html#v30">V30</a> — <strong>Kernel v1.0</strong> declared. This is the last planned kernel milestone. Prior: V29 trust/ops, V28 sync, V27 query, V26 kernel wiring. V13 streaming / global frame post and V15 Part 2 remain open polish. Future work versions as independent platform tracks (Perception, Simulation, Neural, Developer, Robotics, FRAME, Visualization) — not V31/V32.</p>
+    </section>
+
+    <section id="frame">
+      <div class="status-banner">
+        <h3>Direction after v1.0: VWM becomes a FRAME spatial computation dApp</h3>
+        <p>A lead-architect review (<a href="updates.html#frame">migration proposal</a>) reaches an uncomfortable conclusion: the V26–V30 kernel <em>is</em> the FRAME platform kernel. Transactions, replication, trust, snapshots, invariants, and distributed history are FRAME primitives — so ~45–55% of the codebase should be deleted or handed to FRAME. What remains is a pure, deterministic spatial core: <code>apply(state, op) → state'</code>, <code>project(state) → FrameUnits</code>, <code>query(state, q) → result</code>, with rendering externalized into Voxel View dApps.</p>
+      </div>
+      <p>This is a <strong>proposal, not shipped work</strong> — no code has changed and Kernel v1.0 stands as built. It reframes the platform tracks above as FRAME concerns and treats the migration as a deletion-led refactor guarded by the V30 golden-master determinism suite. Full write-up: <a href="updates.html#frame">VWM → FRAME migration →</a></p>
     </section>
 
     <!-- ─────────────── shipped ─────────────── -->
