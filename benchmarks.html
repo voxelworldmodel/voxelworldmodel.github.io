@@ -14,6 +14,7 @@
       <h1>Benchmarks</h1>
       <p class="lead">Measured benchmarks for appearance compiler milestones, scan/depth fusion, training cost, and runtime proofs.</p>
       <nav>
+        <a href="#v26">V26 World kernel</a>
         <a href="#v25">V25 World reasoning</a>
         <a href="#v24">V24 Persistent identity</a>
         <a href="#v23-semantic">V23 Semantic world</a>
@@ -59,6 +60,50 @@
       <span><span class="trend trend-good">▲</span><span class="trend trend-good">▼</span> green = better</span>
       <span><span class="trend trend-bad">▲</span><span class="trend trend-bad">▼</span> red = worse</span>
     </div>
+
+    <!-- ─────────────── V26 kernel ─────────────── -->
+    <section class="bench-milestone" id="v26">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">311/311 tests · kernel proof</span>
+      </div>
+      <h2>V26, Integrated World Kernel</h2>
+      <p>One labeled observation drives the whole stack via events — transactional commit, semantics, identity, reasoning, snapshot restore with identical authoritative checksum.</p>
+
+      <div class="bench-summary">
+        <div class="bench-chip"><span class="chip-label">Tests</span><span class="chip-value">311/311</span></div>
+        <div class="bench-chip"><span class="chip-label">Tx commit</span><span class="chip-value">~1.4 ms</span></div>
+        <div class="bench-chip"><span class="chip-label">Invariant audit</span><span class="chip-value">&lt;1 ms</span></div>
+        <div class="bench-chip"><span class="chip-label">Hallway snapshot</span><span class="chip-value">~120 ms</span></div>
+        <div class="bench-chip"><span class="chip-label">Invariants</span><span class="chip-value">7 PASS</span></div>
+        <div class="bench-chip"><span class="chip-label">Checksum</span><span class="chip-value">identical</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v26_kernel.png" alt="World Kernel (V26) panel with live correlation trace.">
+        <figcaption><strong>Live panel.</strong> ObservationReceived → … → WorldFactCreated · invariants PASS · 0 event failures.</figcaption>
+      </figure>
+
+      <div class="bench-panel bench-panel-accent">
+        <div class="bench-panel-head">Definition-of-success proofs</div>
+        <table class="bench-table benchmark">
+          <thead>
+            <tr><th>Claim</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="Claim">No manual downstream calls</td><td data-label="Verified">one observation → automatic event chain (correlation + causation linked)</td></tr>
+            <tr><td data-label="Claim">Transactional authority</td><td data-label="Verified">single-writer TransactionManager; ConflictError / NestedTransactionError; full rollback</td></tr>
+            <tr><td data-label="Claim">Save → restore equivalence</td><td data-label="Verified">hallway 10,763 voxels · authoritative checksum identical</td></tr>
+            <tr><td data-label="Claim">Replay determinism</td><td data-label="Verified">two identical runs → identical authoritative checksums</td></tr>
+            <tr><td data-label="Claim">Invariant audit</td><td data-label="Verified">7/7 PASS live; modes audit/dev/test/production</td></tr>
+            <tr><td data-label="Claim">Product e2e fixed</td><td data-label="Verified"><code>test_vwm_product_e2e.py</code> 5/5 pass (reconstruction shadowing fixed)</td></tr>
+          </tbody>
+        </table>
+        <div class="bench-note">Honest limits: no incremental snapshots; cross-layer query package deferred; learned perception not added; no many-worker stress suite.</div>
+      </div>
+
+      <p><a class="cta-link" href="updates.html#v26">Read full V26 narrative →</a></p>
+    </section>
 
     <!-- ─────────────── V25 reasoning ─────────────── -->
     <section class="bench-milestone" id="v25">

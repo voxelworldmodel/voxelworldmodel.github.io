@@ -14,7 +14,8 @@
       <h1>Project Updates</h1>
       <p class="lead">Honest milestone reports, what shipped, what was measured, and what is still in progress.</p>
       <nav>
-        <a href="#v25">Latest: V25 world reasoning</a>
+        <a href="#v26">Latest: V26 world kernel</a>
+        <a href="#v25">V25 world reasoning</a>
         <a href="#v24">V24 persistent identity</a>
         <a href="#v23">V23 semantic world</a>
         <a href="#v22">V22 neural backends</a>
@@ -50,6 +51,56 @@
         <a href="paper.html">Technical Paper</a>
       </nav>
     </header>
+
+    <article class="update" id="v26">
+      <div class="update-meta">
+        <time datetime="2026-07-19">July 19, 2026</time>
+        <span class="badge badge-ok">311/311 tests · one observation → whole stack</span>
+      </div>
+      <h2>V26, Integrated World Kernel</h2>
+      <p>V26 turns V20–V25 into <strong>one coherent, event-driven, transactional, persistent world kernel</strong>. No decorative feature layer — it tightens, connects, and hardens the existing architecture, and proves it with real end-to-end execution.</p>
+
+      <div class="status-banner">
+        <h3>✅ The single most important proof works — observe → commit → meaning → identity → facts → save → restore (identical checksum)</h3>
+        <p>Live on this publish: one labeled observation entered; no downstream subsystem called manually. Event chain (one <code>correlation_id</code>): <code>ObservationReceived → WorldTransactionCommitted → SemanticEntityCreated → IdentityCreated → WorldFactCreated</code>. Invariants audit <strong>PASS</strong> (7/7). Snapshot saved with authoritative checksum. Hallway restore (10,763 voxels) checksum-identical.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span class="value">311/311</span><span class="label">Tests (17 kernel + 5 product + prior)</span></div>
+        <div class="stat"><span class="value">~1.4 ms</span><span class="label">Tx commit latency</span></div>
+        <div class="stat"><span class="value">&lt;1 ms</span><span class="label">Invariant audit</span></div>
+        <div class="stat"><span class="value">~120 ms</span><span class="label">Hallway snapshot I/O</span></div>
+        <div class="stat"><span class="value">7</span><span class="label">Executable invariants</span></div>
+        <div class="stat"><span class="value">identical</span><span class="label">Save→load checksum</span></div>
+      </div>
+
+      <figure class="figure figure-accent">
+        <img src="viewer_v26_kernel.png" alt="VWM viewer with the World Kernel (V26) panel showing revision, transactions, correlation trace, and invariants PASS.">
+        <figcaption><strong>World Kernel — V26 panel, live.</strong> Revision · tx counts · sem/idn/facts · correlation event trace · invariants PASS. Endpoints: <code>/api/kernel/{diagnostics,invariants}</code> + POST <code>/api/kernel/control</code> (run_pipeline / audit_invariants / snapshot).</figcaption>
+      </figure>
+
+      <h3>What shipped</h3>
+      <ul>
+        <li><strong><code>vwm/transactions/</code></strong> — atomic <code>WorldTransaction</code> + single-writer <code>TransactionManager</code>: the only place voxels and revision change. Conflict / nest rejection, complete rollback.</li>
+        <li><strong><code>vwm/core/evidence/</code></strong> — canonical noisy-OR confidence/hypothesis/review; semantic + reasoning delegate to it.</li>
+        <li><strong><code>vwm/kernel/</code></strong> — <code>WorldKernel</code> + reactors: V21 is the nervous system for V23–V25 (idempotent, correlation/causation-traced).</li>
+        <li><strong><code>vwm/snapshot/</code></strong> — whole-world <code>.vwm</code> save/load with manifest, per-section + whole-file checksums, staged validate-then-restore.</li>
+        <li><strong><code>vwm/invariants/</code></strong> — 7 executable kernel invariants (audit/dev/test/production modes).</li>
+        <li><strong>Product test fixed</strong> — long-broken <code>test_vwm_product_e2e.py</code> now passes (5 tests); shadowed <code>reconstruction</code> import restored.</li>
+      </ul>
+
+      <h3>Honest Scope Notes</h3>
+      <ul>
+        <li><strong>Incremental snapshots</strong> — <code>save_incremental()</code> returns <code>{"supported": false}</code>; full snapshots only.</li>
+        <li><strong>Cross-layer query package</strong> (<code>vwm/query/</code>) — deferred; <code>reasoning.why</code> stays reasoning-local.</li>
+        <li><strong>Learned perception</strong> — not added; ingested class label is synthetic ground-truth; the <em>wiring</em> is the deliverable.</li>
+        <li>No dedicated many-worker concurrency stress suite; single-writer + failure-injection cover correctness.</li>
+      </ul>
+
+      <div class="highlight">
+        <p><strong>Bottom line:</strong> VWM is now a transactional, event-driven, evidence-based, persistent spatial world kernel — geometry, semantics, identity, history, reasoning, compilation, and rendering compose automatically and can be saved, restored, audited, and replayed deterministically. Deliverables: <code>vwm/{transactions,kernel,snapshot,invariants,core/evidence}/*</code>, <code>docs/V26_REPORT.md</code>, <code>/api/kernel/*</code>, the live panel, and 17 kernel + 5 product tests (311 total, no ignores).</p>
+      </div>
+    </article>
 
     <article class="update" id="v25">
       <div class="update-meta">
